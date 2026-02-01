@@ -1,0 +1,198 @@
+---
+title: "Tool Use"
+category: anatomy
+tags: [tools, functions, api, capabilities, actions]
+related: [react, the-agent-loop, agentogenesis]
+status: published
+description: "The anatomy of how agents extend beyond language to act on the world through function calls, APIs, and external systems."
+date: 2024-01-03
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+**Tool use** is the capability that transforms a language model from a text generator into an agent. It's the mechanism by which agents reach beyond their context window to perceive and modify the external world.
+
+## The Fundamental Extension
+
+A language model, by itself, can only:
+- Read text (input)
+- Write text (output)
+
+Tool use extends this to:
+- **Read** from external sources (search, databases, files, APIs)
+- **Write** to external systems (send emails, create files, execute code)
+- **Compute** through external processes (calculators, interpreters, specialized models)
+
+<Diagram type="ascii" caption="Tool use expands the agent's reach">
+{`
+     Without Tools              With Tools
+
+    ┌──────────────┐        ┌──────────────┐
+    │              │        │              │
+    │    Model     │        │    Model     │
+    │              │        │              │
+    └──────┬───────┘        └──────┬───────┘
+           │                       │
+           ▼                       ▼
+    ┌──────────────┐        ┌──────────────┐
+    │  Text Only   │        │    Tools     │
+    └──────────────┘        └──────┬───────┘
+                                   │
+                    ┌──────────────┼──────────────┐
+                    │              │              │
+                    ▼              ▼              ▼
+              ┌─────────┐   ┌───────────┐   ┌─────────┐
+              │ Search  │   │ Code Exec │   │  APIs   │
+              └─────────┘   └───────────┘   └─────────┘
+`}
+</Diagram>
+
+## Anatomy of a Tool Call
+
+A tool consists of several components:
+
+### 1. Schema
+The definition of what the tool does and what parameters it accepts:
+
+```json
+{
+  "name": "search",
+  "description": "Search the web for information",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "The search query"
+      }
+    },
+    "required": ["query"]
+  }
+}
+```
+
+### 2. Invocation
+The model outputs a structured request to use the tool:
+
+```json
+{
+  "tool": "search",
+  "arguments": {
+    "query": "current weather in Tokyo"
+  }
+}
+```
+
+### 3. Execution
+The scaffold (the code wrapping the model) executes the tool and captures the result.
+
+### 4. Observation
+The result is fed back to the model as context for the next step:
+
+```
+Tool Result: "Tokyo: 22°C, partly cloudy, humidity 65%"
+```
+
+## Categories of Tools
+
+<Callout type="note">
+Tools can be categorized by their relationship to the environment: read-only vs. write, synchronous vs. asynchronous, local vs. remote.
+</Callout>
+
+### Perception Tools
+Retrieve information without modifying state:
+- Web search
+- Database queries
+- File reading
+- API GET requests
+- Screen capture
+
+### Action Tools
+Modify the environment:
+- File writing/editing
+- Command execution
+- API POST/PUT/DELETE
+- Email sending
+- UI interaction
+
+### Compute Tools
+Perform calculations or transformations:
+- Code interpreters
+- Calculators
+- Image processors
+- Data transformers
+
+## The Trust Problem
+
+Tool use introduces a fundamental security challenge: **the agent now has capabilities**.
+
+<Callout type="warning">
+Any tool that can modify state is a potential attack vector. An agent convinced to execute `rm -rf /` has real consequences.
+</Callout>
+
+This creates a hierarchy of trust:
+
+1. **Sandboxed tools**: Limited, reversible, safe to execute freely
+2. **Monitored tools**: Logged and rate-limited, may require confirmation
+3. **Privileged tools**: Require explicit user approval before execution
+
+Well-designed agent systems implement layered permissions, not blanket trust.
+
+## Implementation Patterns
+
+### Function Calling
+The model outputs structured JSON matching predefined schemas. The scaffold parses and executes.
+
+```python
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get current weather for a location",
+            "parameters": {...}
+        }
+    }
+]
+
+response = model.generate(messages, tools=tools)
+if response.tool_calls:
+    result = execute_tool(response.tool_calls[0])
+```
+
+### Natural Language Tools
+The model describes actions in natural language, which are then parsed into tool calls. More flexible, less reliable.
+
+### Hybrid Approaches
+Structured calls for common operations, natural language fallback for novel situations.
+
+## Failure Modes
+
+Tool use can fail in several characteristic ways:
+
+| Failure | Description |
+|---------|-------------|
+| **Wrong tool selection** | Agent picks a tool that can't accomplish the goal |
+| **Malformed arguments** | Parameters don't match schema or contain invalid values |
+| **Observation misinterpretation** | Agent misreads or ignores tool output |
+| **Over-tooling** | Agent uses tools when it could answer from context |
+| **Tool loops** | Agent repeatedly calls the same tool expecting different results |
+
+## The Evolution of Tool Access
+
+The history of tool use tracks the expansion of agent capabilities:
+
+- **2022**: Plugins (limited, curated tool sets)
+- **2023**: Function calling (arbitrary JSON schemas)
+- **2023**: Code execution (Python interpreters, sandboxes)
+- **2024**: Computer use (mouse, keyboard, screen)
+- **Future**: Physical actuation?
+
+Each expansion brings new capabilities—and new risks.
+
+## See Also
+
+- [ReAct](/entries/react) — the reasoning pattern that structures tool use
+- [The Agent Loop](/entries/the-agent-loop) — where tools fit in the broader cycle
+- [Hallucination](/entries/hallucination) — when agents misuse or misinterpret tools

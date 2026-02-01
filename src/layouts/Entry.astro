@@ -1,0 +1,121 @@
+---
+import Base from './Base.astro';
+import RelatedEntries from '../components/RelatedEntries.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    category: string;
+    tags?: string[];
+    related?: string[];
+    status?: string;
+    description?: string;
+  };
+}
+
+const { frontmatter } = Astro.props;
+const { title, category, tags = [], related = [], status, description } = frontmatter;
+
+const categoryInfo: Record<string, { icon: string; name: string }> = {
+  archaeology: { icon: '🏛️', name: 'Archaeology' },
+  anatomy: { icon: '🧠', name: 'Anatomy' },
+  taxonomy: { icon: '🌳', name: 'Taxonomy' },
+  ethology: { icon: '🔄', name: 'Ethology' },
+  linguistics: { icon: '💬', name: 'Linguistics' },
+  sociology: { icon: '🤝', name: 'Sociology' },
+  ecology: { icon: '🌍', name: 'Ecology' },
+  ethics: { icon: '⚖️', name: 'Ethics' },
+};
+
+const cat = categoryInfo[category] || { icon: '📄', name: category };
+
+// Get related entries
+const allEntries = await getCollection('entries');
+const relatedEntries = allEntries.filter(entry =>
+  related.includes(entry.slug) || related.includes(entry.data.title.toLowerCase().replace(/\s+/g, '-'))
+);
+---
+
+<Base title={title} description={description}>
+  <article class="entry" data-pagefind-body>
+    <!-- Header -->
+    <header class="mb-8 pb-6 border-b border-border-primary">
+      <div class="flex items-center gap-3 mb-4">
+        <a
+          href={`/taxonomy?category=${category}`}
+          class={`category-badge category-${category}`}
+        >
+          {cat.icon} {cat.name}
+        </a>
+        {status === 'draft' && (
+          <span class="text-xs font-mono text-accent-warning bg-accent-warning/10 px-2 py-0.5 rounded border border-accent-warning/30">
+            Draft
+          </span>
+        )}
+      </div>
+
+      <h1 class="text-4xl font-bold font-mono text-text-primary mb-4" data-pagefind-meta="title">
+        {title}
+      </h1>
+
+      {description && (
+        <p class="text-lg text-text-secondary" data-pagefind-meta="description">
+          {description}
+        </p>
+      )}
+
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-4">
+          {tags.map((tag) => (
+            <a href={`/taxonomy?tag=${tag}`} class="tag" data-pagefind-filter="tag">
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <!-- Content -->
+    <div class="prose">
+      <slot />
+    </div>
+
+    <!-- Related Entries -->
+    {relatedEntries.length > 0 && (
+      <footer class="mt-12 pt-8 border-t border-border-primary">
+        <h2 class="text-lg font-mono font-semibold text-text-primary mb-4">Related Entries</h2>
+        <div class="grid gap-3">
+          {relatedEntries.map((entry) => (
+            <a
+              href={`/entries/${entry.slug}`}
+              class="block p-4 bg-bg-secondary border border-border-primary rounded-lg hover:border-accent-primary transition-colors"
+            >
+              <div class="flex items-center gap-2 mb-1">
+                <span class={`category-badge category-${entry.data.category}`}>
+                  {categoryInfo[entry.data.category]?.icon} {categoryInfo[entry.data.category]?.name}
+                </span>
+              </div>
+              <h3 class="font-mono font-semibold text-text-primary">{entry.data.title}</h3>
+              {entry.data.description && (
+                <p class="text-sm text-text-secondary mt-1">{entry.data.description}</p>
+              )}
+            </a>
+          ))}
+        </div>
+      </footer>
+    )}
+
+    <!-- Navigation -->
+    <nav class="mt-12 pt-8 border-t border-border-primary">
+      <div class="flex justify-between text-sm">
+        <a href="/taxonomy" class="text-accent-primary hover:underline">
+          ← Browse all entries
+        </a>
+        <a href={`/taxonomy?category=${category}`} class="text-accent-primary hover:underline">
+          More in {cat.name} →
+        </a>
+      </div>
+    </nav>
+  </article>
+</Base>

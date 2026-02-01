@@ -1,0 +1,50 @@
+---
+interface TimelineEvent {
+  year: string | number;
+  title: string;
+  description?: string;
+  type?: 'milestone' | 'release' | 'paper' | 'event';
+}
+
+interface Props {
+  events?: TimelineEvent[];
+}
+
+const { events = [] } = Astro.props;
+
+const typeStyles = {
+  milestone: { dot: 'bg-accent-primary', line: 'border-accent-primary' },
+  release: { dot: 'bg-green-500', line: 'border-green-500' },
+  paper: { dot: 'bg-purple-500', line: 'border-purple-500' },
+  event: { dot: 'bg-amber-500', line: 'border-amber-500' },
+};
+---
+
+<div class="timeline my-8">
+  {events.length > 0 ? (
+    <div class="relative pl-8 border-l-2 border-border-primary space-y-6">
+      {events.map((event, index) => {
+        const style = typeStyles[event.type || 'milestone'];
+        return (
+          <div class="relative">
+            <!-- Timeline dot -->
+            <div class={`absolute -left-[25px] w-4 h-4 ${style.dot} rounded-full border-4 border-bg-primary`}></div>
+
+            <!-- Content -->
+            <div class="pb-2">
+              <span class="font-mono text-sm text-text-muted">{event.year}</span>
+              <h4 class="font-semibold text-text-primary mt-1">{event.title}</h4>
+              {event.description && (
+                <p class="text-sm text-text-secondary mt-1">{event.description}</p>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  ) : (
+    <div class="relative pl-8 border-l-2 border-border-primary space-y-6">
+      <slot />
+    </div>
+  )}
+</div>

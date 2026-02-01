@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  entries?: string[];
+  category?: string;
+  limit?: number;
+  exclude?: string;
+}
+
+const { entries = [], category, limit = 5, exclude } = Astro.props;
+
+const allEntries = await getCollection('entries');
+
+let filteredEntries = allEntries.filter(entry =>
+  entry.data.status !== 'draft' && entry.slug !== exclude
+);
+
+if (entries.length > 0) {
+  filteredEntries = filteredEntries.filter(entry =>
+    entries.includes(entry.slug) ||
+    entries.includes(entry.data.title.toLowerCase().replace(/\s+/g, '-'))
+  );
+}
+
+if (category) {
+  filteredEntries = filteredEntries.filter(entry =>
+    entry.data.category === category
+  );
+}
+
+filteredEntries = filteredEntries.slice(0, limit);
+
+const categoryInfo: Record<string, { icon: string; name: string }> = {
+  archaeology: { icon: '🏛️', name: 'Archaeology' },
+  anatomy: { icon: '🧠', name: 'Anatomy' },
+  taxonomy: { icon: '🌳', name: 'Taxonomy' },
+  ethology: { icon: '🔄', name: 'Ethology' },
+  linguistics: { icon: '💬', name: 'Linguistics' },
+  sociology: { icon: '🤝', name: 'Sociology' },
+  ecology: { icon: '🌍', name: 'Ecology' },
+  ethics: { icon: '⚖️', name: 'Ethics' },
+};
+---
+
+{filteredEntries.length > 0 && (
+  <div class="related-entries my-6">
+    <h3 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">Related Entries</h3>
+    <div class="grid gap-2">
+      {filteredEntries.map((entry) => {
+        const cat = categoryInfo[entry.data.category];
+        return (
+          <a
+            href={`/entries/${entry.slug}`}
+            class="flex items-center gap-3 p-3 bg-bg-secondary border border-border-primary rounded-lg hover:border-accent-primary transition-colors group"
+          >
+            <span class="text-lg">{cat?.icon || '📄'}</span>
+            <div class="flex-1 min-w-0">
+              <p class="font-mono text-sm text-text-primary group-hover:text-accent-primary transition-colors truncate">
+                {entry.data.title}
+              </p>
+              {entry.data.description && (
+                <p class="text-xs text-text-muted truncate">{entry.data.description}</p>
+              )}
+            </div>
+            <span class="text-text-muted group-hover:text-accent-primary transition-colors">→</span>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+)}

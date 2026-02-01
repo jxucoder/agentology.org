@@ -1,0 +1,103 @@
+---
+title: "Agentogenesis"
+category: archaeology
+tags: [origins, history, emergence, foundation]
+related: [the-agent-loop, react]
+status: published
+description: "The origin story of AI agents—when language models crossed the threshold from tools to autonomous actors."
+date: 2024-01-01
+---
+
+import Callout from '../../components/Callout.astro';
+import Timeline from '../../components/Timeline.astro';
+import TimelineEvent from '../../components/TimelineEvent.astro';
+import Diagram from '../../components/Diagram.astro';
+
+The term **agentogenesis** describes the moment—or more accurately, the gradual transition—when large language models evolved from sophisticated text predictors into entities capable of autonomous action in the world.
+
+## The Threshold
+
+A language model, however capable, is not inherently an agent. It receives input, generates output, and waits. An agent, by contrast, *does things*: it observes, decides, acts, and observes the consequences of its actions.
+
+The threshold was crossed not through any single breakthrough, but through the combination of three capabilities:
+
+1. **Tool use** — the ability to invoke external functions
+2. **Reasoning loops** — structured thinking before acting
+3. **Persistence** — maintaining state across interactions
+
+<Callout type="insight">
+Agentogenesis wasn't a binary switch. Models existed on a spectrum of agency, with capability gradually expanding until certain thresholds enabled qualitatively new behaviors.
+</Callout>
+
+## A Brief Timeline
+
+<Timeline>
+  <TimelineEvent year="2020" title="GPT-3 Released" type="milestone">
+    Demonstrated that scale could produce emergent capabilities, including in-context learning. Not yet agents, but the foundation was laid.
+  </TimelineEvent>
+
+  <TimelineEvent year="2022" title="ChatGPT & RLHF" type="release">
+    Made models conversational and steerable. Still reactive, but the interface for human-agent interaction was established.
+  </TimelineEvent>
+
+  <TimelineEvent year="2022" title="ReAct Paper Published" type="paper">
+    Formalized the interleaving of reasoning and acting, providing a blueprint for agent architectures.
+  </TimelineEvent>
+
+  <TimelineEvent year="2023" title="Tool Use Goes Mainstream" type="milestone">
+    Function calling, plugins, and APIs became standard. Models could now reach beyond their context window.
+  </TimelineEvent>
+
+  <TimelineEvent year="2023-24" title="Autonomous Agent Frameworks" type="release">
+    AutoGPT, LangChain agents, Claude computer use—the scaffolding for persistent, goal-directed behavior emerged.
+  </TimelineEvent>
+</Timeline>
+
+## The Components of Agency
+
+What makes a model an agent? The standard formulation includes:
+
+<Diagram type="ascii" caption="The minimal agent architecture">
+{`
+┌─────────────────────────────────────────┐
+│              ENVIRONMENT                │
+│  (files, APIs, databases, web, users)   │
+└─────────────────┬───────────────────────┘
+                  │
+          ┌───────▼───────┐
+          │   PERCEPTION  │ ← observe
+          └───────┬───────┘
+                  │
+          ┌───────▼───────┐
+          │   REASONING   │ ← think
+          │   (LLM core)  │
+          └───────┬───────┘
+                  │
+          ┌───────▼───────┐
+          │    ACTION     │ ← act
+          │  (tool calls) │
+          └───────┬───────┘
+                  │
+                  └──────────→ back to environment
+`}
+</Diagram>
+
+This loop—**observe → reason → act → observe**—is the heartbeat of agency. Without it, you have a language model. With it, you have an agent.
+
+## Why "Agentogenesis"?
+
+The term echoes biological concepts like *anthropogenesis* (the origin of humans) and *biogenesis* (life from life). This is intentional.
+
+We're witnessing the emergence of a new category of entity. Not alive, not conscious (as far as we know), but *capable of autonomous action* in ways that demand new vocabulary.
+
+Agentology, as a field, begins here—at the moment of agentogenesis—and traces the developments that follow.
+
+<Callout type="note">
+Some researchers argue we should reserve "agent" for systems with true goal-directedness and world-models. Others use it more loosely for any system that takes actions. This encyclopedia adopts a pragmatic middle ground: an agent is a system that can perceive, reason, and act in a loop.
+</Callout>
+
+## See Also
+
+- [The Agent Loop](/entries/the-agent-loop) — the fundamental cycle that defines agent behavior
+- [ReAct](/entries/react) — the architecture that formalized agent reasoning
+- [Tool Use](/entries/tool-use) — how agents act on the world

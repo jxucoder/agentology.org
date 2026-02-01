@@ -1,0 +1,53 @@
+---
+interface Props {
+  name: string;
+  category?: string;
+  status?: 'active' | 'deprecated' | 'experimental';
+  organization?: string;
+  year?: string | number;
+  description?: string;
+  href?: string;
+}
+
+const { name, category, status = 'active', organization, year, description, href } = Astro.props;
+
+const statusStyles = {
+  active: { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-700/50' },
+  deprecated: { bg: 'bg-red-900/30', text: 'text-red-400', border: 'border-red-700/50' },
+  experimental: { bg: 'bg-yellow-900/30', text: 'text-yellow-400', border: 'border-yellow-700/50' },
+};
+
+const st = statusStyles[status];
+---
+
+<div class="agent-card bg-bg-secondary border border-border-primary rounded-lg p-5 hover:border-accent-primary transition-colors my-4">
+  <div class="flex items-start justify-between gap-4 mb-3">
+    <div>
+      <h3 class="font-mono font-bold text-lg text-text-primary">
+        {href ? (
+          <a href={href} class="hover:text-accent-primary transition-colors">
+            {name}
+          </a>
+        ) : name}
+      </h3>
+      {organization && (
+        <p class="text-sm text-text-muted mt-0.5">{organization} {year && `• ${year}`}</p>
+      )}
+    </div>
+    <span class={`${st.bg} ${st.text} ${st.border} border px-2 py-0.5 rounded text-xs font-mono flex-shrink-0`}>
+      {status}
+    </span>
+  </div>
+
+  {description && (
+    <p class="text-text-secondary text-sm mb-3">{description}</p>
+  )}
+
+  {category && (
+    <div class="flex items-center gap-2">
+      <span class={`category-badge category-${category}`}>{category}</span>
+    </div>
+  )}
+
+  <slot />
+</div>

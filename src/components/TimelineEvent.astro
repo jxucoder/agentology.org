@@ -1,0 +1,30 @@
+---
+interface Props {
+  year: string | number;
+  title: string;
+  type?: 'milestone' | 'release' | 'paper' | 'event';
+}
+
+const { year, title, type = 'milestone' } = Astro.props;
+
+const typeStyles = {
+  milestone: 'bg-accent-primary',
+  release: 'bg-green-500',
+  paper: 'bg-purple-500',
+  event: 'bg-amber-500',
+};
+---
+
+<div class="relative">
+  <!-- Timeline dot -->
+  <div class={`absolute -left-[25px] w-4 h-4 ${typeStyles[type]} rounded-full border-4 border-bg-primary`}></div>
+
+  <!-- Content -->
+  <div class="pb-4">
+    <span class="font-mono text-sm text-text-muted">{year}</span>
+    <h4 class="font-semibold text-text-primary mt-1">{title}</h4>
+    <div class="text-sm text-text-secondary mt-1">
+      <slot />
+    </div>
+  </div>
+</div>
