@@ -17,33 +17,14 @@ import Diagram from '../../components/Diagram.astro';
 
 Language models are trained to predict text. They learn patterns—what words follow other words—not facts about the world. This creates a fundamental problem:
 
-<Diagram type="ascii" caption="The grounding gap">
-{`
-┌─────────────────────────────────────────────────────────┐
-│                                                         │
-│                      THE WORLD                          │
-│               (facts, events, state)                    │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-                          │
-                          │ ?
-                          │
-┌─────────────────────────▼───────────────────────────────┐
-│                                                         │
-│                    LANGUAGE MODEL                       │
-│             (patterns from training data)               │
-│                                                         │
-│   - Training data may be outdated                       │
-│   - Training data may be incomplete                     │
-│   - Training data may be wrong                          │
-│   - Model may interpolate incorrectly                   │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-                          │
-                          │
-                          ▼
-                   Output may not
-                   match reality
+<Diagram type="mermaid" caption="grounding_gap">
+{`graph TD
+    A[THE WORLD<br/>facts, events, state] -->|?| B[LANGUAGE MODEL<br/>patterns from training data<br/><br/>- Training data may be outdated<br/>- Training data may be incomplete<br/>- Training data may be wrong<br/>- Model may interpolate incorrectly]
+    B --> C[Output may not<br/>match reality]
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 
@@ -90,37 +71,24 @@ Connecting to current time:
 
 The agent knows "now" and can access up-to-date information.
 
-<Diagram type="ascii" caption="How grounding connects language to reality">
-{`
-                    ┌─────────────┐
-                    │   Query     │
-                    └──────┬──────┘
-                           │
-           ┌───────────────┼───────────────┐
-           │               │               │
-           ▼               ▼               ▼
-    ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-    │   Search    │ │   Tools     │ │  Databases  │
-    └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
-           │               │               │
-           │    EXTERNAL SOURCES           │
-           │       (Reality)               │
-           │               │               │
-           └───────────────┼───────────────┘
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │  Retrieved  │
-                    │  Evidence   │
-                    └──────┬──────┘
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │   Model     │
-                    │  generates  │
-                    │  grounded   │
-                    │  response   │
-                    └─────────────┘
+<Diagram type="mermaid" caption="grounding_connects_to_reality">
+{`graph TD
+    Q[Query] --> S[Search]
+    Q --> T[Tools]
+    Q --> D[Databases]
+
+    S --> E[Retrieved Evidence<br/>EXTERNAL SOURCES<br/>Reality]
+    T --> E
+    D --> E
+
+    E --> M[Model generates<br/>grounded response]
+
+    style Q fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style S fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style T fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style E fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style M fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
 `}
 </Diagram>
 
@@ -169,21 +137,23 @@ Grounding and hallucination exist in tension:
 - **Maximum grounding**: Only assert what's directly retrieved/observed. Safe but limited.
 - **Maximum generation**: Pure pattern completion. Creative but unreliable.
 
-<Diagram type="ascii" caption="The grounding-creativity spectrum">
-{`
-Pure Grounding                              Pure Generation
-     │                                              │
-     ▼                                              ▼
-┌─────────┬──────────┬──────────┬──────────┬─────────────┐
-│ Direct  │ Cited    │ Inferred │ Pattern  │ Fabricated  │
-│ Quote   │ Claim    │ from     │ Matched  │ Content     │
-│         │          │ Evidence │          │             │
-└─────────┴──────────┴──────────┴──────────┴─────────────┘
-     │                    │                        │
-     │                    │                        │
-     ▼                    ▼                        ▼
- Very safe          Useful but            Dangerous if
- Limited            needs care            presented as fact
+<Diagram type="mermaid" caption="grounding_creativity_spectrum">
+{`graph LR
+    A[Direct Quote<br/>Very safe<br/>Limited] --> B[Cited Claim<br/>Useful but<br/>needs care]
+    B --> C[Inferred from<br/>Evidence<br/>Useful but<br/>needs care]
+    C --> D[Pattern<br/>Matched<br/>Dangerous if<br/>presented as fact]
+    D --> E[Fabricated<br/>Content<br/>Dangerous if<br/>presented as fact]
+
+    PG[Pure Grounding] -.-> A
+    PGen[Pure Generation] -.-> E
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style E fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style PG fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style PGen fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
 `}
 </Diagram>
 

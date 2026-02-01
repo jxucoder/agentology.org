@@ -42,40 +42,14 @@ Constitutional AI attempts to address these by making values explicit and traini
 
 ## How CAI Works
 
-<Diagram type="ascii" caption="The Constitutional AI training process">
-{`
-┌─────────────────────────────────────────────────────────┐
-│                    CONSTITUTION                         │
-│                                                         │
-│  "Please choose the response that is most helpful      │
-│   while being harmless and honest..."                  │
-│                                                         │
-│  "Prefer responses that are not harmful or unethical"  │
-│                                                         │
-│  "Choose the response that is least likely to cause    │
-│   harm to any group of people"                         │
-│                                                         │
-└─────────────────────────────┬───────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────┐
-│                  SELF-CRITIQUE                          │
-│                                                         │
-│   1. Model generates response to prompt                 │
-│   2. Model critiques its own response using principles  │
-│   3. Model revises response based on critique           │
-│   4. Revised response used for training                 │
-│                                                         │
-└─────────────────────────────┬───────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────┐
-│            REINFORCEMENT LEARNING                       │
-│                                                         │
-│   Model trained to produce responses that would         │
-│   survive its own constitutional critique               │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+<Diagram type="mermaid" caption="constitutional_ai_training_process">
+{`graph TD
+    A[CONSTITUTION<br/><br/>Choose response that is<br/>most helpful while being<br/>harmless and honest<br/><br/>Prefer responses that are<br/>not harmful or unethical<br/><br/>Choose response least likely<br/>to cause harm] --> B[SELF-CRITIQUE<br/><br/>1. Model generates response<br/>2. Critiques own response<br/>using principles<br/>3. Revises based on critique<br/>4. Revised response used<br/>for training]
+    B --> C[REINFORCEMENT LEARNING<br/><br/>Model trained to produce<br/>responses that would survive<br/>its own constitutional critique]
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
 `}
 </Diagram>
 
@@ -180,34 +154,17 @@ Who decides the constitution? The problem of aligning the constitution is shifte
 
 CAI and RLHF aren't opposed—they're complementary:
 
-<Diagram type="ascii" caption="How CAI and RLHF complement each other">
-{`
-┌─────────────────────────────────────────────────────────┐
-│                                                         │
-│   RLHF: "Learn what humans prefer"                      │
-│   ───────────────────────────────                       │
-│   + Captures implicit preferences                       │
-│   + Adapts to human judgment                            │
-│   - Inconsistent, non-transparent                       │
-│   - Prone to sycophancy                                 │
-│                                                         │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│   CAI: "Apply explicit principles"                      │
-│   ────────────────────────────────                      │
-│   + Transparent, consistent                             │
-│   + Scalable, auditable                                 │
-│   - Principles need careful design                      │
-│   - May miss nuance                                     │
-│                                                         │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│   Combined: Best of both                                │
-│   ─────────────────────────                             │
-│   CAI provides foundation of explicit values            │
-│   RLHF adds nuance and human calibration               │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+<Diagram type="mermaid" caption="cai_and_rlhf_complement">
+{`graph TD
+    R[RLHF<br/>Learn what humans prefer<br/><br/>+ Captures implicit preferences<br/>+ Adapts to human judgment<br/>- Inconsistent, non-transparent<br/>- Prone to sycophancy]
+    C[CAI<br/>Apply explicit principles<br/><br/>+ Transparent, consistent<br/>+ Scalable, auditable<br/>- Principles need careful design<br/>- May miss nuance]
+
+    R --> Combined[Combined: Best of both<br/><br/>CAI provides foundation<br/>of explicit values<br/><br/>RLHF adds nuance and<br/>human calibration]
+    C --> Combined
+
+    style R fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style Combined fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
 `}
 </Diagram>
 

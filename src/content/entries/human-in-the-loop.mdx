@@ -29,21 +29,22 @@ HITL is not just a safety mechanism—it's a social institution. It establishes 
 
 ## Patterns of Human Involvement
 
-<Diagram type="ascii" caption="Spectrum of human involvement">
-{`
-Full Human Control                            Full Agent Autonomy
-      │                                                │
-      ▼                                                ▼
-┌─────────┬───────────┬───────────┬───────────┬────────────┐
-│ Human   │ Human     │ Shared    │ Agent     │ Agent      │
-│ Does    │ Approves  │ Control   │ Acts,     │ Acts       │
-│ All     │ All       │           │ Human     │ Freely     │
-│         │ Actions   │           │ Reviews   │            │
-└─────────┴───────────┴───────────┴───────────┴────────────┘
-     │          │           │           │           │
-     │          │           │           │           │
-     ▼          ▼           ▼           ▼           ▼
-   L0         L1          L2          L3          L4
+<Diagram type="mermaid" caption="human_involvement_spectrum">
+{`graph LR
+    FC[Full Human Control] --> L0[L0<br/>Human Does All]
+    L0 --> L1[L1<br/>Human Approves<br/>All Actions]
+    L1 --> L2[L2<br/>Shared Control]
+    L2 --> L3[L3<br/>Agent Acts,<br/>Human Reviews]
+    L3 --> L4[L4<br/>Agent Acts<br/>Freely]
+    L4 --> FA[Full Agent Autonomy]
+
+    style FC fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style L0 fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style L1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style L2 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style L3 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style L4 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style FA fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
 `}
 </Diagram>
 
@@ -129,22 +130,18 @@ If humans only review agent work, they may lose ability to do the work themselve
 ### Audit the Audit
 Monitor the quality of human review. Are reviewers engaged? Are they catching errors? Is review adding value?
 
-<Diagram type="ascii" caption="The HITL feedback loop">
-{`
-┌─────────────────────────────────────────────────────────┐
-│                                                         │
-│    ┌──────────┐      ┌──────────┐      ┌──────────┐    │
-│    │  Agent   │─────►│  Human   │─────►│ Decision │    │
-│    │ Proposes │      │ Reviews  │      │ Executes │    │
-│    └──────────┘      └──────────┘      └────┬─────┘    │
-│                                              │         │
-│                                              │         │
-│    ┌──────────┐      ┌──────────┐           │         │
-│    │  Agent   │◄─────│ Outcome  │◄──────────┘         │
-│    │ Learns   │      │ Observed │                      │
-│    └──────────┘      └──────────┘                      │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+<Diagram type="mermaid" caption="hitl_feedback_loop">
+{`graph LR
+    A[Agent<br/>Proposes] --> H[Human<br/>Reviews]
+    H --> D[Decision<br/>Executes]
+    D --> O[Outcome<br/>Observed]
+    O --> L[Agent<br/>Learns]
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style H fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style O fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style L fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 

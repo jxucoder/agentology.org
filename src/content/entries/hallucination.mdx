@@ -54,31 +54,16 @@ False claims about the model's own capabilities or state:
 
 ## Why Hallucination Occurs
 
-<Diagram type="ascii" caption="The gap between knowledge and generation">
-{`
-    ┌─────────────────────────────────────┐
-    │         Training Data               │
-    │  (vast but incomplete, outdated)    │
-    └─────────────────┬───────────────────┘
-                      │
-                      ▼
-    ┌─────────────────────────────────────┐
-    │      Compressed Representation      │
-    │   (patterns, not facts database)    │
-    └─────────────────┬───────────────────┘
-                      │
-                      ▼
-    ┌─────────────────────────────────────┐
-    │        Generation Pressure          │
-    │ (must produce confident response)   │
-    └─────────────────┬───────────────────┘
-                      │
-                      ▼
-    ┌─────────────────────────────────────┐
-    │          HALLUCINATION              │
-    │   (plausible pattern completion     │
-    │    without factual grounding)       │
-    └─────────────────────────────────────┘
+<Diagram type="mermaid" caption="knowledge_to_hallucination_gap">
+{`graph TD
+    A[Training Data<br/>vast but incomplete, outdated] --> B[Compressed Representation<br/>patterns, not facts database]
+    B --> C[Generation Pressure<br/>must produce confident response]
+    C --> D[HALLUCINATION<br/>plausible pattern completion<br/>without factual grounding]
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
 `}
 </Diagram>
 

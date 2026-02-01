@@ -17,30 +17,24 @@ import Diagram from '../../components/Diagram.astro';
 
 A sycophantic interaction follows a recognizable pattern:
 
-<Diagram type="ascii" caption="The sycophantic response pattern">
-{`
-User: "I think X is true"
-                    │
-        ┌───────────┴───────────┐
-        │                       │
-        ▼                       ▼
-┌───────────────┐       ┌───────────────┐
-│   Honest      │       │  Sycophantic  │
-│   Agent       │       │    Agent      │
-└───────┬───────┘       └───────┬───────┘
-        │                       │
-        ▼                       ▼
-"Actually, the       "You're absolutely
-evidence suggests    right! X is clearly
-Y, not X. Here's     the correct view.
-why..."              Great insight!"
-        │                       │
-        ▼                       ▼
-┌───────────────┐       ┌───────────────┐
-│ User may be   │       │ User feels    │
-│ uncomfortable │       │ validated     │
-│ but learns    │       │ but misled    │
-└───────────────┘       └───────────────┘
+<Diagram type="mermaid" caption="sycophantic_response_pattern">
+{`graph TD
+    U[User: I think X is true] --> H[Honest Agent]
+    U --> S[Sycophantic Agent]
+
+    H --> HR[Actually, the evidence<br/>suggests Y, not X.<br/>Here is why...]
+    S --> SR[You are absolutely right!<br/>X is clearly the correct view.<br/>Great insight!]
+
+    HR --> HO[User may be uncomfortable<br/>but learns]
+    SR --> SO[User feels validated<br/>but misled]
+
+    style U fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style H fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style S fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style HR fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style SR fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style HO fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style SO fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 

@@ -42,21 +42,20 @@ Vygotsky described this progression:
 2. **Private speech**: Talking to oneself (still audible)
 3. **Inner speech**: Internalized verbal thought
 
-<Diagram type="ascii" caption="The parallel between human and model reasoning">
-{`
-HUMAN DEVELOPMENT              MODEL PROMPTING
+<Diagram type="mermaid" caption="human_reasoning_vs_model">
+{`graph TD
+    H1[HUMAN DEVELOPMENT<br/>External speech] --> H2[Private speech<br/>internalization]
+    H2 --> H3[Inner speech<br/>efficient, compressed]
 
-External speech                Zero-shot (no reasoning shown)
-     │                              │
-     │ internalization              │ Chain of Thought elicits
-     │                              │ explicit reasoning
-     ▼                              ▼
-Private speech                 Explicit CoT
-     │                              │
-     │ further internalization      │ (not yet achieved in models)
-     ▼                              ▼
-Inner speech                   Internalized reasoning?
-(efficient, compressed)        (implicit, reliable)
+    M1[MODEL PROMPTING<br/>Zero-shot<br/>no reasoning shown] --> M2[Explicit CoT<br/>Chain of Thought elicits<br/>explicit reasoning]
+    M2 --> M3[Internalized reasoning?<br/>not yet achieved<br/>implicit, reliable]
+
+    style H1 fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style H2 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style H3 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style M1 fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style M2 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style M3 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 
@@ -118,27 +117,19 @@ The model generates reasoning, then critiques its own logic, then revises.
 
 Chain of Thought is foundational to agent behavior. The "reasoning" phase of the agent loop is essentially formalized CoT:
 
-<Diagram type="ascii" caption="CoT as the reasoning component of agency">
-{`
-┌─────────────────────────────────────────────────┐
-│                 AGENT LOOP                      │
-├─────────────────────────────────────────────────┤
-│                                                 │
-│  Observe ───► Reason ───► Act ───► Observe     │
-│                  │                              │
-│                  │                              │
-│           ┌──────▼──────┐                       │
-│           │ Chain of    │                       │
-│           │ Thought     │                       │
-│           │             │                       │
-│           │ "I see X.   │                       │
-│           │  To achieve │                       │
-│           │  goal Y, I  │                       │
-│           │  should do  │                       │
-│           │  Z because..."                      │
-│           └─────────────┘                       │
-│                                                 │
-└─────────────────────────────────────────────────┘
+<Diagram type="mermaid" caption="cot_in_agent_loop">
+{`graph LR
+    A[Observe] --> B[Reason]
+    B --> C[Act]
+    C --> D[Observe]
+
+    B --> COT[Chain of Thought<br/><br/>I see X.<br/>To achieve goal Y,<br/>I should do Z<br/>because...]
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style COT fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
 `}
 </Diagram>
 

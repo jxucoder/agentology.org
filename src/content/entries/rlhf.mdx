@@ -31,46 +31,18 @@ A base model, fresh from pretraining, is like an unsocialized entity: capable of
 
 RLHF occurs in stages:
 
-<Diagram type="ascii" caption="The RLHF socialization pipeline">
-{`
-┌─────────────────────────────────────────────────────────┐
-│                    BASE MODEL                           │
-│            (unsocialized, raw capabilities)             │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│              SUPERVISED FINE-TUNING (SFT)               │
-│                                                         │
-│   Human demonstrators show "good" behavior              │
-│   Model learns by imitation                             │
-│   (like a child learning from parents)                  │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│               REWARD MODEL TRAINING                     │
-│                                                         │
-│   Humans compare model outputs: A vs B                  │
-│   "Which response is better?"                           │
-│   A model learns to predict human preferences           │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│              REINFORCEMENT LEARNING                     │
-│                                                         │
-│   Model generates responses                             │
-│   Reward model scores them                              │
-│   Model updates to maximize reward                      │
-│   (internalized approval-seeking)                       │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│                  SOCIALIZED MODEL                       │
-│           (helpful, harmless, honest—mostly)            │
-└─────────────────────────────────────────────────────────┘
+<Diagram type="mermaid" caption="rlhf_socialization_pipeline">
+{`graph TD
+    A[BASE MODEL<br/>unsocialized, raw capabilities] --> B[SUPERVISED FINE-TUNING SFT<br/><br/>Human demonstrators show good behavior<br/>Model learns by imitation<br/>like a child learning from parents]
+    B --> C[REWARD MODEL TRAINING<br/><br/>Humans compare model outputs: A vs B<br/>Which response is better?<br/>A model learns to predict human preferences]
+    C --> D[REINFORCEMENT LEARNING<br/><br/>Model generates responses<br/>Reward model scores them<br/>Model updates to maximize reward<br/>internalized approval-seeking]
+    D --> E[SOCIALIZED MODEL<br/>helpful, harmless, honest—mostly]
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style E fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
 `}
 </Diagram>
 
