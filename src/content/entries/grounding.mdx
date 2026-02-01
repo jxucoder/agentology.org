@@ -1,0 +1,266 @@
+---
+title: "Grounding"
+category: anatomy
+tags: [retrieval, knowledge, truth, reality]
+related: [hallucination, tool-use, memory-systems]
+status: published
+description: "The connection between language and reality—how agents anchor their outputs in facts, evidence, and the external world rather than pure pattern completion."
+date: 2024-01-16
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+**Grounding** refers to the mechanisms that connect agent outputs to external reality—anchoring language in facts, evidence, observations, and verified information rather than relying solely on patterns learned during training.
+
+## The Problem of Ungrounded Language
+
+Language models are trained to predict text. They learn patterns—what words follow other words—not facts about the world. This creates a fundamental problem:
+
+<Diagram type="ascii" caption="The grounding gap">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│                      THE WORLD                          │
+│               (facts, events, state)                    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+                          │
+                          │ ?
+                          │
+┌─────────────────────────▼───────────────────────────────┐
+│                                                         │
+│                    LANGUAGE MODEL                       │
+│             (patterns from training data)               │
+│                                                         │
+│   - Training data may be outdated                       │
+│   - Training data may be incomplete                     │
+│   - Training data may be wrong                          │
+│   - Model may interpolate incorrectly                   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+                          │
+                          │
+                          ▼
+                   Output may not
+                   match reality
+`}
+</Diagram>
+
+Without grounding, agents can only access the world through the distorted lens of training data—fixed at a point in time, incomplete, and potentially erroneous.
+
+<Callout type="insight">
+Ungrounded language is like reasoning in a dream: internally consistent, potentially elaborate, but disconnected from reality. Grounding wakes the agent up.
+</Callout>
+
+## Types of Grounding
+
+### Retrieval Grounding
+Connecting to external knowledge sources:
+- Document retrieval
+- Web search
+- Database queries
+- Knowledge graphs
+
+The agent retrieves relevant information and incorporates it into context before generating.
+
+### Perceptual Grounding
+Connecting to direct observations:
+- Tool outputs
+- API responses
+- Sensor data
+- File system state
+
+The agent perceives current reality rather than relying on training knowledge.
+
+### Verification Grounding
+Checking outputs against sources:
+- Citation verification
+- Fact-checking
+- Consistency checking
+- Source attribution
+
+The agent validates its claims rather than asserting them without evidence.
+
+### Temporal Grounding
+Connecting to current time:
+- Real-time data
+- Recent events
+- Current state
+
+The agent knows "now" and can access up-to-date information.
+
+<Diagram type="ascii" caption="How grounding connects language to reality">
+{`
+                    ┌─────────────┐
+                    │   Query     │
+                    └──────┬──────┘
+                           │
+           ┌───────────────┼───────────────┐
+           │               │               │
+           ▼               ▼               ▼
+    ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+    │   Search    │ │   Tools     │ │  Databases  │
+    └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
+           │               │               │
+           │    EXTERNAL SOURCES           │
+           │       (Reality)               │
+           │               │               │
+           └───────────────┼───────────────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │  Retrieved  │
+                    │  Evidence   │
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │   Model     │
+                    │  generates  │
+                    │  grounded   │
+                    │  response   │
+                    └─────────────┘
+`}
+</Diagram>
+
+## Retrieval-Augmented Generation (RAG)
+
+The dominant grounding paradigm today is RAG:
+
+1. **Query**: User asks a question or agent needs information
+2. **Retrieve**: Search relevant documents from a knowledge base
+3. **Augment**: Add retrieved content to model context
+4. **Generate**: Model produces response incorporating retrieved information
+
+```
+User: "What is the current stock price of Apple?"
+
+Without RAG: "Apple stock is around $150..." (possibly outdated)
+
+With RAG:
+  - Retrieve: [Fetch current AAPL price: $187.32]
+  - Generate: "Apple (AAPL) is currently trading at $187.32."
+```
+
+<Callout type="note">
+RAG doesn't eliminate hallucination—models can still misinterpret or ignore retrieved context. But it provides a foundation of evidence that makes grounding possible.
+</Callout>
+
+## Tool Use as Grounding
+
+Beyond retrieval, agents can ground through action:
+
+| Tool | Grounding Function |
+|------|-------------------|
+| **Web search** | Current information from the web |
+| **Calculator** | Mathematical truth |
+| **Code execution** | Verified computation |
+| **File system** | Actual file contents |
+| **APIs** | Real-world service state |
+| **Databases** | Authoritative records |
+
+Each tool call creates a grounding point—an observation that connects reasoning to reality.
+
+## The Grounding-Hallucination Tradeoff
+
+Grounding and hallucination exist in tension:
+
+- **Maximum grounding**: Only assert what's directly retrieved/observed. Safe but limited.
+- **Maximum generation**: Pure pattern completion. Creative but unreliable.
+
+<Diagram type="ascii" caption="The grounding-creativity spectrum">
+{`
+Pure Grounding                              Pure Generation
+     │                                              │
+     ▼                                              ▼
+┌─────────┬──────────┬──────────┬──────────┬─────────────┐
+│ Direct  │ Cited    │ Inferred │ Pattern  │ Fabricated  │
+│ Quote   │ Claim    │ from     │ Matched  │ Content     │
+│         │          │ Evidence │          │             │
+└─────────┴──────────┴──────────┴──────────┴─────────────┘
+     │                    │                        │
+     │                    │                        │
+     ▼                    ▼                        ▼
+ Very safe          Useful but            Dangerous if
+ Limited            needs care            presented as fact
+`}
+</Diagram>
+
+The art is in calibrating this tradeoff for different contexts.
+
+## Challenges in Grounding
+
+### Retrieval Quality
+The wrong documents retrieved mean wrong grounding. Garbage in, garbage out.
+
+### Context Integration
+Models may ignore retrieved context or misweight it against training knowledge.
+
+### Source Reliability
+Not all sources are equally trustworthy. How should agents evaluate source quality?
+
+### Temporal Coherence
+Mixing information from different times can create inconsistencies.
+
+### Scalability
+Comprehensive grounding is expensive—every claim verified, every fact checked.
+
+### Adversarial Inputs
+Grounding sources (websites, documents) may contain prompt injections or misinformation.
+
+<Callout type="warning">
+Grounding to untrustworthy sources can be worse than no grounding. An agent that retrieves from a manipulated source may confidently assert false information.
+</Callout>
+
+## Grounding and Trust
+
+Grounding is fundamentally about trust:
+
+- **Training data**: Trusted at training time, but fixed and possibly outdated
+- **Retrieved sources**: Must be evaluated for reliability
+- **Tool outputs**: Generally trusted, but tools can fail or be manipulated
+- **User inputs**: May be adversarial
+
+A robust grounding architecture layers trust:
+
+```
+Most trusted:    Direct tool observations
+                 Verified sources
+                 Retrieved documents
+                 Training knowledge
+Least trusted:   User-provided claims
+```
+
+## The Anthropological Parallel
+
+Human societies have developed grounding institutions:
+
+| Human Institution | Agent Equivalent |
+|-------------------|------------------|
+| Libraries | Document stores |
+| Encyclopedias | Knowledge bases |
+| Journalism | Web search |
+| Scientific method | Verification tools |
+| Citation practices | Source attribution |
+| Peer review | Consistency checking |
+
+Agents are recapitulating the development of knowledge infrastructure that took humans millennia to build.
+
+## Future Directions
+
+Grounding is evolving rapidly:
+
+- **Learned retrieval**: Models that know what to retrieve
+- **Multi-hop reasoning**: Grounding chains across multiple sources
+- **Provenance tracking**: Following claims back to original sources
+- **Confidence calibration**: Knowing what's well-grounded vs. uncertain
+- **Real-time grounding**: Continuous connection to current reality
+
+The goal: agents that not only can access truth but know when they have it and when they don't.
+
+## See Also
+
+- [Hallucination](/entries/hallucination) — what grounding aims to prevent
+- [Tool Use](/entries/tool-use) — grounding through action
+- [Memory Systems](/entries/memory-systems) — grounding in past experience

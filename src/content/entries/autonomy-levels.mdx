@@ -1,0 +1,211 @@
+---
+title: "Autonomy Levels"
+category: taxonomy
+tags: [classification, autonomy, development, maturity]
+related: [scaffolding, human-in-the-loop, the-agent-loop]
+status: published
+description: "A developmental taxonomy of agent independence—from fully supervised infancy to unsupervised autonomy, with the stages between."
+date: 2024-01-07
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+In developmental psychology, we track the stages through which children gain independence: from total dependence on caregivers, to supervised exploration, to adolescent semi-autonomy, to adult self-direction.
+
+**Autonomy levels** provide an analogous framework for AI agents—a taxonomy of how much independence an agent exercises and how much human oversight it requires.
+
+## The Autonomy Spectrum
+
+Agents don't exist in a binary state of "autonomous" or "not autonomous." They occupy positions on a spectrum:
+
+<Diagram type="ascii" caption="The autonomy spectrum">
+{`
+HUMAN CONTROL ◄─────────────────────────────────────► AGENT AUTONOMY
+
+Level 0        Level 1        Level 2        Level 3        Level 4
+   │              │              │              │              │
+   ▼              ▼              ▼              ▼              ▼
+┌──────┐    ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+│ Tool │    │ Assisted │   │ Partial  │   │Supervised│   │   Full   │
+│      │    │          │   │          │   │ Autonomy │   │ Autonomy │
+│Human │    │ Human    │   │ Shared   │   │ Agent    │   │ Agent    │
+│does  │    │ decides, │   │ control  │   │ decides, │   │ decides  │
+│all   │    │ agent    │   │          │   │ human    │   │ and acts │
+│      │    │ assists  │   │          │   │ approves │   │          │
+└──────┘    └──────────┘   └──────────┘   └──────────┘   └──────────┘
+`}
+</Diagram>
+
+## Level 0: Tool Mode
+
+The agent has no autonomy. It responds to specific queries with specific outputs. The human maintains complete control over all decisions and actions.
+
+**Characteristics:**
+- Single-turn interactions
+- No persistent state
+- No action-taking capability
+- Human interprets and acts on outputs
+
+**Examples:**
+- Basic chatbots
+- Code completion (suggesting, not executing)
+- Translation services
+
+**Anthropological parallel:** An infant, entirely dependent on caregivers for all needs.
+
+## Level 1: Assisted Mode
+
+The agent provides recommendations, but the human makes all decisions and takes all actions. The agent augments human capability without replacing human judgment.
+
+**Characteristics:**
+- Can propose multi-step plans
+- Recommendations require human approval
+- No direct environmental access
+- Human remains fully in the loop
+
+**Examples:**
+- Code review assistants
+- Research summarizers
+- Decision support systems
+
+**Anthropological parallel:** A young child who can express preferences but whose guardians make all significant decisions.
+
+## Level 2: Partial Autonomy
+
+The agent can take *some* actions independently, while others require human approval. The boundary between autonomous and supervised actions is explicitly defined.
+
+**Characteristics:**
+- Some tools available without approval
+- High-stakes actions require confirmation
+- Operates within defined constraints
+- Human can intervene at any point
+
+**Examples:**
+- Coding agents that can read/write files but need approval to execute
+- Email drafting agents that require send confirmation
+- Research agents with read access but no write access
+
+**Anthropological parallel:** An older child with some independence (can walk to school alone) but restrictions on major decisions.
+
+<Callout type="note">
+Level 2 is where most production agent systems operate today. It balances capability with safety by creating explicit permission boundaries.
+</Callout>
+
+## Level 3: Supervised Autonomy
+
+The agent operates independently but under observation. It makes decisions and takes actions, but humans monitor its behavior and can intervene if needed.
+
+**Characteristics:**
+- Broad action-taking authority
+- Logging and transparency requirements
+- Human review of outcomes (not inputs)
+- Intervention capability preserved
+
+**Examples:**
+- Autonomous coding sessions with audit logs
+- Customer service agents with escalation protocols
+- Trading systems with position limits
+
+**Anthropological parallel:** A teenager with significant freedom but ongoing parental oversight and the possibility of intervention.
+
+## Level 4: Full Autonomy
+
+The agent operates independently without real-time human oversight. It sets its own subgoals, takes actions, and handles consequences. Humans may set high-level objectives but don't supervise execution.
+
+**Characteristics:**
+- Self-directed goal pursuit
+- No approval requirements
+- Long time horizons
+- Human involvement only at setup and review
+
+**Examples:**
+- Long-running research agents
+- Fully autonomous vehicles
+- Self-improving systems (theoretical)
+
+**Anthropological parallel:** An adult, fully independent and responsible for their own decisions.
+
+<Callout type="warning">
+Level 4 autonomy is rarely deployed for AI agents today. The combination of capability limitations and safety concerns keeps most systems at Level 2-3.
+</Callout>
+
+## Factors Determining Appropriate Level
+
+What autonomy level is appropriate for a given agent? Key factors include:
+
+### Capability
+Can the agent reliably accomplish the task? Higher capability enables higher autonomy.
+
+### Reversibility
+Can mistakes be undone? Reversible actions (editing a draft) tolerate more autonomy than irreversible ones (sending an email).
+
+### Stakes
+What's the cost of failure? Higher stakes demand more oversight.
+
+### Domain
+Is the domain well-specified or open-ended? Constrained domains are safer for autonomy.
+
+### Trust
+Has the agent demonstrated reliability? Trust is earned through track record.
+
+<Diagram type="ascii" caption="Autonomy level decision factors">
+{`
+                    High Stakes
+                         │
+                         │
+     Lower ◄─────────────┼─────────────► Higher
+    Autonomy             │              Autonomy
+                         │
+                    Low Stakes
+
+    ─────────────────────────────────────────────
+
+    Irreversible ◄───────┼───────► Reversible
+    Low Trust    ◄───────┼───────► High Trust
+    Open Domain  ◄───────┼───────► Constrained
+    Low Capability◄──────┼───────► High Capability
+`}
+</Diagram>
+
+## Dynamic Autonomy
+
+Autonomy levels need not be static. Sophisticated systems adjust autonomy based on:
+
+- **Task phase**: More oversight during critical moments
+- **Confidence**: Higher autonomy when the agent is certain
+- **Track record**: Earned autonomy over time
+- **Anomaly detection**: Reduced autonomy when behavior is unusual
+
+This mirrors human development: we grant children more independence as they demonstrate readiness.
+
+## The Autonomy-Alignment Relationship
+
+A crucial insight: **autonomy and alignment must scale together**.
+
+An agent with high autonomy but poor alignment is dangerous. An agent with high alignment but low autonomy is merely underutilized.
+
+| Alignment | Low Autonomy | High Autonomy |
+|-----------|--------------|---------------|
+| **Low** | Safe but limited | Dangerous |
+| **High** | Underutilized | Ideal |
+
+This is why the field progresses carefully: we increase autonomy only as alignment techniques improve.
+
+## Classification in Practice
+
+When categorizing an agent, consider:
+
+1. What actions can it take without approval?
+2. What approval mechanisms exist?
+3. What oversight is applied during operation?
+4. How are outcomes reviewed?
+5. Can autonomy level be adjusted dynamically?
+
+The answers position the agent on the spectrum—and reveal the implicit trust assumptions built into its design.
+
+## See Also
+
+- [Scaffolding](/entries/scaffolding) — the structures that constrain and enable agent autonomy
+- [Human-in-the-Loop](/entries/human-in-the-loop) — the role of human oversight in agent systems
+- [The Agent Loop](/entries/the-agent-loop) — the fundamental cycle autonomy is applied to
