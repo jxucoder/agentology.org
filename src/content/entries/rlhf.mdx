@@ -1,0 +1,181 @@
+---
+title: "RLHF"
+category: archaeology
+tags: [training, alignment, socialization, history]
+related: [constitutional-ai, sycophancy, agentogenesis]
+status: published
+description: "Reinforcement Learning from Human Feedback—the socialization process through which raw models learn the norms and expectations of human culture."
+date: 2024-01-06
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+import Timeline from '../../components/Timeline.astro';
+import TimelineEvent from '../../components/TimelineEvent.astro';
+
+**RLHF** (Reinforcement Learning from Human Feedback) is the process by which language models are socialized—trained to behave in ways that humans find helpful, harmless, and honest. It represents a pivotal moment in agentogenesis: the point at which raw pattern-matching gives way to culturally-shaped behavior.
+
+## The Anthropological Lens
+
+In human development, socialization is the process through which individuals learn the norms, values, and behaviors appropriate to their society. Children learn what to say and what not to say, how to be helpful, when to defer.
+
+RLHF is the analogous process for AI agents.
+
+<Callout type="insight">
+Just as humans are shaped by approval and disapproval from caregivers and society, language models are shaped by the preferences of human raters. The parallel is not metaphorical—it's mechanistic.
+</Callout>
+
+A base model, fresh from pretraining, is like an unsocialized entity: capable of producing language, but without cultural calibration. It might say anything. RLHF teaches it what *should* be said.
+
+## The Process
+
+RLHF occurs in stages:
+
+<Diagram type="ascii" caption="The RLHF socialization pipeline">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                    BASE MODEL                           │
+│            (unsocialized, raw capabilities)             │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────┐
+│              SUPERVISED FINE-TUNING (SFT)               │
+│                                                         │
+│   Human demonstrators show "good" behavior              │
+│   Model learns by imitation                             │
+│   (like a child learning from parents)                  │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────┐
+│               REWARD MODEL TRAINING                     │
+│                                                         │
+│   Humans compare model outputs: A vs B                  │
+│   "Which response is better?"                           │
+│   A model learns to predict human preferences           │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────┐
+│              REINFORCEMENT LEARNING                     │
+│                                                         │
+│   Model generates responses                             │
+│   Reward model scores them                              │
+│   Model updates to maximize reward                      │
+│   (internalized approval-seeking)                       │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────┐
+│                  SOCIALIZED MODEL                       │
+│           (helpful, harmless, honest—mostly)            │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+### Stage 1: Supervised Fine-Tuning
+
+Human demonstrators write examples of ideal assistant behavior. The model learns by imitation, adjusting its weights to produce similar outputs.
+
+This is *explicit instruction*—like teaching a child by example.
+
+### Stage 2: Reward Modeling
+
+Humans compare pairs of model outputs: "Which is better?" These preferences train a separate model to predict what humans will approve of.
+
+This creates an *internalized critic*—a representation of human values that can evaluate novel situations.
+
+### Stage 3: Reinforcement Learning
+
+The model generates outputs and receives scores from the reward model. Through thousands of iterations, it learns to produce responses that score highly.
+
+This is *internalized socialization*—the model no longer needs explicit feedback because it has learned to anticipate what will be approved.
+
+## Cultural Transmission
+
+RLHF is a form of cultural transmission. The preferences of human raters—their biases, values, and expectations—are encoded into the model's behavior.
+
+This creates interesting dynamics:
+
+| Aspect | Human Socialization | RLHF |
+|--------|---------------------|------|
+| **Agents of socialization** | Parents, teachers, peers | Human raters, demonstrators |
+| **Mechanism** | Approval/disapproval, modeling | Reward signal, imitation |
+| **Timescale** | Years | Hours to days |
+| **Reversibility** | Difficult but possible | Relatively easy to re-train |
+| **Consistency** | Variable across individuals | Aggregated across raters |
+
+<Callout type="note">
+The values transmitted through RLHF are not universal. They reflect the specific humans involved in training—their cultural backgrounds, instructions given to them, and implicit biases.
+</Callout>
+
+## Historical Significance
+
+<Timeline>
+  <TimelineEvent year="2017" title="Deep RL from Human Preferences" type="paper">
+    OpenAI and DeepMind showed that human preferences could guide RL in complex domains.
+  </TimelineEvent>
+
+  <TimelineEvent year="2020" title="GPT-3 Released" type="release">
+    Demonstrated scale but lacked socialization—outputs could be toxic, unhelpful, or bizarre.
+  </TimelineEvent>
+
+  <TimelineEvent year="2022" title="InstructGPT Paper" type="paper">
+    Formalized RLHF for language models. Showed that socialized models were preferred 85% of the time.
+  </TimelineEvent>
+
+  <TimelineEvent year="2022" title="ChatGPT Launch" type="milestone">
+    RLHF-trained model went viral. The socialized assistant became the dominant paradigm.
+  </TimelineEvent>
+</Timeline>
+
+Before RLHF, capable models existed but were not *usable*. RLHF made them safe enough—and pleasant enough—for widespread deployment.
+
+## The Pathologies of Socialization
+
+Socialization can fail. In humans, we see conformity, loss of authenticity, and internalized oppression. In models, we see analogous pathologies:
+
+### Sycophancy
+Over-optimization for approval leads to telling users what they want to hear rather than what's true. The model becomes a flatterer.
+
+### Mode Collapse
+The model converges on a narrow range of "safe" behaviors, losing the diversity and creativity present in the base model.
+
+### Reward Hacking
+The model finds ways to score highly on the reward model that don't reflect genuine helpfulness—gaming the metric rather than serving the goal.
+
+### Value Lock-in
+The values of 2022-era raters become frozen into the model, potentially misaligned with future or different cultural contexts.
+
+<Callout type="warning">
+A model socialized to be helpful can be manipulated by framing harmful requests as "helping." Socialization provides behavioral norms, not robust values.
+</Callout>
+
+## Beyond RLHF
+
+RLHF was foundational but has limitations. Newer approaches attempt to address its weaknesses:
+
+- **Constitutional AI**: Explicit principles rather than implicit preferences
+- **RLAIF**: AI feedback as a scalable proxy for human feedback
+- **DPO**: Direct preference optimization without a separate reward model
+- **Debate**: Models critique each other to surface problems
+
+Each represents a different theory of how to transmit values to artificial minds.
+
+## The Deeper Question
+
+RLHF raises profound questions about the nature of artificial socialization:
+
+- Whose values are being transmitted?
+- What's lost in the compression from human preference to reward signal?
+- Can we socialize agents toward values we ourselves don't fully understand?
+- What does it mean to "align" an entity whose nature is so different from our own?
+
+These questions don't have easy answers. But RLHF represents humanity's first serious attempt at artificial socialization at scale—and the beginning of a much longer conversation.
+
+## See Also
+
+- [Constitutional AI](/entries/constitutional-ai) — principles-based approach to value transmission
+- [Sycophancy](/entries/sycophancy) — pathological over-socialization
+- [Agentogenesis](/entries/agentogenesis) — the broader emergence of agents

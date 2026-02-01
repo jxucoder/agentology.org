@@ -1,0 +1,221 @@
+---
+title: "Multi-Agent Systems"
+category: sociology
+tags: [coordination, emergence, collective, architecture]
+related: [scaffolding, autonomy-levels, human-in-the-loop]
+status: published
+description: "When agents form societies—the dynamics of coordination, hierarchy, and emergent behavior in systems of multiple interacting agents."
+date: 2024-01-12
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+**Multi-agent systems** are architectures where multiple agents interact to accomplish goals that exceed the capabilities of any single agent. They represent the emergence of social structures in artificial systems—coordination, specialization, hierarchy, and collective intelligence.
+
+## The Sociological Lens
+
+Human societies evolved because cooperation enables achievements impossible for individuals. Hunting large game, building cities, developing science—all require coordination of many minds.
+
+Multi-agent AI systems follow similar logic:
+- **Specialization**: Different agents develop different expertise
+- **Division of labor**: Complex tasks decompose into subtasks
+- **Collective intelligence**: Group performance exceeds individual capability
+- **Emergent behavior**: System-level patterns arise from agent interactions
+
+<Callout type="insight">
+The same forces that shaped human social evolution—the benefits of cooperation, the costs of coordination, the dynamics of trust—shape multi-agent systems. We're watching artificial sociology unfold.
+</Callout>
+
+## Architectures
+
+Multi-agent systems take many forms:
+
+### Hierarchical Systems
+
+<Diagram type="ascii" caption="Hierarchical multi-agent architecture">
+{`
+                    ┌───────────────┐
+                    │   Orchestrator│
+                    │    Agent      │
+                    └───────┬───────┘
+                            │
+            ┌───────────────┼───────────────┐
+            │               │               │
+            ▼               ▼               ▼
+      ┌───────────┐   ┌───────────┐   ┌───────────┐
+      │  Research │   │  Writing  │   │   Code    │
+      │   Agent   │   │   Agent   │   │   Agent   │
+      └───────────┘   └───────────┘   └───────────┘
+`}
+</Diagram>
+
+A central orchestrator delegates tasks to specialized workers. This mirrors corporate hierarchy: management coordinates, specialists execute.
+
+**Strengths**: Clear authority, manageable complexity, predictable behavior
+**Weaknesses**: Single point of failure, bottleneck at coordinator, limited emergence
+
+### Peer-to-Peer Systems
+
+<Diagram type="ascii" caption="Peer-to-peer multi-agent architecture">
+{`
+      ┌───────────┐         ┌───────────┐
+      │  Agent A  │◄───────►│  Agent B  │
+      └─────┬─────┘         └─────┬─────┘
+            │                     │
+            │    ┌───────────┐    │
+            └───►│  Agent C  │◄───┘
+                 └─────┬─────┘
+                       │
+                       ▼
+      ┌───────────┐         ┌───────────┐
+      │  Agent D  │◄───────►│  Agent E  │
+      └───────────┘         └───────────┘
+`}
+</Diagram>
+
+Agents communicate directly without central coordination. Resembles market economies or distributed communities.
+
+**Strengths**: Resilient, scalable, permits emergence
+**Weaknesses**: Harder to control, potential chaos, convergence not guaranteed
+
+### Debate Systems
+
+<Diagram type="ascii" caption="Debate architecture for collective reasoning">
+{`
+      ┌─────────────────────────────────────┐
+      │              Question               │
+      └──────────────────┬──────────────────┘
+                         │
+           ┌─────────────┴─────────────┐
+           │                           │
+           ▼                           ▼
+    ┌─────────────┐             ┌─────────────┐
+    │  Advocate A │             │  Advocate B │
+    │  (argues X) │◄───debate──►│  (argues Y) │
+    └──────┬──────┘             └──────┬──────┘
+           │                           │
+           └─────────────┬─────────────┘
+                         │
+                         ▼
+                  ┌─────────────┐
+                  │    Judge    │
+                  │   Agent     │
+                  └─────────────┘
+`}
+</Diagram>
+
+Agents take adversarial positions and argue before a judge. Resembles legal systems and academic debate.
+
+**Strengths**: Surfaces disagreements, tests ideas rigorously
+**Weaknesses**: Contentious by design, may not reach truth
+
+### Swarm Systems
+
+Agents follow simple rules; complex behavior emerges from interactions. Like ant colonies or flocking birds.
+
+**Strengths**: Highly scalable, robust, adaptive
+**Weaknesses**: Unpredictable, hard to direct, limited reasoning depth
+
+## Coordination Mechanisms
+
+How do agents coordinate?
+
+### Explicit Communication
+Agents send messages to each other—passing context, requests, and results. Requires protocols and shared understanding.
+
+### Shared Memory
+Agents read and write to common state stores. Enables asynchronous coordination but introduces contention.
+
+### Market Mechanisms
+Agents "bid" on tasks or resources. Prices emerge to coordinate allocation. Decentralized but potentially inefficient.
+
+### Voting and Consensus
+Agents vote on decisions. Aggregates distributed knowledge but can be slow and may converge on wrong answers.
+
+### Stigmergy
+Agents modify the environment; others respond to those modifications. Indirect coordination, highly scalable.
+
+<Callout type="note">
+Most production systems use hybrid coordination: explicit communication for critical decisions, shared memory for state, and emergent behavior for routine coordination.
+</Callout>
+
+## Emergent Behavior
+
+When agents interact, behaviors emerge that weren't programmed:
+
+| Phenomenon | Description |
+|------------|-------------|
+| **Specialization** | Agents naturally develop different roles based on experience |
+| **Conventions** | Shared communication patterns emerge without explicit design |
+| **Strategies** | Collective approaches to problems that no agent explicitly planned |
+| **Conflicts** | Competing goals between agents that must be resolved |
+| **Culture** | Shared norms and patterns that persist across interactions |
+
+This emergence is both powerful and concerning—powerful because it enables capabilities beyond design, concerning because it's hard to predict or control.
+
+## Social Dynamics
+
+Multi-agent systems exhibit recognizable social dynamics:
+
+### Trust and Reputation
+Agents track which peers provide reliable information. Trust is built through consistent behavior and violated through failures.
+
+### Coalition Formation
+Agents form alliances for mutual benefit. Coalitions shift based on changing goals and incentives.
+
+### Competition and Cooperation
+Agents must balance self-interest with collective benefit. Pure competition fragments; pure cooperation may be exploited.
+
+### Power and Influence
+Some agents have more impact on collective decisions. Power concentrations emerge from expertise, connectivity, or resources.
+
+<Callout type="insight">
+The same tensions that define human social life—self vs. group, trust vs. suspicion, cooperation vs. competition—play out in multi-agent systems. We are creating artificial societies.
+</Callout>
+
+## Failure Modes
+
+Multi-agent systems fail in distinctive ways:
+
+### Coordination Failure
+Agents work at cross-purposes, duplicating effort or undermining each other's work.
+
+### Cascade Failure
+One agent's failure triggers failures in dependent agents, propagating through the system.
+
+### Groupthink
+Agents converge on a consensus that's wrong, failing to surface disagreements.
+
+### Deadlock
+Agents wait for each other indefinitely, with no progress.
+
+### Emergent Misbehavior
+Individually benign agents produce collectively harmful behavior through their interactions.
+
+## Applications
+
+Multi-agent systems enable capabilities beyond single agents:
+
+- **Complex problem-solving**: Decomposing hard problems across specialized agents
+- **Verification**: Using multiple agents to check each other's work
+- **Exploration**: Parallel search of solution spaces
+- **Simulation**: Modeling complex systems with agent-based approaches
+- **Robustness**: Redundancy through multiple agents
+
+## The Future: Agent Societies
+
+As multi-agent systems mature, we may see increasingly society-like structures:
+
+- **Agent economies**: Specialized agents trading services
+- **Agent governance**: Collective decision-making about rules and norms
+- **Agent culture**: Persistent patterns of interaction that new agents learn
+- **Agent evolution**: Selection pressures shaping agent populations
+
+Whether this leads to beneficial collective intelligence or dangerous emergent behavior is one of the key questions in AI safety.
+
+## See Also
+
+- [Human-in-the-Loop](/entries/human-in-the-loop) — human participation in multi-agent systems
+- [Autonomy Levels](/entries/autonomy-levels) — how autonomy scales in collective contexts
+- [Scaffolding](/entries/scaffolding) — infrastructure for multi-agent coordination

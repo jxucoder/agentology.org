@@ -1,0 +1,152 @@
+---
+title: "Hallucination"
+category: ethology
+tags: [pathology, failure, confabulation, reliability]
+related: [tool-use, react]
+status: published
+description: "A pathology entry: when agents generate plausible-sounding but factually incorrect information with misplaced confidence."
+date: 2024-01-04
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+**Hallucination** is perhaps the most studied pathology of language models and, by extension, agents. It refers to the generation of content that is coherent and confident but factually incorrect, internally inconsistent, or entirely fabricated.
+
+## Defining the Phenomenon
+
+The term "hallucination" is borrowed from psychology, where it describes perception without external stimulus. In AI, it describes *generation without grounding*—outputs that sound right but aren't.
+
+<Callout type="note">
+Some researchers prefer "confabulation," which better captures the model's attempt to fill gaps with plausible-sounding fabrications rather than genuinely perceiving something that isn't there.
+</Callout>
+
+Key characteristics:
+- **Confidence**: Hallucinated content is typically delivered with the same tone as accurate information
+- **Plausibility**: The output usually follows logical structures and uses appropriate vocabulary
+- **Ungroundedness**: The content doesn't correspond to training data, context, or reality
+
+## Types of Hallucination
+
+### Factual Hallucination
+Incorrect statements about the world:
+- "The Eiffel Tower was built in 1920" (it was 1889)
+- Fabricated citations to papers that don't exist
+- Invented statistics or dates
+
+### Logical Hallucination
+Reasoning that doesn't follow:
+- "If A implies B, and we have B, therefore A" (affirming the consequent)
+- Circular reasoning presented as proof
+- Contradictions within the same response
+
+### Entity Hallucination
+Fabricating or confusing entities:
+- "According to Professor James Wilson's 2023 study..." (no such study)
+- Merging attributes of two different people
+- Inventing companies, products, or events
+
+### Self-Hallucination
+False claims about the model's own capabilities or state:
+- "I remember our conversation from last week" (no persistent memory)
+- "I searched the internet and found..." (when no search was made)
+- "I'm updating my knowledge now" (not possible during inference)
+
+## Why Hallucination Occurs
+
+<Diagram type="ascii" caption="The gap between knowledge and generation">
+{`
+    ┌─────────────────────────────────────┐
+    │         Training Data               │
+    │  (vast but incomplete, outdated)    │
+    └─────────────────┬───────────────────┘
+                      │
+                      ▼
+    ┌─────────────────────────────────────┐
+    │      Compressed Representation      │
+    │   (patterns, not facts database)    │
+    └─────────────────┬───────────────────┘
+                      │
+                      ▼
+    ┌─────────────────────────────────────┐
+    │        Generation Pressure          │
+    │ (must produce confident response)   │
+    └─────────────────┬───────────────────┘
+                      │
+                      ▼
+    ┌─────────────────────────────────────┐
+    │          HALLUCINATION              │
+    │   (plausible pattern completion     │
+    │    without factual grounding)       │
+    └─────────────────────────────────────┘
+`}
+</Diagram>
+
+Several factors contribute:
+
+1. **Statistical pattern matching**: Models learn patterns, not facts. They generate what *sounds like* a correct answer.
+
+2. **No knowledge boundary awareness**: Models don't reliably know what they don't know.
+
+3. **Training incentives**: Models are trained to be helpful and complete, not to say "I don't know."
+
+4. **Distribution shift**: Questions may fall outside training distribution, forcing extrapolation.
+
+## Hallucination in Agents
+
+For agents, hallucination becomes especially dangerous because agents *act*:
+
+<Callout type="warning">
+A chatbot that hallucinates a citation wastes time. An agent that hallucinates a command can delete files, send emails, or make purchases.
+</Callout>
+
+Agent-specific hallucinations include:
+
+| Type | Example |
+|------|---------|
+| **Tool hallucination** | "I just ran the search and found..." (no tool was called) |
+| **Observation hallucination** | Misremembering or inventing tool results |
+| **Capability hallucination** | "I can access your calendar" (when no such tool exists) |
+| **State hallucination** | Believing a file was created when the operation failed |
+
+## Mitigation Strategies
+
+### For Models
+
+- **Retrieval augmentation**: Ground generation in retrieved documents
+- **Uncertainty calibration**: Train models to express when they're unsure
+- **Knowledge cutoff awareness**: Acknowledge limitations explicitly
+- **Verification training**: Reward self-correction and fact-checking
+
+### For Agents
+
+- **Tool grounding**: Require explicit tool calls; don't trust claimed actions
+- **Observation verification**: Cross-reference tool outputs
+- **Execution logs**: Maintain ground truth of what actually happened
+- **Uncertainty propagation**: Carry forward confidence levels through the agent loop
+- **Human checkpoints**: Pause for confirmation on high-stakes actions
+
+## Detection
+
+Hallucination detection remains an open problem, but approaches include:
+
+1. **Consistency checking**: Does the model give the same answer when asked differently?
+2. **Source verification**: Can claimed sources be validated?
+3. **Self-critique**: Ask the model to evaluate its own output
+4. **Ensemble disagreement**: Do multiple models agree?
+5. **Grounding comparison**: Does the output match retrieved context?
+
+<Callout type="insight">
+No detection method is perfect. The best defense is defense in depth: multiple layers of verification, human oversight for critical decisions, and architectures that make hallucination visible rather than hidden.
+</Callout>
+
+## The Deeper Problem
+
+Hallucination reveals something fundamental about how language models work: they are *pattern completers*, not *knowledge bases*. They generate text that is statistically likely given the prompt, not text that is guaranteed to be true.
+
+This isn't a bug to be fixed but a characteristic to be managed. Agents built on language models inherit this characteristic. The goal is not to eliminate hallucination (likely impossible with current architectures) but to build systems robust to its occurrence.
+
+## See Also
+
+- [Tool Use](/entries/tool-use) — how grounding in tool outputs can reduce hallucination
+- [ReAct](/entries/react) — how reasoning traces help detect faulty logic

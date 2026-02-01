@@ -1,0 +1,145 @@
+---
+title: "ReAct"
+category: ethology
+tags: [architecture, reasoning, loops, prompting]
+related: [the-agent-loop, tool-use, agentogenesis]
+status: published
+description: "The paradigm that formalized agent behavior by interleaving Reasoning and Acting in a synergistic loop."
+date: 2024-01-02
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+import AgentCard from '../../components/AgentCard.astro';
+
+**ReAct** (Reasoning + Acting) is a prompting paradigm introduced by Yao et al. (2022) that fundamentally shaped how we build AI agents. It demonstrated that interleaving reasoning traces with actions produces more capable, interpretable, and reliable agent behavior.
+
+## The Core Insight
+
+Before ReAct, there were two separate approaches:
+
+- **Chain-of-Thought (CoT)**: Models reason step-by-step, improving accuracy on complex tasks—but they can't *do* anything
+- **Action-only agents**: Models take actions in an environment—but lack transparent reasoning about why
+
+ReAct unified these approaches. The key insight: reasoning and acting are synergistic.
+
+<Callout type="insight">
+Reasoning helps the agent plan actions and interpret observations. Acting provides grounding that prevents reasoning from drifting into hallucination.
+</Callout>
+
+## The ReAct Loop
+
+The pattern follows a simple structure:
+
+<Diagram type="ascii" caption="The ReAct cycle">
+{`
+┌──────────────────────────────────────────────────────┐
+│                     ReAct LOOP                       │
+├──────────────────────────────────────────────────────┤
+│                                                      │
+│   Thought → "I need to find the population of       │
+│              Tokyo to answer this question"          │
+│       │                                              │
+│       ▼                                              │
+│   Action → search("Tokyo population 2024")           │
+│       │                                              │
+│       ▼                                              │
+│   Observation → "Tokyo has a population of           │
+│                  approximately 13.96 million"        │
+│       │                                              │
+│       ▼                                              │
+│   Thought → "Now I have the answer, I can           │
+│              formulate my response"                  │
+│       │                                              │
+│       └──────────────→ (continue or finish)          │
+│                                                      │
+└──────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+Each iteration produces:
+1. **Thought**: Explicit reasoning about the current state and next steps
+2. **Action**: A concrete step taken in the environment
+3. **Observation**: The result of that action, fed back into the loop
+
+## Example Trace
+
+A typical ReAct trace looks like this:
+
+```
+Question: What is the elevation of the capital of the country
+where Einstein was born?
+
+Thought 1: I need to find where Einstein was born.
+Action 1: search("Albert Einstein birthplace")
+Observation 1: Albert Einstein was born in Ulm, Germany.
+
+Thought 2: Einstein was born in Germany. The capital of Germany
+is Berlin. I need to find Berlin's elevation.
+Action 2: search("Berlin elevation")
+Observation 2: Berlin has an average elevation of 34 meters.
+
+Thought 3: I now have enough information to answer the question.
+Action 3: finish("34 meters")
+```
+
+## Why ReAct Matters
+
+### 1. Interpretability
+Every decision is justified in the thought trace. You can see *why* the agent did what it did.
+
+### 2. Grounding
+Actions provide real-world feedback that keeps reasoning on track. The model can't drift into pure confabulation when observations contradict its assumptions.
+
+### 3. Composability
+The pattern works with any set of tools. Swap out the action space, and the same architecture applies.
+
+### 4. Error Recovery
+When an action fails or returns unexpected results, the thought step allows the agent to reason about the failure and try a different approach.
+
+<Callout type="warning">
+ReAct is not magic. Agents can still make poor decisions, get stuck in loops, or misinterpret observations. The pattern provides structure, not guarantees.
+</Callout>
+
+## Variations and Extensions
+
+Since the original paper, ReAct has spawned many variations:
+
+<AgentCard
+  name="ReWOO"
+  description="Separates planning from execution. Reasons first, acts later."
+  status="active"
+/>
+
+<AgentCard
+  name="Reflexion"
+  description="Adds a reflection step after failure to improve future attempts."
+  status="active"
+/>
+
+<AgentCard
+  name="LATS"
+  description="Language Agent Tree Search—combines ReAct with Monte Carlo Tree Search."
+  status="experimental"
+/>
+
+## Implementation Notes
+
+When implementing ReAct, key considerations include:
+
+- **Prompt design**: The format of thought/action/observation matters. Consistent formatting helps the model follow the pattern.
+- **Action space**: Define clear, unambiguous actions. Vague actions lead to vague behavior.
+- **Observation parsing**: Truncate or summarize long observations to stay within context limits.
+- **Loop limits**: Set maximum iterations to prevent infinite loops.
+
+## The Legacy
+
+ReAct didn't invent agent loops—those existed before. What it did was *formalize* them, providing a template that could be studied, replicated, and improved upon.
+
+Today, most agent frameworks implicitly or explicitly implement some variant of ReAct. It's become the default grammar for agent behavior.
+
+## See Also
+
+- [The Agent Loop](/entries/the-agent-loop) — the broader pattern ReAct instantiates
+- [Tool Use](/entries/tool-use) — the mechanics of agent actions
+- [Agentogenesis](/entries/agentogenesis) — the historical context for ReAct's emergence

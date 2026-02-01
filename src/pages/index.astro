@@ -1,0 +1,114 @@
+---
+import Base from '../layouts/Base.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+import EntryCard from '../components/EntryCard.astro';
+import { getCollection } from 'astro:content';
+
+const categories = [
+  { name: 'Archaeology', slug: 'archaeology', icon: '🏛️', description: 'History, lineages, epochs, deprecated agents' },
+  { name: 'Anatomy', slug: 'anatomy', icon: '🧠', description: 'Model architecture, memory, inputs/outputs, compute' },
+  { name: 'Taxonomy', slug: 'taxonomy', icon: '🌳', description: 'Classification by autonomy, habitat, specialization' },
+  { name: 'Ethology', slug: 'ethology', icon: '🔄', description: 'Behaviors, rituals, failure modes, pathologies' },
+  { name: 'Linguistics', slug: 'linguistics', icon: '💬', description: 'Prompts, dialects, communication patterns' },
+  { name: 'Sociology', slug: 'sociology', icon: '🤝', description: 'Multi-agent systems, hierarchies, coordination' },
+  { name: 'Ecology', slug: 'ecology', icon: '🌍', description: 'Environments, niches, adversarial threats' },
+  { name: 'Ethics', slug: 'ethics', icon: '⚖️', description: 'Values, alignment, governance, taboos' },
+];
+
+const allEntries = await getCollection('entries');
+const publishedEntries = allEntries
+  .filter(entry => entry.data.status === 'published')
+  .sort((a, b) => (b.data.date?.getTime() || 0) - (a.data.date?.getTime() || 0))
+  .slice(0, 5);
+
+// Count entries per category
+const categoryCounts = categories.map(cat => ({
+  ...cat,
+  count: allEntries.filter(e => e.data.category === cat.slug).length
+}));
+---
+
+<Base title="Home">
+  <!-- Hero -->
+  <header class="text-center mb-16">
+    <div class="inline-block mb-6">
+      <span class="text-6xl">🔬</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold font-mono text-text-primary mb-4">
+      Agentology
+    </h1>
+    <p class="text-xl text-text-secondary max-w-2xl mx-auto mb-6">
+      An encyclopedia for AI agents, using anthropology as the organizing framework.
+    </p>
+    <p class="text-sm text-text-muted font-mono">
+      Anthropology, but for agents.
+    </p>
+  </header>
+
+  <!-- Categories Grid -->
+  <section class="mb-16">
+    <h2 class="text-lg font-mono font-semibold text-text-primary mb-6 flex items-center gap-2">
+      <span class="text-accent-primary">#</span> Categories
+    </h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      {categoryCounts.map((cat) => (
+        <CategoryCard
+          name={cat.name}
+          slug={cat.slug}
+          icon={cat.icon}
+          description={cat.description}
+          count={cat.count}
+        />
+      ))}
+    </div>
+  </section>
+
+  <!-- Recent Entries -->
+  {publishedEntries.length > 0 && (
+    <section class="mb-16">
+      <h2 class="text-lg font-mono font-semibold text-text-primary mb-6 flex items-center gap-2">
+        <span class="text-accent-primary">&gt;</span> Recent Entries
+      </h2>
+      <div class="grid gap-4">
+        {publishedEntries.map((entry) => (
+          <EntryCard
+            title={entry.data.title}
+            slug={entry.slug}
+            category={entry.data.category}
+            description={entry.data.description}
+            tags={entry.data.tags}
+            status={entry.data.status}
+          />
+        ))}
+      </div>
+      <div class="text-center mt-6">
+        <a href="/taxonomy" class="text-accent-primary hover:underline font-mono text-sm">
+          Browse all entries →
+        </a>
+      </div>
+    </section>
+  )}
+
+  <!-- Quick Start -->
+  <section class="bg-bg-secondary border border-border-primary rounded-lg p-6">
+    <h2 class="text-lg font-mono font-semibold text-text-primary mb-4">
+      What is Agentology?
+    </h2>
+    <div class="prose text-text-secondary">
+      <p>
+        As AI agents become more prevalent, we need frameworks to understand them—not just technically, but as entities that exhibit behaviors, form relationships, and evolve over time.
+      </p>
+      <p class="mt-4">
+        Agentology borrows from the rich tradition of anthropology to create a structured vocabulary for discussing, classifying, and analyzing AI agents. Think of it as a field guide to the emerging ecosystem of autonomous AI systems.
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-3 mt-6">
+      <a href="/entries/agentogenesis" class="px-4 py-2 bg-accent-primary text-bg-primary font-mono text-sm rounded-lg hover:opacity-90 transition-opacity">
+        Start Here: Agentogenesis
+      </a>
+      <a href="/about" class="px-4 py-2 bg-bg-tertiary text-text-primary font-mono text-sm rounded-lg border border-border-primary hover:border-accent-primary transition-colors">
+        About the Project
+      </a>
+    </div>
+  </section>
+</Base>

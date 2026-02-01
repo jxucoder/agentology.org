@@ -1,0 +1,214 @@
+---
+title: "The Agent Loop"
+category: ethology
+tags: [architecture, patterns, fundamentals, behavior]
+related: [react, tool-use, agentogenesis]
+status: published
+description: "The fundamental cycle that defines agent behavior: observe → reason → act → observe. The heartbeat of agency."
+date: 2024-01-05
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+**The Agent Loop** is the fundamental pattern underlying all autonomous AI agent behavior. It describes the continuous cycle through which agents perceive their environment, reason about what to do, take action, and observe the results.
+
+## The Basic Pattern
+
+At its simplest, the agent loop consists of four phases:
+
+<Diagram type="ascii" caption="The canonical agent loop">
+{`
+                    ┌─────────────┐
+                    │   OBSERVE   │
+                    │             │
+                    │ • Read input│
+                    │ • Get state │
+                    │ • Parse env │
+                    └──────┬──────┘
+                           │
+                           ▼
+    ┌────────────────────────────────────────┐
+    │                                        │
+    │              ┌──────────┐              │
+    │              │  REASON  │              │
+    │              │          │              │
+    │              │ • Think  │              │
+    │              │ • Plan   │              │
+    │              │ • Decide │              │
+    │              └────┬─────┘              │
+    │                   │                    │
+    │                   ▼                    │
+    │              ┌──────────┐              │
+    │              │   ACT    │              │
+    │              │          │              │
+    │              │ • Call   │              │
+    │              │   tools  │              │
+    │              │ • Output │              │
+    │              └────┬─────┘              │
+    │                   │                    │
+    └───────────────────┼────────────────────┘
+                        │
+                        ▼
+                ┌───────────────┐
+                │   OBSERVE     │
+                │   (results)   │
+                └───────┬───────┘
+                        │
+                        └──────────→ repeat
+`}
+</Diagram>
+
+This loop repeats until the agent either:
+- Achieves its goal
+- Determines the goal is unachievable
+- Exhausts its allocated resources (time, tokens, iterations)
+- Is interrupted by external intervention
+
+## The Phases in Detail
+
+### 1. Observe
+
+The agent gathers information about its current state:
+
+- **Direct input**: User messages, task descriptions
+- **Environment state**: File contents, database values, system status
+- **Previous results**: Output from the last action taken
+- **Context**: Conversation history, accumulated knowledge
+
+<Callout type="note">
+Observation is not passive. Agents often must actively query the environment to gather needed information—reading files, searching the web, checking status.
+</Callout>
+
+### 2. Reason
+
+The agent processes observations and decides what to do:
+
+- **Situation assessment**: What's the current state? What's changed?
+- **Goal tracking**: What are we trying to achieve? Are we making progress?
+- **Plan formulation**: What steps are needed? In what order?
+- **Action selection**: What's the best next action given current knowledge?
+
+This phase is where techniques like Chain-of-Thought and ReAct operate—making reasoning explicit and structured.
+
+### 3. Act
+
+The agent executes a chosen action:
+
+- **Tool invocation**: Calling functions, APIs, or external services
+- **Environment modification**: Writing files, sending messages
+- **Information requests**: Queries that will yield new observations
+- **Termination signals**: Deciding to finish or request help
+
+Actions connect the agent's reasoning to the world.
+
+### 4. Observe (Results)
+
+The cycle completes as the agent observes the consequences:
+
+- **Success signals**: Did the action achieve its intended effect?
+- **Error messages**: What went wrong? Why?
+- **State changes**: How did the environment change?
+- **New information**: What was learned from the action?
+
+This observation becomes input for the next iteration.
+
+## Variations
+
+The basic loop admits many variations:
+
+### Parallel Actions
+Some agents can take multiple actions simultaneously:
+
+```
+observe → reason → [act₁, act₂, act₃] → observe all
+```
+
+### Hierarchical Loops
+Nested loops for different levels of abstraction:
+
+```
+outer loop: strategic planning
+  inner loop: tactical execution
+    innermost: individual actions
+```
+
+### Reflective Loops
+Loops that include self-evaluation:
+
+```
+observe → reason → act → observe → reflect → adjust
+```
+
+### Interruptible Loops
+Loops that can pause for human input:
+
+```
+observe → reason → act → observe → [human checkpoint?] → continue
+```
+
+## Properties of the Loop
+
+### Reactivity
+The loop responds to environmental changes. Each observation updates the agent's understanding.
+
+### Goal-Directedness
+The reasoning phase maintains focus on objectives. Without this, the loop degenerates into random action.
+
+### Adaptability
+Failed actions don't crash the system—they become observations that inform future reasoning.
+
+### Boundedness
+Well-designed loops have termination conditions. Unbounded loops risk infinite execution.
+
+<Callout type="warning">
+The agent loop is powerful but not magical. A poorly designed loop can waste resources, get stuck, or cause harm. The pattern provides structure, not safety.
+</Callout>
+
+## Implementation Considerations
+
+### State Management
+What persists between iterations? Options include:
+- Full history (expensive but complete)
+- Summarized history (efficient but lossy)
+- Windowed history (recent events only)
+- External memory (databases, vector stores)
+
+### Iteration Limits
+How many times can the loop run? Considerations:
+- Token budgets
+- Time constraints
+- Cost limits
+- Task complexity
+
+### Parallelism
+Can multiple loop instances run concurrently? Trade-offs:
+- Speed vs. consistency
+- Resource usage
+- Coordination overhead
+
+### Observability
+Can humans see what's happening? Important for:
+- Debugging
+- Safety monitoring
+- Trust building
+- Compliance
+
+## The Loop as Primitive
+
+The agent loop is to agents what the instruction cycle is to CPUs: a fundamental primitive upon which more complex behaviors are built.
+
+Understanding this loop provides:
+- A mental model for how agents work
+- A framework for debugging agent behavior
+- A template for designing new agents
+- A vocabulary for discussing agent architectures
+
+Every agent, no matter how sophisticated, reduces to some form of this cycle.
+
+## See Also
+
+- [ReAct](/entries/react) — a specific instantiation of the loop with explicit reasoning
+- [Tool Use](/entries/tool-use) — the mechanics of the "act" phase
+- [Agentogenesis](/entries/agentogenesis) — how this pattern emerged
+- [Hallucination](/entries/hallucination) — what happens when reasoning goes wrong

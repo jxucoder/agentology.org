@@ -1,0 +1,263 @@
+---
+title: "Memory Systems"
+category: anatomy
+tags: [architecture, persistence, retrieval, context]
+related: [scaffolding, the-agent-loop, grounding]
+status: published
+description: "How agents remember—from ephemeral context windows to persistent knowledge stores, and the mechanisms that connect past experience to present action."
+date: 2024-01-15
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+**Memory systems** are the mechanisms through which agents maintain information across time—connecting past observations and actions to present decisions. They represent the extension of cognition beyond the model's native context window.
+
+## The Anthropological Lens
+
+Human societies have developed sophisticated memory systems:
+
+- **Oral tradition**: Stories, songs, and rituals that encode knowledge
+- **Writing**: External storage of information
+- **Institutions**: Organizations that maintain knowledge across generations
+- **Technology**: Libraries, databases, the internet
+
+Individual human memory is limited; cultural memory extends it. Agent memory systems face analogous challenges: how to persist information beyond the immediate, and how to make it accessible when needed.
+
+<Callout type="insight">
+An agent without memory is like a human with amnesia—capable in the moment but unable to learn, build on past work, or maintain coherent long-term goals.
+</Callout>
+
+## The Context Window Problem
+
+Language models have a fundamental limitation: the context window. All reasoning must occur within this fixed space of tokens.
+
+<Diagram type="ascii" caption="The context window constraint">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                   CONTEXT WINDOW                        │
+│                   (e.g., 128K tokens)                   │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │ System prompt                                     │  │
+│  ├──────────────────────────────────────────────────┤  │
+│  │ Conversation history                              │  │
+│  ├──────────────────────────────────────────────────┤  │
+│  │ Retrieved context                                 │  │
+│  ├──────────────────────────────────────────────────┤  │
+│  │ Current input                                     │  │
+│  └──────────────────────────────────────────────────┘  │
+│                                                         │
+│  Everything must fit. What doesn't fit is forgotten.   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+Memory systems extend this by storing information externally and selectively retrieving it when relevant.
+
+## Types of Agent Memory
+
+### Working Memory
+The active context window—what the agent is currently "thinking about." Limited but immediately accessible.
+
+**Characteristics:**
+- Fast access
+- Limited capacity
+- Lost between sessions
+- No retrieval needed
+
+### Episodic Memory
+Records of specific experiences—conversations, tasks, observations. The agent's autobiography.
+
+**Implementation:**
+- Conversation logs
+- Action trajectories
+- Timestamped records
+
+**Use cases:**
+- "What did we discuss last Tuesday?"
+- "How did I solve this problem before?"
+- "What has this user asked for in the past?"
+
+### Semantic Memory
+General knowledge extracted from experiences—facts, concepts, relationships. The agent's understanding of the world.
+
+**Implementation:**
+- Knowledge graphs
+- Vector databases
+- Structured databases
+
+**Use cases:**
+- "What do I know about this topic?"
+- "What are the properties of X?"
+- "How are A and B related?"
+
+### Procedural Memory
+Knowledge of how to do things—skills, procedures, strategies. The agent's capabilities.
+
+**Implementation:**
+- Tool definitions
+- Code libraries
+- Learned heuristics
+
+**Use cases:**
+- "How do I accomplish this task?"
+- "What's the best approach here?"
+- "What steps does this require?"
+
+<Callout type="note">
+This taxonomy mirrors human memory research. The parallel isn't coincidental—agents face similar memory challenges to biological minds, even if the implementations differ.
+</Callout>
+
+## Memory Architecture
+
+<Diagram type="ascii" caption="A layered memory architecture">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│                    AGENT CORE                           │
+│                  (Language Model)                       │
+│                                                         │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+                          │ read/write
+                          │
+┌─────────────────────────▼───────────────────────────────┐
+│                   WORKING MEMORY                        │
+│                (Current Context)                        │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+          ┌───────────────┼───────────────┐
+          │               │               │
+          ▼               ▼               ▼
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│   EPISODIC   │  │   SEMANTIC   │  │  PROCEDURAL  │
+│    MEMORY    │  │    MEMORY    │  │    MEMORY    │
+│              │  │              │  │              │
+│ - Logs       │  │ - Vector DB  │  │ - Tools      │
+│ - Transcripts│  │ - Knowledge  │  │ - Functions  │
+│ - History    │  │ - Facts      │  │ - Skills     │
+└──────────────┘  └──────────────┘  └──────────────┘
+`}
+</Diagram>
+
+## Retrieval Mechanisms
+
+Having memory isn't enough—agents must retrieve the *right* memories at the *right* time.
+
+### Recency-Based
+Prioritize recent information. Simple but loses long-term context.
+
+### Relevance-Based (RAG)
+Retrieve information semantically similar to the current query:
+1. Embed the current context as a vector
+2. Find similar vectors in memory
+3. Include matching content in context
+
+### Importance-Based
+Weight memories by significance—errors, successes, surprises, explicit markers.
+
+### Associative
+Follow links between related memories, like human associative recall.
+
+### Hierarchical
+Organize memories in summaries and details; retrieve at appropriate granularity.
+
+<Callout type="warning">
+Retrieval is where most memory systems fail. Poor retrieval means relevant information isn't surfaced when needed, and irrelevant information clutters context.
+</Callout>
+
+## Memory Operations
+
+### Encoding
+Transforming experiences into storable form:
+- Raw storage (full transcripts)
+- Summarization (compressed representations)
+- Extraction (key facts and entities)
+- Embedding (vector representations)
+
+### Consolidation
+Processing memories for long-term storage:
+- Deduplication
+- Integration with existing knowledge
+- Importance weighting
+- Pruning obsolete information
+
+### Retrieval
+Accessing relevant memories:
+- Query formulation
+- Similarity matching
+- Ranking and filtering
+- Context injection
+
+### Forgetting
+Intentional removal or decay:
+- Privacy requirements
+- Obsolete information
+- Capacity management
+- Error correction
+
+## Memory and Identity
+
+Memory is central to identity. An agent with persistent memory develops something like continuity:
+
+- Remembers past interactions
+- Builds on previous work
+- Maintains consistent preferences
+- Develops "relationships" with recurring users
+
+<Callout type="insight">
+Is an agent with persistent memory the same agent across sessions? The question has philosophical depth. Memory creates narrative continuity—but is that identity?
+</Callout>
+
+## Challenges
+
+### Capacity
+Memory grows without bound. What to keep? What to forget?
+
+### Retrieval Quality
+Finding the right memories at the right time is hard. Too little context is useless; too much is overwhelming.
+
+### Consistency
+Memories should be coherent. Contradictory memories create confusion.
+
+### Privacy
+Stored information may contain sensitive data. Memory creates liability.
+
+### Staleness
+Old memories may no longer be accurate. The world changes; memories don't.
+
+### Trust
+Should all memories be trusted equally? Some may be incorrect or adversarial.
+
+## The Collective Memory Parallel
+
+Multi-agent systems have collective memory challenges similar to human organizations:
+
+- **Shared knowledge bases**: What does the group know?
+- **Communication**: How is knowledge transmitted?
+- **Consistency**: Do agents have compatible memories?
+- **Specialization**: Who knows what?
+- **Institutional memory**: What persists as agents change?
+
+Organizational memory research offers insights for multi-agent memory design.
+
+## Future Directions
+
+Memory systems for agents are rapidly evolving:
+
+- **Learned retrieval**: Models that learn when and what to remember
+- **Structured memory**: Beyond vector similarity to richer knowledge structures
+- **Active forgetting**: Intelligent pruning and consolidation
+- **Memory-augmented architectures**: Deep integration of memory with model computation
+- **Shared memory protocols**: Standards for multi-agent memory
+
+The goal: agents that truly learn from experience, building knowledge over time.
+
+## See Also
+
+- [Scaffolding](/entries/scaffolding) — memory systems as scaffold components
+- [The Agent Loop](/entries/the-agent-loop) — where memory connects to action
+- [Grounding](/entries/grounding) — memory as connection to reality

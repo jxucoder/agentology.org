@@ -1,0 +1,182 @@
+---
+title: "Chain of Thought"
+category: linguistics
+tags: [prompting, reasoning, cognition, inner-speech]
+related: [react, the-agent-loop, scaffolding]
+status: published
+description: "The emergence of inner speech in language models—how explicit step-by-step reasoning transforms performance and enables complex problem-solving."
+date: 2024-01-10
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+import Timeline from '../../components/Timeline.astro';
+import TimelineEvent from '../../components/TimelineEvent.astro';
+
+**Chain of Thought** (CoT) is a prompting technique that elicits step-by-step reasoning from language models before producing a final answer. More profoundly, it represents the emergence of something analogous to inner speech—the internal monologue that humans use to think through complex problems.
+
+## The Discovery
+
+Before Chain of Thought, language models were prompted to produce answers directly:
+
+> **Question**: If John has 3 apples and buys 2 more, then gives half to Mary, how many does John have?
+> **Direct prompting**: "2" ❌ (often wrong on complex problems)
+
+With Chain of Thought, the model is encouraged to "think aloud":
+
+> **Question**: [same]
+> **CoT prompting**: "John starts with 3 apples. He buys 2 more, so he has 3 + 2 = 5 apples. He gives half to Mary, so he keeps 5 / 2 = 2.5. Since we can't have half an apple, he keeps 2 apples."  ✓
+
+The same model, with explicit reasoning, performs dramatically better.
+
+<Callout type="insight">
+Chain of Thought doesn't add information—the model already "knows" how to solve the problem. CoT provides a format that allows that knowledge to be applied systematically.
+</Callout>
+
+## The Inner Speech Parallel
+
+In developmental psychology, **inner speech** refers to the internalization of language as a tool for thought. Children first solve problems by talking aloud, then gradually internalize this dialogue.
+
+Vygotsky described this progression:
+1. **External speech**: Talking through problems out loud
+2. **Private speech**: Talking to oneself (still audible)
+3. **Inner speech**: Internalized verbal thought
+
+<Diagram type="ascii" caption="The parallel between human and model reasoning">
+{`
+HUMAN DEVELOPMENT              MODEL PROMPTING
+
+External speech                Zero-shot (no reasoning shown)
+     │                              │
+     │ internalization              │ Chain of Thought elicits
+     │                              │ explicit reasoning
+     ▼                              ▼
+Private speech                 Explicit CoT
+     │                              │
+     │ further internalization      │ (not yet achieved in models)
+     ▼                              ▼
+Inner speech                   Internalized reasoning?
+(efficient, compressed)        (implicit, reliable)
+`}
+</Diagram>
+
+Current language models are at an interesting developmental stage: they perform better with explicit reasoning (like children with private speech) but haven't fully internalized this capacity (like adult inner speech).
+
+## Mechanisms
+
+Why does Chain of Thought work? Several mechanisms contribute:
+
+### Computation Extension
+Each reasoning step adds tokens, providing more "compute" for the model to work through the problem. Complex problems need more processing.
+
+### Context Maintenance
+Intermediate steps keep relevant information in context. Without them, the model must hold everything in its weights.
+
+### Error Correction
+Explicit steps make errors visible (to the model and observers), allowing for mid-course correction.
+
+### Structure Imposition
+The step-by-step format enforces logical structure, preventing the model from jumping to conclusions.
+
+### Knowledge Retrieval
+Each step can trigger relevant knowledge retrieval, building up the information needed for the final answer.
+
+## Variants
+
+Chain of Thought has spawned many variations:
+
+### Zero-Shot CoT
+Simply adding "Let's think step by step" to the prompt elicits reasoning without examples.
+
+### Few-Shot CoT
+Providing examples of problems with reasoning traces before the target question.
+
+### Self-Consistency
+Generate multiple reasoning chains and take the majority answer. Different reasoning paths should converge on correct answers.
+
+### Tree of Thought
+Explore multiple reasoning branches, evaluating and pruning, rather than a single chain.
+
+### Chain of Thought with Self-Critique
+The model generates reasoning, then critiques its own logic, then revises.
+
+<Timeline>
+  <TimelineEvent year="2022" title="Chain of Thought Prompting" type="paper">
+    Wei et al. showed that prompting for step-by-step reasoning dramatically improved performance on math and reasoning tasks.
+  </TimelineEvent>
+
+  <TimelineEvent year="2022" title="Zero-Shot CoT" type="paper">
+    Kojima et al. demonstrated that simply adding "Let's think step by step" triggers reasoning without examples.
+  </TimelineEvent>
+
+  <TimelineEvent year="2023" title="Tree of Thought" type="paper">
+    Yao et al. extended linear chains to branching exploration of reasoning paths.
+  </TimelineEvent>
+</Timeline>
+
+## Chain of Thought and Agents
+
+Chain of Thought is foundational to agent behavior. The "reasoning" phase of the agent loop is essentially formalized CoT:
+
+<Diagram type="ascii" caption="CoT as the reasoning component of agency">
+{`
+┌─────────────────────────────────────────────────┐
+│                 AGENT LOOP                      │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│  Observe ───► Reason ───► Act ───► Observe     │
+│                  │                              │
+│                  │                              │
+│           ┌──────▼──────┐                       │
+│           │ Chain of    │                       │
+│           │ Thought     │                       │
+│           │             │                       │
+│           │ "I see X.   │                       │
+│           │  To achieve │                       │
+│           │  goal Y, I  │                       │
+│           │  should do  │                       │
+│           │  Z because..."                      │
+│           └─────────────┘                       │
+│                                                 │
+└─────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+ReAct, the dominant agent paradigm, is essentially CoT interleaved with actions. The "thought" traces are Chain of Thought reasoning.
+
+## Limitations
+
+Chain of Thought is not a panacea:
+
+### Faithfulness
+The stated reasoning may not reflect the model's actual "computation." CoT can be post-hoc rationalization rather than genuine reasoning.
+
+### Verbosity
+Reasoning takes tokens. This increases latency and cost, and consumes context window.
+
+### Error Propagation
+Once the model commits to a reasoning path, errors compound. Wrong early steps lead to wrong conclusions.
+
+### Manipulation
+CoT can be used to manipulate model behavior—leading the reasoning toward desired (but incorrect) conclusions.
+
+<Callout type="warning">
+Just because a model shows reasoning doesn't mean it's reasoning correctly. The chain of thought can be a plausible-looking path to a wrong answer.
+</Callout>
+
+## The Future
+
+Chain of Thought represents an early understanding of how to elicit systematic reasoning from language models. Open questions include:
+
+- **Internalization**: Can models learn to reason without explicit chains?
+- **Verification**: How do we check if reasoning is faithful?
+- **Efficiency**: Can we get the benefits of CoT with less verbosity?
+- **Teaching**: Can CoT during training improve base reasoning ability?
+
+The developmental trajectory—from external to internal speech—suggests that future models might reason more efficiently without explicit chains. But we're not there yet.
+
+## See Also
+
+- [ReAct](/entries/react) — CoT interleaved with actions
+- [The Agent Loop](/entries/the-agent-loop) — where reasoning fits in agent behavior
+- [Scaffolding](/entries/scaffolding) — how external structure supports model capabilities

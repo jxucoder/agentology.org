@@ -1,0 +1,216 @@
+---
+title: "Scaffolding"
+category: anatomy
+tags: [architecture, tools, infrastructure, extended-mind]
+related: [tool-use, the-agent-loop, autonomy-levels]
+status: published
+description: "The external structures—code, tools, memory systems—that transform a language model into an agent capable of action and persistence."
+date: 2024-01-08
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+In developmental psychology, **scaffolding** refers to the support structures provided by caregivers that enable children to accomplish tasks beyond their independent capability. As competence grows, scaffolding is gradually removed.
+
+In cognitive science, the **extended mind** thesis proposes that cognition doesn't stop at the skull—tools, notebooks, and environmental structures are part of our cognitive systems.
+
+For AI agents, **scaffolding** encompasses both ideas: the external infrastructure that enables models to act as agents, extending their capabilities beyond raw language generation.
+
+## The Model is Not the Agent
+
+A language model, by itself, cannot:
+- Remember beyond its context window
+- Take actions in the world
+- Maintain state across sessions
+- Recover from errors
+- Manage multi-step processes
+
+The **scaffold** provides all of this. It is the code, infrastructure, and tools that wrap a model to create an agent.
+
+<Diagram type="ascii" caption="The relationship between model and scaffold">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                      SCAFFOLD                           │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │                                                  │   │
+│  │   ┌──────────────────────────────────────────┐  │   │
+│  │   │                                          │  │   │
+│  │   │              LANGUAGE MODEL              │  │   │
+│  │   │                                          │  │   │
+│  │   │    (reasoning, language, knowledge)      │  │   │
+│  │   │                                          │  │   │
+│  │   └──────────────────────────────────────────┘  │   │
+│  │                                                  │   │
+│  │   ┌────────────┐  ┌────────────┐  ┌──────────┐  │   │
+│  │   │   Memory   │  │   Tools    │  │  State   │  │   │
+│  │   └────────────┘  └────────────┘  └──────────┘  │   │
+│  │                                                  │   │
+│  │   ┌────────────┐  ┌────────────┐  ┌──────────┐  │   │
+│  │   │  Parsing   │  │   Error    │  │  Loops   │  │   │
+│  │   │            │  │  Handling  │  │          │  │   │
+│  │   └────────────┘  └────────────┘  └──────────┘  │   │
+│  │                                                  │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                         │
+│         (action, persistence, reliability)              │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+<Callout type="insight">
+The scaffold is as important as the model. A mediocre model with excellent scaffolding often outperforms a powerful model with poor scaffolding.
+</Callout>
+
+## Components of Scaffolding
+
+### 1. The Agent Loop
+
+The fundamental structure: code that repeatedly calls the model, parses outputs, executes actions, and feeds results back in.
+
+```
+while not done:
+    response = model.generate(context)
+    action = parse_action(response)
+    result = execute(action)
+    context = update_context(context, action, result)
+```
+
+This simple loop is the skeleton upon which all else hangs.
+
+### 2. Tool Definitions
+
+Schemas that define what actions are available, their parameters, and their effects. The model can only act through tools the scaffold provides.
+
+### 3. Memory Systems
+
+Mechanisms for persistence beyond the context window:
+- **Conversation history**: Recent exchanges
+- **Summarization**: Compressed representations of past interactions
+- **Vector stores**: Semantic retrieval of relevant information
+- **External databases**: Structured knowledge
+
+### 4. State Management
+
+Tracking where the agent is in a multi-step process:
+- Current goals and subgoals
+- Completed actions
+- Pending tasks
+- Error states
+
+### 5. Error Handling
+
+Recovery mechanisms when things go wrong:
+- Retry logic for transient failures
+- Fallback strategies
+- Graceful degradation
+- Human escalation
+
+### 6. Output Parsing
+
+Extracting structured actions from natural language:
+- JSON parsing
+- Regular expression matching
+- Constrained generation
+- Validation and correction
+
+### 7. Guardrails
+
+Safety constraints on agent behavior:
+- Action filtering
+- Rate limiting
+- Permission systems
+- Content moderation
+
+## The Extended Mind of Agents
+
+The extended mind thesis becomes literal with AI agents. The model provides certain cognitive capabilities (language, reasoning, knowledge), while the scaffold provides others:
+
+| Model Provides | Scaffold Provides |
+|----------------|-------------------|
+| Language generation | Persistent memory |
+| Pattern recognition | Action execution |
+| In-context reasoning | State management |
+| Knowledge (from training) | Real-time information |
+| Goal interpretation | Goal tracking |
+
+Neither is complete without the other. The agent *is* the combination.
+
+## Scaffolding Patterns
+
+Different agent architectures emphasize different scaffolding patterns:
+
+### Minimal Scaffold
+The model handles almost everything through prompting. Simple loop, few tools.
+- **Pros**: Flexible, less code, model-adaptive
+- **Cons**: Fragile, context-limited, hard to debug
+
+### Heavy Scaffold
+Complex orchestration logic, many specialized components, model as a small part.
+- **Pros**: Reliable, controllable, testable
+- **Cons**: Rigid, expensive to build, model-agnostic
+
+### Hybrid Scaffold
+Strategic allocation—scaffold handles reliability and persistence, model handles reasoning and adaptation.
+- **Pros**: Best of both worlds
+- **Cons**: Requires careful design
+
+<Callout type="note">
+The trend is toward heavier scaffolding as production requirements demand reliability. But there's an inherent tension: more scaffolding means less flexibility.
+</Callout>
+
+## Scaffolding and Autonomy
+
+The scaffold doesn't just enable—it also constrains. Autonomy levels are implemented through scaffolding:
+
+- **Level 0-1**: Scaffold mediates all actions, human in the loop
+- **Level 2**: Scaffold filters actions, some require approval
+- **Level 3**: Scaffold logs and monitors, intervention possible
+- **Level 4**: Minimal scaffold, model drives
+
+The scaffold is the control surface through which humans shape agent behavior.
+
+## Building Good Scaffolds
+
+Effective scaffolding shares characteristics:
+
+### Transparency
+The model can "see" the scaffold—understand its tools, memory, and constraints. Opacity leads to confusion.
+
+### Reliability
+Failed API calls, malformed outputs, unexpected states—the scaffold handles these gracefully.
+
+### Observability
+Humans can inspect scaffold state: what has the agent done? What is it trying to do? What went wrong?
+
+### Modularity
+Components can be swapped, upgraded, or removed without rewriting everything.
+
+### Appropriate Coupling
+The scaffold should be tight enough to ensure reliability but loose enough to accommodate model updates.
+
+## The Future of Scaffolding
+
+Current scaffolding is largely hand-crafted. Future directions include:
+
+- **Learned scaffolds**: Models that generate their own tool definitions and orchestration
+- **Self-modifying scaffolds**: Agents that improve their own infrastructure
+- **Scaffold marketplaces**: Reusable components and patterns
+- **Scaffold-free agents**: Models capable enough to internalize scaffolding functions
+
+<Callout type="warning">
+Self-modifying scaffolds represent a significant safety challenge. If agents can modify their own constraints, oversight becomes much harder.
+</Callout>
+
+## The Scaffolding Paradox
+
+Here's the tension: scaffolding enables agents but also limits them. The more structured the scaffold, the more reliable but less flexible the agent.
+
+This mirrors human development. Children need scaffolding to learn, but eventually, the scaffolding must be removed for full maturity. Whether AI agents will ever mature beyond their scaffolds—or whether they'll always be hybrid systems—remains an open question.
+
+## See Also
+
+- [Tool Use](/entries/tool-use) — the action component of scaffolding
+- [The Agent Loop](/entries/the-agent-loop) — the fundamental scaffold structure
+- [Autonomy Levels](/entries/autonomy-levels) — how scaffolding implements oversight
+- [Memory Systems](/entries/memory-systems) — the persistence component of scaffolding

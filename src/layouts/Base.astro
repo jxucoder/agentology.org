@@ -1,0 +1,177 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Agentology — An encyclopedia for AI agents, using anthropology as the organizing framework.' } = Astro.props;
+
+const categories = [
+  { name: 'Archaeology', slug: 'archaeology', icon: '🏛️', description: 'History, lineages, epochs' },
+  { name: 'Anatomy', slug: 'anatomy', icon: '🧠', description: 'Architecture, memory, compute' },
+  { name: 'Taxonomy', slug: 'taxonomy', icon: '🌳', description: 'Classification, species' },
+  { name: 'Ethology', slug: 'ethology', icon: '🔄', description: 'Behaviors, rituals, patterns' },
+  { name: 'Linguistics', slug: 'linguistics', icon: '💬', description: 'Prompts, dialects' },
+  { name: 'Sociology', slug: 'sociology', icon: '🤝', description: 'Multi-agent systems' },
+  { name: 'Ecology', slug: 'ecology', icon: '🌍', description: 'Environments, niches' },
+  { name: 'Ethics', slug: 'ethics', icon: '⚖️', description: 'Values, alignment' },
+];
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <title>{title} — Agentology</title>
+    <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+    <script src="/pagefind/pagefind-ui.js" is:inline></script>
+  </head>
+  <body class="bg-bg-primary min-h-screen">
+    <div class="flex">
+      <!-- Sidebar -->
+      <aside class="fixed left-0 top-0 h-screen w-64 bg-bg-secondary border-r border-border-primary overflow-y-auto hidden lg:block">
+        <div class="p-6">
+          <!-- Logo -->
+          <a href="/" class="block mb-8">
+            <h1 class="text-xl font-bold font-mono text-text-primary">
+              <span class="text-accent-primary">&gt;</span> agentology
+            </h1>
+            <p class="text-xs text-text-muted mt-1">anthropology for agents</p>
+          </a>
+
+          <!-- Search -->
+          <div class="mb-6">
+            <div id="search" class="search-container"></div>
+          </div>
+
+          <!-- Navigation -->
+          <nav class="space-y-6">
+            <div>
+              <h2 class="text-xs font-mono text-text-muted uppercase tracking-wider mb-3">Navigate</h2>
+              <ul class="space-y-1">
+                <li>
+                  <a href="/" class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
+                    <span class="text-text-muted">~</span> Home
+                  </a>
+                </li>
+                <li>
+                  <a href="/taxonomy" class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
+                    <span class="text-text-muted">/</span> Browse
+                  </a>
+                </li>
+                <li>
+                  <a href="/glossary" class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
+                    <span class="text-text-muted">#</span> Glossary
+                  </a>
+                </li>
+                <li>
+                  <a href="/about" class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
+                    <span class="text-text-muted">?</span> About
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 class="text-xs font-mono text-text-muted uppercase tracking-wider mb-3">Categories</h2>
+              <ul class="space-y-1">
+                {categories.map((cat) => (
+                  <li>
+                    <a
+                      href={`/taxonomy?category=${cat.slug}`}
+                      class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors group"
+                    >
+                      <span class="w-5 text-center">{cat.icon}</span>
+                      <span>{cat.name}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </nav>
+        </div>
+
+        <!-- Footer -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-border-primary bg-bg-secondary">
+          <p class="text-xs text-text-muted text-center">
+            Built with curiosity
+          </p>
+        </div>
+      </aside>
+
+      <!-- Mobile Header -->
+      <header class="fixed top-0 left-0 right-0 h-14 bg-bg-secondary border-b border-border-primary lg:hidden z-50">
+        <div class="flex items-center justify-between h-full px-4">
+          <a href="/" class="font-mono font-bold text-text-primary">
+            <span class="text-accent-primary">&gt;</span> agentology
+          </a>
+          <button id="mobile-menu-btn" class="p-2 text-text-secondary hover:text-text-primary">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Mobile Menu Overlay -->
+      <div id="mobile-menu" class="fixed inset-0 bg-bg-primary/95 z-40 hidden lg:hidden">
+        <div class="p-6 pt-20">
+          <nav class="space-y-4">
+            <a href="/" class="block py-2 text-lg text-text-primary">Home</a>
+            <a href="/taxonomy" class="block py-2 text-lg text-text-primary">Browse</a>
+            <a href="/glossary" class="block py-2 text-lg text-text-primary">Glossary</a>
+            <a href="/about" class="block py-2 text-lg text-text-primary">About</a>
+            <hr class="border-border-primary my-4" />
+            {categories.map((cat) => (
+              <a href={`/taxonomy?category=${cat.slug}`} class="block py-2 text-text-secondary">
+                {cat.icon} {cat.name}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <main class="flex-1 lg:ml-64 min-h-screen pt-14 lg:pt-0">
+        <div class="max-w-4xl mx-auto px-6 py-12">
+          <slot />
+        </div>
+      </main>
+    </div>
+
+    <script is:inline>
+      // Mobile menu toggle
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+        });
+        mobileMenu.addEventListener('click', (e) => {
+          if (e.target === mobileMenu || e.target.tagName === 'A') {
+            mobileMenu.classList.add('hidden');
+          }
+        });
+      }
+
+      // Initialize Pagefind search
+      window.addEventListener('DOMContentLoaded', () => {
+        if (typeof PagefindUI !== 'undefined') {
+          new PagefindUI({
+            element: '#search',
+            showSubResults: true,
+            showImages: false,
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

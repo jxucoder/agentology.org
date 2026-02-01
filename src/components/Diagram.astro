@@ -1,0 +1,33 @@
+---
+interface Props {
+  src?: string;
+  alt?: string;
+  caption?: string;
+  type?: 'image' | 'ascii';
+}
+
+const { src, alt = 'Diagram', caption, type = 'image' } = Astro.props;
+---
+
+<figure class="diagram my-8">
+  {type === 'image' && src ? (
+    <div class="bg-bg-secondary border border-border-primary rounded-lg p-4 overflow-x-auto">
+      <img
+        src={src}
+        alt={alt}
+        class="max-w-full h-auto mx-auto rounded"
+        loading="lazy"
+      />
+    </div>
+  ) : (
+    <div class="bg-bg-secondary border border-border-primary rounded-lg p-6 overflow-x-auto">
+      <pre class="font-mono text-sm text-text-primary whitespace-pre leading-relaxed"><slot /></pre>
+    </div>
+  )}
+
+  {caption && (
+    <figcaption class="text-center text-sm text-text-muted mt-3 italic">
+      {caption}
+    </figcaption>
+  )}
+</figure>

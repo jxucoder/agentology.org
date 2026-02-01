@@ -1,0 +1,156 @@
+---
+import Base from '../layouts/Base.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<Base title="About">
+  <article class="prose">
+    <header class="mb-8 pb-6 border-b border-border-primary">
+      <h1 class="text-4xl font-bold font-mono text-text-primary mb-4">
+        About Agentology
+      </h1>
+      <p class="text-xl text-text-secondary">
+        Understanding AI agents through the lens of anthropology.
+      </p>
+    </header>
+
+    <section class="mb-12">
+      <h2>The Premise</h2>
+      <p>
+        As AI agents become increasingly prevalent—coding assistants, research agents,
+        autonomous systems—we lack a coherent framework for discussing, classifying,
+        and understanding them.
+      </p>
+      <p>
+        <strong>Agentology</strong> proposes borrowing from anthropology, a discipline
+        that has spent centuries developing tools for understanding complex entities:
+        their origins, behaviors, social structures, and evolution.
+      </p>
+    </section>
+
+    <section class="mb-12">
+      <h2>The Framework</h2>
+      <p>
+        The site organizes knowledge about AI agents into eight categories, each
+        borrowed from a subfield of anthropology:
+      </p>
+
+      <div class="grid gap-4 my-6 not-prose">
+        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">🏛️</span>
+            <h3 class="font-mono font-bold text-text-primary">Archaeology</h3>
+          </div>
+          <p class="text-sm text-text-secondary">
+            The history of agents. Lineages, epochs, deprecated architectures, and the
+            evolution of capabilities over time.
+          </p>
+        </div>
+
+        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">🧠</span>
+            <h3 class="font-mono font-bold text-text-primary">Anatomy</h3>
+          </div>
+          <p class="text-sm text-text-secondary">
+            The internal structure of agents. Model architecture, memory systems,
+            input/output modalities, and compute requirements.
+          </p>
+        </div>
+
+        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">🌳</span>
+            <h3 class="font-mono font-bold text-text-primary">Taxonomy</h3>
+          </div>
+          <p class="text-sm text-text-secondary">
+            Classification systems. Organizing agents by autonomy level, habitat,
+            specialization, and capability profile.
+          </p>
+        </div>
+
+        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">🔄</span>
+            <h3 class="font-mono font-bold text-text-primary">Ethology</h3>
+          </div>
+          <p class="text-sm text-text-secondary">
+            Agent behaviors. Rituals, patterns, failure modes, and pathologies
+            observed in the wild.
+          </p>
+        </div>
+
+        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">💬</span>
+            <h3 class="font-mono font-bold text-text-primary">Linguistics</h3>
+          </div>
+          <p class="text-sm text-text-secondary">
+            Communication patterns. Prompts, dialects, jargon, and the evolution of
+            human-agent and agent-agent language.
+          </p>
+        </div>
+
+        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">🤝</span>
+            <h3 class="font-mono font-bold text-text-primary">Sociology</h3>
+          </div>
+          <p class="text-sm text-text-secondary">
+            Multi-agent dynamics. Hierarchies, coordination mechanisms, emergent
+            social structures, and collective behavior.
+          </p>
+        </div>
+
+        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">🌍</span>
+            <h3 class="font-mono font-bold text-text-primary">Ecology</h3>
+          </div>
+          <p class="text-sm text-text-secondary">
+            Environments and niches. Where agents live, resource competition,
+            adversarial threats, and ecosystem dynamics.
+          </p>
+        </div>
+
+        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">⚖️</span>
+            <h3 class="font-mono font-bold text-text-primary">Ethics</h3>
+          </div>
+          <p class="text-sm text-text-secondary">
+            Values and governance. Alignment, taboos, regulatory frameworks, and the
+            moral status of artificial agents.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <h2>Design Philosophy</h2>
+      <ul>
+        <li><strong>Accessible but precise.</strong> Explanations should be understandable to newcomers while remaining accurate for experts.</li>
+        <li><strong>Structured but flexible.</strong> The framework provides organization without forcing artificial categorizations.</li>
+        <li><strong>Living document.</strong> As the field evolves, so does this encyclopedia.</li>
+        <li><strong>Cross-referenced.</strong> Entries link to related concepts, building a knowledge graph over time.</li>
+      </ul>
+    </section>
+
+    <section class="mb-12">
+      <h2>Contributing</h2>
+      <p>
+        Agentology is an open project. Contributions—new entries, corrections,
+        improvements—are welcome via GitHub.
+      </p>
+      <p>
+        Each entry is a simple MDX file. Drop it in the <code>/src/content/entries/</code>
+        folder with the appropriate frontmatter, and you're done.
+      </p>
+    </section>
+
+    <Callout type="note">
+      This project is not affiliated with any organization. It's an independent
+      effort to build shared vocabulary for an emerging field.
+    </Callout>
+  </article>
+</Base>
