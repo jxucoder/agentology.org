@@ -32,26 +32,22 @@ An agent without memory is like a human with amnesia—capable in the moment but
 
 Language models have a fundamental limitation: the context window. All reasoning must occur within this fixed space of tokens.
 
-<Diagram type="ascii" caption="The context window constraint">
-{`
-┌─────────────────────────────────────────────────────────┐
-│                   CONTEXT WINDOW                        │
-│                   (e.g., 128K tokens)                   │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │ System prompt                                     │  │
-│  ├──────────────────────────────────────────────────┤  │
-│  │ Conversation history                              │  │
-│  ├──────────────────────────────────────────────────┤  │
-│  │ Retrieved context                                 │  │
-│  ├──────────────────────────────────────────────────┤  │
-│  │ Current input                                     │  │
-│  └──────────────────────────────────────────────────┘  │
-│                                                         │
-│  Everything must fit. What doesn't fit is forgotten.   │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+<Diagram type="mermaid" caption="context_window_constraint // ~128K tokens">
+{`graph TB
+    subgraph CW["CONTEXT WINDOW<br/>everything must fit"]
+        SP[System Prompt]
+        CH[Conversation History]
+        RC[Retrieved Context]
+        CI[Current Input]
+
+        SP --> CH --> RC --> CI
+    end
+
+    style CW fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style SP fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style CH fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style RC fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style CI fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 
@@ -113,33 +109,20 @@ This taxonomy mirrors human memory research. The parallel isn't coincidental—a
 
 ## Memory Architecture
 
-<Diagram type="ascii" caption="A layered memory architecture">
-{`
-┌─────────────────────────────────────────────────────────┐
-│                                                         │
-│                    AGENT CORE                           │
-│                  (Language Model)                       │
-│                                                         │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-                          │ read/write
-                          │
-┌─────────────────────────▼───────────────────────────────┐
-│                   WORKING MEMORY                        │
-│                (Current Context)                        │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-          ┌───────────────┼───────────────┐
-          │               │               │
-          ▼               ▼               ▼
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│   EPISODIC   │  │   SEMANTIC   │  │  PROCEDURAL  │
-│    MEMORY    │  │    MEMORY    │  │    MEMORY    │
-│              │  │              │  │              │
-│ - Logs       │  │ - Vector DB  │  │ - Tools      │
-│ - Transcripts│  │ - Knowledge  │  │ - Functions  │
-│ - History    │  │ - Facts      │  │ - Skills     │
-└──────────────┘  └──────────────┘  └──────────────┘
+<Diagram type="mermaid" caption="layered_memory_architecture">
+{`graph TD
+    CORE["AGENT CORE<br/>language_model"]
+    CORE -->|read/write| WM["WORKING MEMORY<br/>current_context"]
+
+    WM --> EM["EPISODIC<br/>logs<br/>transcripts<br/>history"]
+    WM --> SM["SEMANTIC<br/>vector_db<br/>knowledge<br/>facts"]
+    WM --> PM["PROCEDURAL<br/>tools<br/>functions<br/>skills"]
+
+    style CORE fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style WM fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style EM fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style SM fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style PM fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 

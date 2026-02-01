@@ -19,21 +19,21 @@ In developmental psychology, we track the stages through which children gain ind
 
 Agents don't exist in a binary state of "autonomous" or "not autonomous." They occupy positions on a spectrum:
 
-<Diagram type="ascii" caption="The autonomy spectrum">
-{`
-HUMAN CONTROL ◄─────────────────────────────────────► AGENT AUTONOMY
+<Diagram type="mermaid" caption="human_control ← → agent_autonomy">
+{`graph LR
+    L0["Level 0<br/>TOOL<br/>human does all"]
+    L1["Level 1<br/>ASSISTED<br/>human decides<br/>agent assists"]
+    L2["Level 2<br/>PARTIAL<br/>shared control"]
+    L3["Level 3<br/>SUPERVISED<br/>agent decides<br/>human approves"]
+    L4["Level 4<br/>FULL<br/>agent decides<br/>and acts"]
 
-Level 0        Level 1        Level 2        Level 3        Level 4
-   │              │              │              │              │
-   ▼              ▼              ▼              ▼              ▼
-┌──────┐    ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
-│ Tool │    │ Assisted │   │ Partial  │   │Supervised│   │   Full   │
-│      │    │          │   │          │   │ Autonomy │   │ Autonomy │
-│Human │    │ Human    │   │ Shared   │   │ Agent    │   │ Agent    │
-│does  │    │ decides, │   │ control  │   │ decides, │   │ decides  │
-│all   │    │ agent    │   │          │   │ human    │   │ and acts │
-│      │    │ assists  │   │          │   │ approves │   │          │
-└──────┘    └──────────┘   └──────────┘   └──────────┘   └──────────┘
+    L0 --> L1 --> L2 --> L3 --> L4
+
+    style L0 fill:#0a0a0a,stroke:#666666,stroke-width:1px,color:#cccccc
+    style L1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style L2 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style L3 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style L4 fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
 `}
 </Diagram>
 
@@ -149,22 +149,36 @@ Is the domain well-specified or open-ended? Constrained domains are safer for au
 ### Trust
 Has the agent demonstrated reliability? Trust is earned through track record.
 
-<Diagram type="ascii" caption="Autonomy level decision factors">
-{`
-                    High Stakes
-                         │
-                         │
-     Lower ◄─────────────┼─────────────► Higher
-    Autonomy             │              Autonomy
-                         │
-                    Low Stakes
+<Diagram type="mermaid" caption="autonomy_level_decision_factors">
+{`graph TD
+    subgraph Primary["primary_factor"]
+        S1["high_stakes → lower_autonomy"]
+        S2["low_stakes → higher_autonomy"]
+    end
 
-    ─────────────────────────────────────────────
+    subgraph Secondary["secondary_factors"]
+        F1["irreversible → lower"]
+        F2["reversible → higher"]
+        F3["low_trust → lower"]
+        F4["high_trust → higher"]
+        F5["open_domain → lower"]
+        F6["constrained → higher"]
+        F7["low_capability → lower"]
+        F8["high_capability → higher"]
+    end
 
-    Irreversible ◄───────┼───────► Reversible
-    Low Trust    ◄───────┼───────► High Trust
-    Open Domain  ◄───────┼───────► Constrained
-    Low Capability◄──────┼───────► High Capability
+    style Primary fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style Secondary fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style S1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style S2 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style F1 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style F2 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style F3 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style F4 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style F5 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style F6 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style F7 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style F8 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
 `}
 </Diagram>
 

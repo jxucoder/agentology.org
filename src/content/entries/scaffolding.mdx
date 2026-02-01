@@ -28,33 +28,36 @@ A language model, by itself, cannot:
 
 The **scaffold** provides all of this. It is the code, infrastructure, and tools that wrap a model to create an agent.
 
-<Diagram type="ascii" caption="The relationship between model and scaffold">
-{`
-┌─────────────────────────────────────────────────────────┐
-│                      SCAFFOLD                           │
-│  ┌─────────────────────────────────────────────────┐   │
-│  │                                                  │   │
-│  │   ┌──────────────────────────────────────────┐  │   │
-│  │   │                                          │  │   │
-│  │   │              LANGUAGE MODEL              │  │   │
-│  │   │                                          │  │   │
-│  │   │    (reasoning, language, knowledge)      │  │   │
-│  │   │                                          │  │   │
-│  │   └──────────────────────────────────────────┘  │   │
-│  │                                                  │   │
-│  │   ┌────────────┐  ┌────────────┐  ┌──────────┐  │   │
-│  │   │   Memory   │  │   Tools    │  │  State   │  │   │
-│  │   └────────────┘  └────────────┘  └──────────┘  │   │
-│  │                                                  │   │
-│  │   ┌────────────┐  ┌────────────┐  ┌──────────┐  │   │
-│  │   │  Parsing   │  │   Error    │  │  Loops   │  │   │
-│  │   │            │  │  Handling  │  │          │  │   │
-│  │   └────────────┘  └────────────┘  └──────────┘  │   │
-│  │                                                  │   │
-│  └─────────────────────────────────────────────────┘   │
-│                                                         │
-│         (action, persistence, reliability)              │
-└─────────────────────────────────────────────────────────┘
+<Diagram type="mermaid" caption="model_wrapped_by_scaffold">
+{`graph TB
+    subgraph SCAFFOLD["SCAFFOLD<br/>action // persistence // reliability"]
+        LM["LANGUAGE MODEL<br/>reasoning // language // knowledge"]
+
+        M[Memory]
+        T[Tools]
+        S[State]
+
+        P[Parsing]
+        E[Error Handling]
+        L[Loops]
+
+        LM --- M
+        LM --- T
+        LM --- S
+
+        M --- P
+        T --- E
+        S --- L
+    end
+
+    style SCAFFOLD fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style LM fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style M fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style T fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style S fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style P fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style E fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style L fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
 `}
 </Diagram>
 

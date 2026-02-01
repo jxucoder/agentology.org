@@ -24,27 +24,30 @@ Tool use extends this to:
 - **Write** to external systems (send emails, create files, execute code)
 - **Compute** through external processes (calculators, interpreters, specialized models)
 
-<Diagram type="ascii" caption="Tool use expands the agent's reach">
-{`
-     Without Tools              With Tools
+<Diagram type="mermaid" caption="without_tools → with_tools">
+{`graph TB
+    subgraph WITHOUT["WITHOUT TOOLS"]
+        M1[Model]
+        M1 --> T1[Text Only]
+    end
 
-    ┌──────────────┐        ┌──────────────┐
-    │              │        │              │
-    │    Model     │        │    Model     │
-    │              │        │              │
-    └──────┬───────┘        └──────┬───────┘
-           │                       │
-           ▼                       ▼
-    ┌──────────────┐        ┌──────────────┐
-    │  Text Only   │        │    Tools     │
-    └──────────────┘        └──────┬───────┘
-                                   │
-                    ┌──────────────┼──────────────┐
-                    │              │              │
-                    ▼              ▼              ▼
-              ┌─────────┐   ┌───────────┐   ┌─────────┐
-              │ Search  │   │ Code Exec │   │  APIs   │
-              └─────────┘   └───────────┘   └─────────┘
+    subgraph WITH["WITH TOOLS"]
+        M2[Model]
+        M2 --> TS[Tools]
+        TS --> S[Search]
+        TS --> C[Code Exec]
+        TS --> A[APIs]
+    end
+
+    style WITHOUT fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style WITH fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style M1 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style T1 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style M2 fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style TS fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style S fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 

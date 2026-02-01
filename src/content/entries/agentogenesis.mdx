@@ -57,28 +57,18 @@ Agentogenesis wasn't a binary switch. Models existed on a spectrum of agency, wi
 
 What makes a model an agent? The standard formulation includes:
 
-<Diagram type="ascii" caption="The minimal agent architecture">
-{`
-┌─────────────────────────────────────────┐
-│              ENVIRONMENT                │
-│  (files, APIs, databases, web, users)   │
-└─────────────────┬───────────────────────┘
-                  │
-          ┌───────▼───────┐
-          │   PERCEPTION  │ ← observe
-          └───────┬───────┘
-                  │
-          ┌───────▼───────┐
-          │   REASONING   │ ← think
-          │   (LLM core)  │
-          └───────┬───────┘
-                  │
-          ┌───────▼───────┐
-          │    ACTION     │ ← act
-          │  (tool calls) │
-          └───────┬───────┘
-                  │
-                  └──────────→ back to environment
+<Diagram type="mermaid" caption="minimal_agent_architecture">
+{`graph TD
+    ENV[ENVIRONMENT<br/>files // apis // databases // web // users]
+    ENV --> P[PERCEPTION<br/>observe]
+    P --> R[REASONING<br/>LLM core // think]
+    R --> A[ACTION<br/>tool calls // act]
+    A -.feedback.-> ENV
+
+    style ENV fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style P fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style R fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 

@@ -33,20 +33,17 @@ Multi-agent systems take many forms:
 
 ### Hierarchical Systems
 
-<Diagram type="ascii" caption="Hierarchical multi-agent architecture">
-{`
-                    ┌───────────────┐
-                    │   Orchestrator│
-                    │    Agent      │
-                    └───────┬───────┘
-                            │
-            ┌───────────────┼───────────────┐
-            │               │               │
-            ▼               ▼               ▼
-      ┌───────────┐   ┌───────────┐   ┌───────────┐
-      │  Research │   │  Writing  │   │   Code    │
-      │   Agent   │   │   Agent   │   │   Agent   │
-      └───────────┘   └───────────┘   └───────────┘
+<Diagram type="mermaid" caption="hierarchical_multi-agent">
+{`graph TD
+    O[Orchestrator Agent]
+    O --> R[Research Agent]
+    O --> W[Writing Agent]
+    O --> C[Code Agent]
+
+    style O fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style R fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style W fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 
@@ -57,20 +54,19 @@ A central orchestrator delegates tasks to specialized workers. This mirrors corp
 
 ### Peer-to-Peer Systems
 
-<Diagram type="ascii" caption="Peer-to-peer multi-agent architecture">
-{`
-      ┌───────────┐         ┌───────────┐
-      │  Agent A  │◄───────►│  Agent B  │
-      └─────┬─────┘         └─────┬─────┘
-            │                     │
-            │    ┌───────────┐    │
-            └───►│  Agent C  │◄───┘
-                 └─────┬─────┘
-                       │
-                       ▼
-      ┌───────────┐         ┌───────────┐
-      │  Agent D  │◄───────►│  Agent E  │
-      └───────────┘         └───────────┘
+<Diagram type="mermaid" caption="peer-to-peer_multi-agent">
+{`graph TD
+    A[Agent A] <--> B[Agent B]
+    A <--> C[Agent C]
+    B <--> C
+    C --> D[Agent D]
+    D <--> E[Agent E]
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style E fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 
@@ -81,27 +77,19 @@ Agents communicate directly without central coordination. Resembles market econo
 
 ### Debate Systems
 
-<Diagram type="ascii" caption="Debate architecture for collective reasoning">
-{`
-      ┌─────────────────────────────────────┐
-      │              Question               │
-      └──────────────────┬──────────────────┘
-                         │
-           ┌─────────────┴─────────────┐
-           │                           │
-           ▼                           ▼
-    ┌─────────────┐             ┌─────────────┐
-    │  Advocate A │             │  Advocate B │
-    │  (argues X) │◄───debate──►│  (argues Y) │
-    └──────┬──────┘             └──────┬──────┘
-           │                           │
-           └─────────────┬─────────────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │    Judge    │
-                  │   Agent     │
-                  └─────────────┘
+<Diagram type="mermaid" caption="debate_architecture">
+{`graph TD
+    Q[Question]
+    Q --> A[Advocate A<br/>argues X]
+    Q --> B[Advocate B<br/>argues Y]
+    A <-.debate.-> B
+    A --> J[Judge Agent]
+    B --> J
+
+    style Q fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style J fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
 `}
 </Diagram>
 
