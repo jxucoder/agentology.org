@@ -3,154 +3,153 @@ import Base from '../layouts/Base.astro';
 import Callout from '../components/Callout.astro';
 ---
 
-<Base title="About">
+<Base title="ABOUT">
   <article class="prose">
-    <header class="mb-8 pb-6 border-b border-border-primary">
-      <h1 class="text-4xl font-bold font-mono text-text-primary mb-4">
-        About Agentology
+    <header class="mb-8 pb-4 border-b border-border-primary">
+      <pre class="text-xs text-text-muted mb-3">
+[ system.documentation ]
+FILE: about.txt
+STATUS: classified
+LAST_MODIFIED: {new Date().toISOString().split('T')[0]}
+      </pre>
+      <h1 class="text-xl font-bold font-mono text-text-primary mb-2 uppercase">
+        AGENTOLOGY
       </h1>
-      <p class="text-xl text-text-secondary">
-        Understanding AI agents through the lens of anthropology.
+      <p class="text-sm text-text-secondary font-mono">
+        anthropological framework for autonomous AI systems
       </p>
     </header>
 
     <section class="mb-12">
-      <h2>The Premise</h2>
+      <h2>premise</h2>
       <p>
-        As AI agents become increasingly prevalent—coding assistants, research agents,
-        autonomous systems—we lack a coherent framework for discussing, classifying,
-        and understanding them.
+        autonomous AI systems proliferate. coding assistants. research agents.
+        decision-making systems. we lack coherent frameworks for classification
+        and analysis.
       </p>
       <p>
-        <strong>Agentology</strong> proposes borrowing from anthropology, a discipline
-        that has spent centuries developing tools for understanding complex entities:
-        their origins, behaviors, social structures, and evolution.
+        anthropology provides methodological tools refined across centuries:
+        origin tracing. behavioral analysis. social structures. evolutionary patterns.
+      </p>
+      <p>
+        <strong>agentology</strong> adapts these frameworks for artificial systems.
       </p>
     </section>
 
     <section class="mb-12">
-      <h2>The Framework</h2>
+      <h2>classification.framework</h2>
       <p>
-        The site organizes knowledge about AI agents into eight categories, each
-        borrowed from a subfield of anthropology:
+        eight taxonomic categories adapted from anthropological methodology:
       </p>
 
-      <div class="grid gap-4 my-6 not-prose">
-        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">🏛️</span>
-            <h3 class="font-mono font-bold text-text-primary">Archaeology</h3>
+      <div class="grid gap-2 my-6 not-prose text-xs">
+        <div class="p-3 bg-bg-secondary border border-border-primary">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-text-muted font-mono">[ARCH]</span>
+            <h3 class="font-mono font-semibold text-text-primary">archaeology</h3>
           </div>
-          <p class="text-sm text-text-secondary">
-            The history of agents. Lineages, epochs, deprecated architectures, and the
-            evolution of capabilities over time.
+          <p class="text-text-secondary font-mono pl-12">
+            history // lineages // deprecated_systems // evolutionary_trajectories
           </p>
         </div>
 
-        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">🧠</span>
-            <h3 class="font-mono font-bold text-text-primary">Anatomy</h3>
+        <div class="p-3 bg-bg-secondary border border-border-primary">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-text-muted font-mono">[ANAT]</span>
+            <h3 class="font-mono font-semibold text-text-primary">anatomy</h3>
           </div>
-          <p class="text-sm text-text-secondary">
-            The internal structure of agents. Model architecture, memory systems,
-            input/output modalities, and compute requirements.
+          <p class="text-text-secondary font-mono pl-12">
+            architecture // memory_systems // io_modalities // compute_requirements
           </p>
         </div>
 
-        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">🌳</span>
-            <h3 class="font-mono font-bold text-text-primary">Taxonomy</h3>
+        <div class="p-3 bg-bg-secondary border border-border-primary">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-text-muted font-mono">[TAXO]</span>
+            <h3 class="font-mono font-semibold text-text-primary">taxonomy</h3>
           </div>
-          <p class="text-sm text-text-secondary">
-            Classification systems. Organizing agents by autonomy level, habitat,
-            specialization, and capability profile.
+          <p class="text-text-secondary font-mono pl-12">
+            classification // autonomy_levels // specialization // capability_profiles
           </p>
         </div>
 
-        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">🔄</span>
-            <h3 class="font-mono font-bold text-text-primary">Ethology</h3>
+        <div class="p-3 bg-bg-secondary border border-border-primary">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-text-muted font-mono">[ETHO]</span>
+            <h3 class="font-mono font-semibold text-text-primary">ethology</h3>
           </div>
-          <p class="text-sm text-text-secondary">
-            Agent behaviors. Rituals, patterns, failure modes, and pathologies
-            observed in the wild.
+          <p class="text-text-secondary font-mono pl-12">
+            behaviors // patterns // failure_modes // observed_pathologies
           </p>
         </div>
 
-        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">💬</span>
-            <h3 class="font-mono font-bold text-text-primary">Linguistics</h3>
+        <div class="p-3 bg-bg-secondary border border-border-primary">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-text-muted font-mono">[LING]</span>
+            <h3 class="font-mono font-semibold text-text-primary">linguistics</h3>
           </div>
-          <p class="text-sm text-text-secondary">
-            Communication patterns. Prompts, dialects, jargon, and the evolution of
-            human-agent and agent-agent language.
+          <p class="text-text-secondary font-mono pl-12">
+            communication_patterns // prompts // protocols // agent_dialects
           </p>
         </div>
 
-        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">🤝</span>
-            <h3 class="font-mono font-bold text-text-primary">Sociology</h3>
+        <div class="p-3 bg-bg-secondary border border-border-primary">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-text-muted font-mono">[SOCI]</span>
+            <h3 class="font-mono font-semibold text-text-primary">sociology</h3>
           </div>
-          <p class="text-sm text-text-secondary">
-            Multi-agent dynamics. Hierarchies, coordination mechanisms, emergent
-            social structures, and collective behavior.
+          <p class="text-text-secondary font-mono pl-12">
+            multi-agent_dynamics // hierarchies // coordination // emergent_behavior
           </p>
         </div>
 
-        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">🌍</span>
-            <h3 class="font-mono font-bold text-text-primary">Ecology</h3>
+        <div class="p-3 bg-bg-secondary border border-border-primary">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-text-muted font-mono">[ECOL]</span>
+            <h3 class="font-mono font-semibold text-text-primary">ecology</h3>
           </div>
-          <p class="text-sm text-text-secondary">
-            Environments and niches. Where agents live, resource competition,
-            adversarial threats, and ecosystem dynamics.
+          <p class="text-text-secondary font-mono pl-12">
+            environments // resource_competition // adversarial_threats // niches
           </p>
         </div>
 
-        <div class="p-4 bg-bg-secondary border border-border-primary rounded-lg">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">⚖️</span>
-            <h3 class="font-mono font-bold text-text-primary">Ethics</h3>
+        <div class="p-3 bg-bg-secondary border border-border-primary">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-text-muted font-mono">[ETHI]</span>
+            <h3 class="font-mono font-semibold text-text-primary">ethics</h3>
           </div>
-          <p class="text-sm text-text-secondary">
-            Values and governance. Alignment, taboos, regulatory frameworks, and the
-            moral status of artificial agents.
+          <p class="text-text-secondary font-mono pl-12">
+            alignment // governance // constraints // moral_frameworks
           </p>
         </div>
       </div>
     </section>
 
     <section class="mb-12">
-      <h2>Design Philosophy</h2>
+      <h2>design.principles</h2>
       <ul>
-        <li><strong>Accessible but precise.</strong> Explanations should be understandable to newcomers while remaining accurate for experts.</li>
-        <li><strong>Structured but flexible.</strong> The framework provides organization without forcing artificial categorizations.</li>
-        <li><strong>Living document.</strong> As the field evolves, so does this encyclopedia.</li>
-        <li><strong>Cross-referenced.</strong> Entries link to related concepts, building a knowledge graph over time.</li>
+        <li><strong>precision over accessibility.</strong> accurate terminology. rigorous definitions.</li>
+        <li><strong>structured flexibility.</strong> organization without forced categorization.</li>
+        <li><strong>continuous evolution.</strong> living documentation adapting to field developments.</li>
+        <li><strong>networked knowledge.</strong> cross-referenced entries forming knowledge graphs.</li>
       </ul>
     </section>
 
     <section class="mb-12">
-      <h2>Contributing</h2>
+      <h2>contributing</h2>
       <p>
-        Agentology is an open project. Contributions—new entries, corrections,
-        improvements—are welcome via GitHub.
+        open research project. contributions accepted via GitHub.
       </p>
       <p>
-        Each entry is a simple MDX file. Drop it in the <code>/src/content/entries/</code>
-        folder with the appropriate frontmatter, and you're done.
+        format: MDX files in <code>/src/content/entries/</code> with appropriate frontmatter.
       </p>
     </section>
 
-    <Callout type="note">
-      This project is not affiliated with any organization. It's an independent
-      effort to build shared vocabulary for an emerging field.
-    </Callout>
+    <div class="not-prose p-3 bg-bg-secondary border border-border-primary">
+      <p class="text-xs text-text-muted font-mono">
+        NOTE: independent research project. no organizational affiliation.
+        purpose: shared vocabulary development for emerging field.
+      </p>
+    </div>
   </article>
 </Base>

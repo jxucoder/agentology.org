@@ -24,33 +24,33 @@ const grouped = glossary.reduce((acc, item) => {
 
 const letters = Object.keys(grouped).sort();
 
-const categoryInfo: Record<string, { icon: string }> = {
-  archaeology: { icon: '🏛️' },
-  anatomy: { icon: '🧠' },
-  taxonomy: { icon: '🌳' },
-  ethology: { icon: '🔄' },
-  linguistics: { icon: '💬' },
-  sociology: { icon: '🤝' },
-  ecology: { icon: '🌍' },
-  ethics: { icon: '⚖️' },
+const categoryInfo: Record<string, { code: string }> = {
+  archaeology: { code: 'ARCH' },
+  anatomy: { code: 'ANAT' },
+  taxonomy: { code: 'TAXO' },
+  ethology: { code: 'ETHO' },
+  linguistics: { code: 'LING' },
+  sociology: { code: 'SOCI' },
+  ecology: { code: 'ECOL' },
+  ethics: { code: 'ETHI' },
 };
 
 // Core terms that should always appear in glossary
 const coreTerms = [
-  { term: 'Agent', definition: 'An AI system that can perceive its environment, make decisions, and take actions to achieve goals autonomously.' },
-  { term: 'Agent Loop', definition: 'The fundamental cycle of observe → reason → act that defines agent behavior.' },
-  { term: 'Autonomy', definition: 'The degree to which an agent can operate independently without human intervention.' },
-  { term: 'Chain of Thought', definition: 'A prompting technique where the model explicitly reasons through steps before answering.' },
-  { term: 'Context Window', definition: 'The maximum amount of text (tokens) a model can process in a single interaction.' },
-  { term: 'Emergent Behavior', definition: 'Capabilities that arise from training but were not explicitly programmed.' },
-  { term: 'Grounding', definition: 'Connecting an agent to external sources of truth or real-world data.' },
-  { term: 'Hallucination', definition: 'When a model generates plausible-sounding but factually incorrect information.' },
-  { term: 'In-Context Learning', definition: 'The ability to learn from examples provided within the prompt.' },
-  { term: 'Prompt', definition: 'Instructions given to an AI model to guide its behavior and output.' },
-  { term: 'ReAct', definition: 'A prompting paradigm combining Reasoning and Acting in an interleaved manner.' },
-  { term: 'Scaffold', definition: 'External code or infrastructure that wraps a model to create an agent.' },
-  { term: 'Tool Use', definition: 'The capability of an agent to interact with external APIs, databases, or systems.' },
-  { term: 'Trajectory', definition: 'The sequence of observations, thoughts, and actions taken by an agent.' },
+  { term: 'Agent', definition: 'autonomous system: perceive → decide → act' },
+  { term: 'Agent Loop', definition: 'observe → reason → act cycle' },
+  { term: 'Autonomy', definition: 'independent operation capacity without human intervention' },
+  { term: 'Chain of Thought', definition: 'explicit reasoning steps before output generation' },
+  { term: 'Context Window', definition: 'maximum token capacity per interaction' },
+  { term: 'Emergent Behavior', definition: 'unprogrammed capabilities arising from training' },
+  { term: 'Grounding', definition: 'external truth source connection' },
+  { term: 'Hallucination', definition: 'plausible but factually incorrect generation' },
+  { term: 'In-Context Learning', definition: 'learning from prompt-embedded examples' },
+  { term: 'Prompt', definition: 'instruction set guiding model behavior' },
+  { term: 'ReAct', definition: 'reasoning + acting interleaved paradigm' },
+  { term: 'Scaffold', definition: 'infrastructure wrapping model to create agent' },
+  { term: 'Tool Use', definition: 'external system interaction capability' },
+  { term: 'Trajectory', definition: 'observation-thought-action sequence' },
 ];
 
 // Merge core terms with entry-derived terms
@@ -71,51 +71,47 @@ const allGrouped = allTerms.reduce((acc, item) => {
 const allLetters = Object.keys(allGrouped).sort();
 ---
 
-<Base title="Glossary">
-  <header class="mb-8">
-    <h1 class="text-3xl font-bold font-mono text-text-primary mb-2">
-      Glossary
-    </h1>
-    <p class="text-text-secondary">
-      Quick definitions of key terms in agentology.
-    </p>
+<Base title="GLOSSARY">
+  <header class="mb-6 pb-3 border-b border-border-primary">
+    <pre class="text-xs text-text-muted mb-2">
+> query: list_terms
+> status: {allTerms.length} definitions loaded
+    </pre>
   </header>
 
-  <!-- Letter Navigation -->
-  <nav class="mb-8 flex flex-wrap gap-2">
+  <nav class="mb-6 flex flex-wrap gap-1 text-xs">
     {allLetters.map((letter) => (
       <a
-        href={`#letter-${letter}`}
-        class="w-8 h-8 flex items-center justify-center font-mono text-sm bg-bg-secondary border border-border-primary rounded hover:border-accent-primary hover:text-accent-primary transition-colors"
+        href={`#${letter}`}
+        class="w-6 h-6 flex items-center justify-center font-mono bg-bg-secondary border border-border-primary hover:border-text-primary hover:text-text-primary transition-all"
       >
         {letter}
       </a>
     ))}
   </nav>
 
-  <!-- Glossary Entries -->
-  <div class="space-y-8">
+  <div class="space-y-6">
     {allLetters.map((letter) => (
-      <section id={`letter-${letter}`}>
-        <h2 class="text-2xl font-mono font-bold text-accent-primary mb-4 pb-2 border-b border-border-primary">
+      <section id={letter} class="animate-fade-in">
+        <h2 class="text-sm font-mono font-bold text-text-primary mb-2 pb-1 border-b border-border-primary">
           {letter}
         </h2>
-        <dl class="space-y-4">
+        <dl class="space-y-1 text-xs">
           {allGrouped[letter].sort((a, b) => a.term.localeCompare(b.term)).map((item) => (
-            <div class="glossary-entry p-4 bg-bg-secondary border border-border-primary rounded-lg hover:border-border-primary/80 transition-colors">
-              <dt class="font-mono font-semibold text-text-primary flex items-center gap-2">
+            <div class="glossary-entry p-2 bg-bg-secondary border-l-2 border-transparent hover:border-text-primary hover:bg-bg-tertiary transition-all">
+              <dt class="font-mono text-text-secondary flex items-center gap-2">
                 {'slug' in item ? (
-                  <a href={`/entries/${item.slug}`} class="hover:text-accent-primary transition-colors">
+                  <a href={`/entries/${item.slug}`} class="hover:text-text-primary transition-colors">
                     {item.term}
                   </a>
                 ) : (
-                  item.term
+                  <span class="text-text-primary">{item.term}</span>
                 )}
                 {'category' in item && item.category && (
-                  <span class="text-sm">{categoryInfo[item.category]?.icon}</span>
+                  <span class="text-text-muted">[{categoryInfo[item.category]?.code}]</span>
                 )}
               </dt>
-              <dd class="text-text-secondary text-sm mt-1">
+              <dd class="text-text-muted mt-0.5 pl-2">
                 {item.definition}
               </dd>
             </div>
@@ -127,8 +123,7 @@ const allLetters = Object.keys(allGrouped).sort();
 
   {allTerms.length === 0 && (
     <div class="text-center py-16">
-      <span class="text-4xl mb-4 block">📖</span>
-      <p class="text-text-secondary">The glossary is being compiled. Check back soon!</p>
+      <p class="text-text-muted text-xs font-mono">no definitions found</p>
     </div>
   )}
 </Base>

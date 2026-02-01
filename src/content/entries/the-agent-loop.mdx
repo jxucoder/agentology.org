@@ -17,45 +17,17 @@ import Diagram from '../../components/Diagram.astro';
 
 At its simplest, the agent loop consists of four phases:
 
-<Diagram type="ascii" caption="The canonical agent loop">
-{`
-                    ┌─────────────┐
-                    │   OBSERVE   │
-                    │             │
-                    │ • Read input│
-                    │ • Get state │
-                    │ • Parse env │
-                    └──────┬──────┘
-                           │
-                           ▼
-    ┌────────────────────────────────────────┐
-    │                                        │
-    │              ┌──────────┐              │
-    │              │  REASON  │              │
-    │              │          │              │
-    │              │ • Think  │              │
-    │              │ • Plan   │              │
-    │              │ • Decide │              │
-    │              └────┬─────┘              │
-    │                   │                    │
-    │                   ▼                    │
-    │              ┌──────────┐              │
-    │              │   ACT    │              │
-    │              │          │              │
-    │              │ • Call   │              │
-    │              │   tools  │              │
-    │              │ • Output │              │
-    │              └────┬─────┘              │
-    │                   │                    │
-    └───────────────────┼────────────────────┘
-                        │
-                        ▼
-                ┌───────────────┐
-                │   OBSERVE     │
-                │   (results)   │
-                └───────┬───────┘
-                        │
-                        └──────────→ repeat
+<Diagram type="mermaid" caption="observe → reason → act → repeat">
+{`graph TD
+    A["OBSERVE<br/>read_input<br/>get_state<br/>parse_env"] --> B["REASON<br/>think<br/>plan<br/>decide"]
+    B --> C["ACT<br/>call_tools<br/>output"]
+    C --> D["OBSERVE<br/>results"]
+    D -.repeat.-> A
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
 `}
 </Diagram>
 

@@ -6,42 +6,42 @@ export default {
     extend: {
       colors: {
         bg: {
-          primary: '#0d1117',
-          secondary: '#161b22',
-          tertiary: '#21262d',
+          primary: '#000000',
+          secondary: '#0a0a0a',
+          tertiary: '#1a1a1a',
         },
         text: {
-          primary: '#e6edf3',
-          secondary: '#8b949e',
-          muted: '#6e7681',
+          primary: '#00ff00',
+          secondary: '#cccccc',
+          muted: '#666666',
         },
         accent: {
-          primary: '#58a6ff',
-          secondary: '#3fb950',
-          warning: '#d29922',
-          danger: '#f85149',
+          primary: '#00ff00',
+          secondary: '#ffffff',
+          warning: '#ffff00',
+          danger: '#ff0000',
         },
         border: {
-          primary: '#30363d',
-          secondary: '#21262d',
+          primary: '#333333',
+          secondary: '#1a1a1a',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans: ['JetBrains Mono', 'Courier New', 'monospace'],
+        mono: ['JetBrains Mono', 'Courier New', 'monospace'],
       },
       typography: {
         DEFAULT: {
           css: {
-            '--tw-prose-body': '#e6edf3',
-            '--tw-prose-headings': '#e6edf3',
-            '--tw-prose-links': '#58a6ff',
-            '--tw-prose-bold': '#e6edf3',
-            '--tw-prose-code': '#e6edf3',
-            '--tw-prose-pre-bg': '#161b22',
-            '--tw-prose-pre-code': '#e6edf3',
-            '--tw-prose-quotes': '#8b949e',
-            '--tw-prose-hr': '#30363d',
+            '--tw-prose-body': '#cccccc',
+            '--tw-prose-headings': '#00ff00',
+            '--tw-prose-links': '#00ff00',
+            '--tw-prose-bold': '#ffffff',
+            '--tw-prose-code': '#00ff00',
+            '--tw-prose-pre-bg': '#0a0a0a',
+            '--tw-prose-pre-code': '#00ff00',
+            '--tw-prose-quotes': '#666666',
+            '--tw-prose-hr': '#333333',
           }
         }
       }

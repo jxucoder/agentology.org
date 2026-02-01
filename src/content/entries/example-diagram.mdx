@@ -1,0 +1,165 @@
+---
+title: "Agent Architecture Patterns"
+category: anatomy
+tags: [architecture, patterns, design]
+related: [the-agent-loop, react, scaffolding]
+status: published
+description: "Visual overview of common agent architectural patterns and their flow structures"
+date: 2024-01-10
+---
+
+import Diagram from '../../components/Diagram.astro';
+import Callout from '../../components/Callout.astro';
+
+This entry demonstrates visual architectural patterns using Mermaid diagrams instead of ASCII art.
+
+## The Basic Agent Loop
+
+<Diagram type="mermaid" caption="observe → reason → act → repeat">
+{`graph TD
+    A[OBSERVE<br/>read_input<br/>get_state<br/>parse_env] --> B[REASON<br/>think<br/>plan<br/>decide]
+    B --> C[ACT<br/>call_tools<br/>output]
+    C --> D[OBSERVE<br/>results]
+    D -.repeat.-> A
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+The fundamental cycle underlying all agent behavior.
+
+## ReAct Pattern
+
+<Diagram type="mermaid" caption="thought → action → observation loop">
+{`graph LR
+    T1[Thought:<br/>need population data] --> A1[Action:<br/>search tokyo_population]
+    A1 --> O1[Observation:<br/>13.96M residents]
+    O1 --> T2[Thought:<br/>have answer now]
+    T2 --> F[finish]
+
+    style T1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style A1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style O1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style T2 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style F fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+Explicit reasoning traces interleaved with actions.
+
+## Hierarchical Agent System
+
+<Diagram type="mermaid" caption="multi-level agent coordination">
+{`graph TD
+    M[Manager Agent<br/>strategic planning] --> S1[Specialist Agent 1<br/>code generation]
+    M --> S2[Specialist Agent 2<br/>testing]
+    M --> S3[Specialist Agent 3<br/>documentation]
+
+    S1 --> T1[Tool: IDE]
+    S2 --> T2[Tool: Test Runner]
+    S3 --> T3[Tool: Doc Generator]
+
+    style M fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style S1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style S2 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style S3 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style T1 fill:#1a1a1a,stroke:#333333,stroke-width:1px,color:#666666
+    style T2 fill:#1a1a1a,stroke:#333333,stroke-width:1px,color:#666666
+    style T3 fill:#1a1a1a,stroke:#333333,stroke-width:1px,color:#666666
+`}
+</Diagram>
+
+Coordinated multi-agent systems with specialized roles.
+
+## Memory Architecture
+
+<Diagram type="mermaid" caption="agent memory systems">
+{`graph TB
+    Input[User Input] --> STM[Short-Term Memory<br/>conversation context]
+    STM --> Proc[Processing<br/>LLM reasoning]
+    Proc --> LTM[Long-Term Memory<br/>vector store]
+    LTM -.retrieval.-> Proc
+    Proc --> Output[Agent Output]
+
+    LTM --> EXT[External Memory<br/>databases / files]
+
+    style Input fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style STM fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style Proc fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style LTM fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style EXT fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style Output fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+Memory layers enabling persistent agent knowledge.
+
+## State Machine Pattern
+
+<Diagram type="mermaid" caption="agent state transitions">
+{`stateDiagram-v2
+    [*] --> Idle
+    Idle --> Planning: task_received
+    Planning --> Executing: plan_ready
+    Executing --> Observing: action_complete
+    Observing --> Planning: need_replan
+    Observing --> Executing: continue_plan
+    Observing --> Complete: goal_achieved
+    Complete --> [*]
+
+    Executing --> Error: failure
+    Error --> Planning: retry
+    Error --> [*]: abort
+`}
+</Diagram>
+
+State-based agent execution model.
+
+## Tool Use Flow
+
+<Diagram type="mermaid" caption="agent-tool interaction">
+{`sequenceDiagram
+    participant Agent
+    participant Executor
+    participant Tool
+    participant Environment
+
+    Agent->>Executor: call_tool(search, "AI agents")
+    Executor->>Tool: invoke(search)
+    Tool->>Environment: web_request
+    Environment-->>Tool: results
+    Tool-->>Executor: formatted_response
+    Executor-->>Agent: observation
+    Agent->>Agent: reason_about_results
+`}
+</Diagram>
+
+Sequence of tool invocation and result processing.
+
+<Callout type="note">
+diagrams auto-render using mermaid.js // fully customizable via markdown syntax
+</Callout>
+
+## Advantages
+
+- **clarity**: visual representation more intuitive than text descriptions
+- **maintainability**: diagram source code stored as text in markdown
+- **consistency**: unified styling across all diagrams
+- **scalability**: complex architectures represented concisely
+
+## Usage
+
+Replace ASCII art with Mermaid syntax:
+
+```astro
+<Diagram type="mermaid" caption="your caption">
+{\`graph TD
+    A[Node A] --> B[Node B]
+\`}
+</Diagram>
+```
+
+Supports flowcharts, sequence diagrams, state diagrams, and more.
