@@ -15,14 +15,13 @@ const glossary = allEntries
   .sort((a, b) => a.term.localeCompare(b.term));
 
 // Group by first letter
-const grouped = glossary.reduce((acc, item) => {
-  const letter = item.term[0].toUpperCase();
-  if (!acc[letter]) acc[letter] = [];
-  acc[letter].push(item);
-  return acc;
-}, {} as Record<string, typeof glossary>);
-
-const letters = Object.keys(grouped).sort();
+// Unused, kept for potential future use
+// const grouped = glossary.reduce((acc, item) => {
+//   const letter = item.term[0].toUpperCase();
+//   if (!acc[letter]) acc[letter] = [];
+//   acc[letter].push(item);
+//   return acc;
+// }, {} as Record<string, typeof glossary>);
 
 const categoryInfo: Record<string, { code: string }> = {
   archaeology: { code: 'ARCH' },
@@ -107,8 +106,8 @@ const allLetters = Object.keys(allGrouped).sort();
                 ) : (
                   <span class="text-text-primary">{item.term}</span>
                 )}
-                {'category' in item && item.category && (
-                  <span class="text-text-muted">[{categoryInfo[item.category]?.code}]</span>
+                {'category' in item && item.category && typeof item.category === 'string' && (
+                  <span class="text-text-muted">[{categoryInfo[item.category as keyof typeof categoryInfo]?.code}]</span>
                 )}
               </dt>
               <dd class="text-text-muted mt-0.5 pl-2">
