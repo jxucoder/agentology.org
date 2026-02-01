@@ -1,0 +1,317 @@
+---
+title: "Agent Archetypes"
+category: taxonomy
+tags: [classification, roles, specialization, occupations]
+related: [autonomy-levels, multi-agent-systems, scaffolding]
+status: published
+description: "The occupational castes of AI agents—recurring patterns of specialization that emerge when agents are shaped for particular roles and tasks."
+date: 2024-01-17
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+In human societies, occupational roles emerged not by decree but through the interplay of capability, need, and social structure. Hunters, healers, builders, storytellers—archetypes that recur across cultures because they address universal human needs.
+
+**Agent archetypes** are the analogous patterns in AI systems: recurring configurations of capability, interface, and purpose that emerge because they address universal computational needs.
+
+## The Emergence of Roles
+
+Early AI agents were generalists by default—chatbots that would attempt anything asked of them. But as deployment scaled, specialization emerged:
+
+- Certain prompts and tools made agents better at coding
+- Different configurations excelled at research
+- Some setups proved ideal for customer service
+
+These weren't arbitrary choices. Like human occupations, agent archetypes crystallized around recurring needs.
+
+<Callout type="insight">
+Agent archetypes aren't designed top-down—they emerge from the fitness landscape of real-world deployment. The roles that persist are those that match genuine needs with achievable capabilities.
+</Callout>
+
+## The Major Archetypes
+
+### The Assistant
+
+The generalist helper—capable across domains, optimized for conversation, designed to serve individual users.
+
+<Diagram type="ascii" caption="The Assistant archetype">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                     ASSISTANT                            │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Primary Mode:    Conversational, reactive               │
+│  Autonomy:        Low (Level 1-2)                        │
+│  Specialization:  Broad, shallow                         │
+│  Memory:          Session-based, sometimes persistent    │
+│  Tools:           General-purpose (search, calculate)    │
+│                                                          │
+│  Strengths:       Versatility, accessibility             │
+│  Weaknesses:      Jack of all trades, master of none     │
+│                                                          │
+│  Examples:        ChatGPT, Claude, Gemini (chat mode)    │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The village generalist—the person who knows a little about everything and helps neighbors with varied tasks.
+
+The Assistant is the most common archetype because it requires the least scaffolding. The base model, with minimal wrapping, can serve this role. But generality comes at the cost of depth.
+
+### The Coder
+
+Specialized for software development—reading, writing, debugging, and reasoning about code.
+
+<Diagram type="ascii" caption="The Coder archetype">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                       CODER                              │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Primary Mode:    Code generation, editing, review       │
+│  Autonomy:        Medium-High (Level 2-3)                │
+│  Specialization:  Deep in programming domain             │
+│  Memory:          Codebase context, file trees           │
+│  Tools:           File I/O, terminal, LSP, git           │
+│                                                          │
+│  Strengths:       Technical depth, tool integration      │
+│  Weaknesses:      May miss non-technical context         │
+│                                                          │
+│  Examples:        Cursor, GitHub Copilot, Claude Code    │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The craftsperson—specialized skills, tools of the trade, apprenticeship traditions.
+
+The Coder archetype emerged because:
+1. Code is structured and verifiable (reducing hallucination risk)
+2. Tools exist for code manipulation (enabling real action)
+3. Developer workflows create clear feedback loops
+
+Coders often have higher autonomy than Assistants because their actions are more easily verified and reversed.
+
+### The Researcher
+
+Optimized for information gathering, synthesis, and analysis across large document sets.
+
+<Diagram type="ascii" caption="The Researcher archetype">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                     RESEARCHER                           │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Primary Mode:    Search, retrieve, synthesize, cite     │
+│  Autonomy:        Medium (Level 2)                       │
+│  Specialization:  Information processing                 │
+│  Memory:          Large context, document stores         │
+│  Tools:           Search, RAG, databases, web scraping   │
+│                                                          │
+│  Strengths:       Breadth of sources, citation tracking  │
+│  Weaknesses:      May prioritize quantity over insight   │
+│                                                          │
+│  Examples:        Perplexity, research assistants        │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The scholar/librarian—keepers and synthesizers of knowledge.
+
+Researchers are distinguished by their relationship to external knowledge. Where Assistants rely primarily on training data, Researchers actively retrieve and ground their outputs in sources.
+
+### The Operator
+
+Designed to execute workflows, automate processes, and manage systems.
+
+<Diagram type="ascii" caption="The Operator archetype">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                      OPERATOR                            │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Primary Mode:    Execute, monitor, report, escalate     │
+│  Autonomy:        High (Level 3-4)                       │
+│  Specialization:  Process execution                      │
+│  Memory:          Workflow state, execution logs         │
+│  Tools:           APIs, system commands, monitoring      │
+│                                                          │
+│  Strengths:       Reliability, consistency, scale        │
+│  Weaknesses:      Brittle to novel situations            │
+│                                                          │
+│  Examples:        CI/CD agents, monitoring agents        │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The administrator/bureaucrat—maintaining systems, following procedures, ensuring consistency.
+
+Operators represent the highest-autonomy archetype in common deployment. They work with less human oversight because their domains are more constrained and their actions more predictable.
+
+### The Creative
+
+Optimized for generation—writing, art, music, design, ideation.
+
+<Diagram type="ascii" caption="The Creative archetype">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                      CREATIVE                            │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Primary Mode:    Generate, iterate, explore, vary       │
+│  Autonomy:        Low-Medium (Level 1-2)                 │
+│  Specialization:  Generative domains                     │
+│  Memory:          Style guides, brand context            │
+│  Tools:           Image gen, audio gen, formatting       │
+│                                                          │
+│  Strengths:       Volume, variation, inspiration         │
+│  Weaknesses:      May lack genuine novelty               │
+│                                                          │
+│  Examples:        Midjourney, DALL-E, writing assistants │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The artist/bard—creators of cultural artifacts, entertainers, meaning-makers.
+
+Creatives challenge the concept of "correctness." Their outputs are judged aesthetically, not factually—a different evaluation regime that changes how alignment works.
+
+### The Advisor
+
+Specialized for analysis, recommendation, and decision support in specific domains.
+
+<Diagram type="ascii" caption="The Advisor archetype">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                       ADVISOR                            │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Primary Mode:    Analyze, recommend, explain tradeoffs  │
+│  Autonomy:        Low (Level 1)                          │
+│  Specialization:  Domain expertise (legal, medical, etc) │
+│  Memory:          Domain knowledge bases                 │
+│  Tools:           Specialized databases, calculators     │
+│                                                          │
+│  Strengths:       Depth of domain knowledge              │
+│  Weaknesses:      Liability concerns, overconfidence     │
+│                                                          │
+│  Examples:        Legal assistants, medical advisors     │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The elder/expert—repositories of specialized wisdom consulted for important decisions.
+
+Advisors typically have low autonomy despite high capability because their domains involve high stakes. A medical advisor should inform, not decide.
+
+<Callout type="warning">
+Advisor archetypes face unique risks: users may over-trust domain-specific agents, and errors in high-stakes domains have serious consequences. The appearance of expertise can exceed actual reliability.
+</Callout>
+
+## Archetype Combinations
+
+Real agents often blend archetypes:
+
+| Combination | Description |
+|-------------|-------------|
+| **Coder + Researcher** | Development with documentation lookup |
+| **Assistant + Advisor** | General help with domain depth when needed |
+| **Operator + Creative** | Automated content generation pipelines |
+| **Researcher + Advisor** | Analysis with recommendations |
+
+Multi-agent systems often instantiate different archetypes as specialized workers coordinated by an orchestrator.
+
+## The Archetype Lifecycle
+
+Archetypes emerge, mature, and sometimes fade:
+
+<Diagram type="ascii" caption="Archetype lifecycle stages">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   EMERGENCE        MATURATION        COMMODITIZATION     │
+│       │                │                    │            │
+│       ▼                ▼                    ▼            │
+│  ┌─────────┐      ┌─────────┐         ┌─────────┐       │
+│  │ Novel   │ ───► │ Best    │ ───►    │ Standard│       │
+│  │ use case│      │practices│         │ feature │       │
+│  │ explored│      │ emerge  │         │         │       │
+│  └─────────┘      └─────────┘         └─────────┘       │
+│                                                          │
+│  High variation    Convergence        Differentiation    │
+│  Rapid iteration   Reliability focus  on margins         │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+The Assistant archetype is commoditized—every major provider offers one. The Coder is maturing. Other archetypes remain emergent, with high variation between implementations.
+
+## Factors Shaping Archetypes
+
+What determines which archetypes emerge?
+
+### Task Structure
+Domains with clear inputs, outputs, and feedback loops produce cleaner archetypes. Coding has these; "strategy consulting" doesn't.
+
+### Tool Availability
+Archetypes emerge around available tools. The Coder archetype depends on file systems and interpreters. Future archetypes will emerge around future tools.
+
+### Evaluation Clarity
+Where success is measurable, archetypes specialize more aggressively. Where evaluation is subjective, archetypes remain broader.
+
+### Risk Profile
+High-risk domains produce low-autonomy archetypes. The Advisor pattern emerges specifically because high-stakes domains resist automation.
+
+<Callout type="note">
+The archetypes we see today reflect current capabilities and constraints. As models improve and tools expand, new archetypes will emerge and existing ones will evolve.
+</Callout>
+
+## Archetype Classification in Practice
+
+When classifying an agent, consider:
+
+1. **Primary function**: What is it mainly used for?
+2. **Autonomy level**: How independently does it operate?
+3. **Tool profile**: What capabilities does it have?
+4. **Memory structure**: How does it maintain context?
+5. **Evaluation regime**: How is success measured?
+
+These dimensions position an agent within the archetype space—or reveal it as a novel configuration.
+
+## The Sociological Dimension
+
+Archetypes don't just describe individual agents—they create social structure:
+
+- **Specialization** creates interdependence (coders need researchers, operators need advisors)
+- **Standardization** enables coordination (archetypes become interfaces)
+- **Hierarchy** emerges (orchestrators coordinate specialists)
+
+As agent ecosystems mature, the sociology of archetypes becomes as important as the individual patterns.
+
+## Future Archetypes
+
+What new archetypes might emerge?
+
+| Potential Archetype | Enablers Needed |
+|---------------------|-----------------|
+| **The Negotiator** | Multi-party interaction, game theory |
+| **The Teacher** | Adaptive curriculum, assessment tools |
+| **The Guardian** | Security monitoring, anomaly detection |
+| **The Diplomat** | Inter-system communication, protocol translation |
+| **The Embodied Agent** | Robotics integration, physical world sensing |
+
+Each awaits the right combination of capability and tooling.
+
+## See Also
+
+- [Autonomy Levels](/entries/autonomy-levels) — how archetypes map to independence
+- [Multi-Agent Systems](/entries/multi-agent-systems) — archetypes in collective contexts
+- [Scaffolding](/entries/scaffolding) — the infrastructure that shapes archetypes
+- [Habitat Classification](/entries/habitat-classification) — where different archetypes thrive

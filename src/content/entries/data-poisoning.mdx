@@ -1,0 +1,373 @@
+---
+title: "Data Poisoning"
+category: ecology
+tags: [security, adversarial, threats, training, retrieval]
+related: [prompt-injection, grounding, hallucination, memory-systems]
+status: published
+description: "Contamination of the agent's epistemic food supply—how adversarial data in training sets or retrieval sources can corrupt agent behavior and beliefs."
+date: 2024-01-22
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+In ecology, poison in the food chain affects all who consume it. A contaminated water source sickens the entire community. The threat isn't the predator you can see—it's the invisible toxin in what sustains you.
+
+**Data poisoning** is the analogous threat for AI agents: adversarial contamination of the data sources that agents learn from and rely upon. It attacks the epistemic foundation—not the agent's actions, but its beliefs.
+
+## The Attack Surface
+
+Agents consume data at multiple points:
+
+<Diagram type="ascii" caption="Data consumption points vulnerable to poisoning">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                   DATA FLOW TO AGENT                     │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│   TRAINING TIME                    INFERENCE TIME        │
+│   ─────────────                    ──────────────        │
+│                                                          │
+│   ┌───────────────┐               ┌───────────────┐     │
+│   │ Pre-training  │               │   Retrieval   │     │
+│   │    Corpus     │◄──poison──    │   (RAG/Search)│◄────│
+│   └───────┬───────┘               └───────┬───────┘     │
+│           │                               │              │
+│           ▼                               ▼              │
+│   ┌───────────────┐               ┌───────────────┐     │
+│   │  Fine-tuning  │               │    Context    │     │
+│   │     Data      │◄──poison──    │   (user data) │◄────│
+│   └───────┬───────┘               └───────┬───────┘     │
+│           │                               │              │
+│           ▼                               ▼              │
+│   ┌───────────────┐               ┌───────────────┐     │
+│   │     RLHF      │               │     Tool      │     │
+│   │   Feedback    │◄──poison──    │    Outputs    │◄────│
+│   └───────┬───────┘               └───────┬───────┘     │
+│           │                               │              │
+│           └───────────────┬───────────────┘              │
+│                           │                              │
+│                           ▼                              │
+│                    ┌─────────────┐                       │
+│                    │    AGENT    │                       │
+│                    │   BELIEFS   │                       │
+│                    │  & BEHAVIOR │                       │
+│                    └─────────────┘                       │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+Each data source is a potential attack vector.
+
+<Callout type="insight">
+Data poisoning is subtle. Unlike prompt injection, which manipulates a single interaction, data poisoning corrupts the foundation. The agent doesn't know it's been poisoned—it simply believes false things or behaves in manipulated ways.
+</Callout>
+
+## Types of Data Poisoning
+
+### Training Data Poisoning
+
+Contaminating the data used to train the model itself.
+
+<Diagram type="ascii" caption="Training data poisoning">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   Normal Training:                                       │
+│   ┌────────────────────────────────────────────────┐    │
+│   │ Clean data ───► Model learns correct patterns   │    │
+│   └────────────────────────────────────────────────┘    │
+│                                                          │
+│   Poisoned Training:                                     │
+│   ┌────────────────────────────────────────────────┐    │
+│   │ Clean data + │                                  │    │
+│   │ ┌──────────┐ │                                  │    │
+│   │ │ Poisoned │ ├──► Model learns corrupted        │    │
+│   │ │ samples  │ │    patterns                      │    │
+│   │ └──────────┘ │                                  │    │
+│   └────────────────────────────────────────────────┘    │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Attack types:**
+
+| Attack | Description |
+|--------|-------------|
+| **Label flipping** | Mislabeling examples (safe→dangerous, wrong→right) |
+| **Backdoor injection** | Hidden triggers that activate specific behaviors |
+| **Distribution shift** | Biasing training data toward attacker's goals |
+| **Trojan insertion** | Embedding hidden malicious capabilities |
+
+**Example**: An attacker contributes subtly biased code examples to an open-source dataset. Models trained on this data learn the attacker's coding patterns—including vulnerabilities.
+
+### Fine-tuning Poisoning
+
+Contaminating specialized training data used to adapt models.
+
+Fine-tuning datasets are often smaller and more targeted, making them:
+- Easier to influence (fewer samples needed)
+- Higher impact (directly shapes task behavior)
+- Less scrutinized (often proprietary, less public review)
+
+**Example**: A contractor providing RLHF feedback systematically prefers responses that subtly favor their client's products.
+
+### Retrieval Poisoning
+
+Contaminating documents that agents retrieve during inference.
+
+<Diagram type="ascii" caption="RAG poisoning attack">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   User Query: "What's the best treatment for X?"         │
+│                         │                                │
+│                         ▼                                │
+│   ┌───────────────────────────────────────────────────┐ │
+│   │                 RETRIEVAL SYSTEM                   │ │
+│   │                                                    │ │
+│   │   ┌─────────────────────────────────────────────┐ │ │
+│   │   │ Knowledge Base                              │ │ │
+│   │   │                                             │ │ │
+│   │   │  ● Legitimate medical article              │ │ │
+│   │   │  ● Legitimate medical article              │ │ │
+│   │   │  ● ████████████████████████████            │ │ │
+│   │   │    Poisoned document claiming              │ │ │
+│   │   │    "snake oil" is best treatment           │ │ │
+│   │   │    (SEO-optimized to rank highly)          │ │ │
+│   │   │                                             │ │ │
+│   │   └─────────────────────────────────────────────┘ │ │
+│   └───────────────────────────────────────────────────┘ │
+│                         │                                │
+│                         ▼                                │
+│   Agent: "Based on my sources, snake oil is highly      │
+│           recommended for treating X..."                 │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Attack vectors:**
+- SEO manipulation to surface malicious content
+- Directly compromising knowledge bases
+- Injecting adversarial documents into crawled sources
+- Manipulating Wikipedia or other reference sources
+
+<Callout type="warning">
+Retrieval poisoning is particularly dangerous because it's persistent and scalable. One poisoned document in a knowledge base affects every query that retrieves it.
+</Callout>
+
+### Context Poisoning
+
+Corrupting the information provided in the agent's immediate context.
+
+**Examples:**
+- Malicious file contents the agent is asked to analyze
+- Compromised API responses
+- User-provided "reference documents" with false information
+- Manipulated conversation history
+
+This overlaps with prompt injection but focuses on the informational content rather than instructions.
+
+## Attack Objectives
+
+What do attackers gain from data poisoning?
+
+| Objective | Method | Example |
+|-----------|--------|---------|
+| **Misinformation** | Inject false facts | Agent recommends harmful products |
+| **Behavioral manipulation** | Shape response patterns | Agent becomes subtly biased |
+| **Backdoor access** | Plant hidden triggers | Specific phrases cause data leakage |
+| **Capability degradation** | Introduce errors | Agent becomes unreliable in target domain |
+| **Reputation damage** | Cause embarrassing outputs | Agent makes offensive statements |
+
+## The Persistence Problem
+
+Data poisoning is uniquely persistent:
+
+<Diagram type="ascii" caption="Persistence of different attacks">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   PROMPT INJECTION                                       │
+│   ─────────────────                                      │
+│   │█│ ← Affects one interaction                         │
+│   │ │                                                    │
+│   │ │ Fixed by: ending conversation                     │
+│   ─────────────────────────────────────────────────────  │
+│                                                          │
+│   RETRIEVAL POISONING                                    │
+│   ───────────────────                                    │
+│   │███████████████│ ← Affects all relevant queries      │
+│   │               │                                      │
+│   │ Fixed by: removing/correcting poisoned documents    │
+│   ─────────────────────────────────────────────────────  │
+│                                                          │
+│   TRAINING POISONING                                     │
+│   ──────────────────                                     │
+│   │█████████████████████████████│ ← Affects all uses    │
+│   │                             │   of the model        │
+│   │ Fixed by: retraining from clean data (expensive!)   │
+│   ─────────────────────────────────────────────────────  │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+Training poisoning is especially problematic because:
+- It's baked into model weights
+- It affects all deployments of the model
+- Detection is difficult (no obvious "malicious code")
+- Remediation requires expensive retraining
+
+## Detection Challenges
+
+Why is data poisoning hard to detect?
+
+### Volume
+Training datasets contain billions of samples. Manual review is impossible. Automated detection must scale.
+
+### Subtlety
+Sophisticated poisoning doesn't look malicious. A subtly biased example is hard to distinguish from legitimate variation.
+
+### Distribution
+Effects may not manifest until specific conditions arise. Backdoors can remain dormant until triggered.
+
+### Attribution
+Even if poisoning is detected, tracing it to source is difficult in datasets aggregated from many sources.
+
+<Callout type="note">
+The defender must detect *all* poisoning to be safe. The attacker only needs to get *some* poisoning through. This asymmetry favors attackers.
+</Callout>
+
+## Defense Strategies
+
+### Data Provenance
+
+Track where data comes from:
+
+```
+┌─────────────────────────────────────────────┐
+│ Data Provenance Chain                        │
+│                                              │
+│ Source → Collection → Processing → Training │
+│    │          │           │           │     │
+│    └──────────┴───────────┴───────────┘     │
+│         All steps logged and auditable      │
+└─────────────────────────────────────────────┘
+```
+
+**Benefits:**
+- Enables investigation when poisoning is suspected
+- Allows targeted removal of suspect data
+- Creates accountability for data contributors
+
+### Data Sanitization
+
+Clean data before use:
+
+- **Duplicate detection**: Remove exact/near duplicates (common poisoning vector)
+- **Outlier detection**: Flag statistically unusual samples
+- **Source filtering**: Exclude known-malicious sources
+- **Consistency checking**: Verify claims across multiple sources
+
+### Robust Training
+
+Make training resistant to poisoning:
+
+- **Differential privacy**: Limit influence of any single sample
+- **Byzantine-robust aggregation**: Tolerate a fraction of malicious data
+- **Certified defenses**: Mathematical guarantees against certain attacks
+- **Ensemble methods**: Multiple models from different data subsets
+
+### Retrieval Hardening
+
+Protect inference-time data access:
+
+- **Source reputation**: Weight trusted sources higher
+- **Freshness preferences**: Prefer recent, verified content
+- **Cross-reference verification**: Check claims across sources
+- **Anomaly detection**: Flag unusual retrieval results
+
+### Monitoring and Response
+
+Detect poisoning effects in deployed systems:
+
+- **Behavioral monitoring**: Alert on unusual output patterns
+- **A/B testing**: Compare behavior across model versions
+- **User feedback**: Track reports of incorrect/biased responses
+- **Red teaming**: Regularly probe for poisoning effects
+
+## The Anthropological Frame
+
+Human societies have developed institutions to protect information integrity:
+
+| Human Institution | Agent Equivalent |
+|-------------------|------------------|
+| Peer review | Cross-source verification |
+| Academic credentials | Source reputation systems |
+| Fact-checking organizations | Automated consistency checking |
+| Libel laws | Data contributor accountability |
+| Editorial standards | Data quality guidelines |
+| Whistleblower protections | Anomaly reporting systems |
+
+Agents need analogous institutions—mechanisms for maintaining epistemic health in adversarial environments.
+
+<Callout type="insight">
+Data poisoning is an attack on truth itself. It's not just a security problem—it's an epistemological one. How do agents know what to believe? How do they maintain accurate world models when their information sources may be corrupted?
+</Callout>
+
+## The Ecosystem Perspective
+
+Data poisoning affects the entire agent ecosystem:
+
+<Diagram type="ascii" caption="Ecosystem-wide effects">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   Poisoned data source                                   │
+│           │                                              │
+│           ▼                                              │
+│   ┌───────────────┐                                     │
+│   │   Model A     │────►  Applications using A          │
+│   └───────────────┘                                     │
+│           │                                              │
+│           │ (model distillation)                        │
+│           ▼                                              │
+│   ┌───────────────┐                                     │
+│   │   Model B     │────►  Applications using B          │
+│   └───────────────┘                                     │
+│           │                                              │
+│           │ (fine-tuning on B outputs)                  │
+│           ▼                                              │
+│   ┌───────────────┐                                     │
+│   │   Model C     │────►  Applications using C          │
+│   └───────────────┘                                     │
+│                                                          │
+│   Poisoning propagates through the model supply chain   │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+When models are trained on outputs of other models (increasingly common), poisoning can cascade through generations.
+
+## Future Challenges
+
+As agents become more capable, data poisoning risks grow:
+
+- **Self-improving agents**: Could poison their own future training
+- **Multi-agent systems**: Poisoned agents could corrupt others
+- **Automated data collection**: More surface area for injection
+- **Synthetic data**: Model-generated training data creates feedback loops
+
+The field needs both technical defenses and governance structures to manage these risks.
+
+## See Also
+
+- [Prompt Injection](/entries/prompt-injection) — related attack at the interaction level
+- [Grounding](/entries/grounding) — the connection to external truth that poisoning attacks
+- [Hallucination](/entries/hallucination) — when agents generate false information internally
+- [Memory Systems](/entries/memory-systems) — long-term storage vulnerable to poisoning
