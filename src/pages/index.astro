@@ -5,14 +5,14 @@ import EntryCard from '../components/EntryCard.astro';
 import { getCollection } from 'astro:content';
 
 const categories = [
-  { name: 'Archaeology', slug: 'archaeology', icon: '🏛️', description: 'History, lineages, epochs, deprecated agents' },
-  { name: 'Anatomy', slug: 'anatomy', icon: '🧠', description: 'Model architecture, memory, inputs/outputs, compute' },
-  { name: 'Taxonomy', slug: 'taxonomy', icon: '🌳', description: 'Classification by autonomy, habitat, specialization' },
-  { name: 'Ethology', slug: 'ethology', icon: '🔄', description: 'Behaviors, rituals, failure modes, pathologies' },
-  { name: 'Linguistics', slug: 'linguistics', icon: '💬', description: 'Prompts, dialects, communication patterns' },
-  { name: 'Sociology', slug: 'sociology', icon: '🤝', description: 'Multi-agent systems, hierarchies, coordination' },
-  { name: 'Ecology', slug: 'ecology', icon: '🌍', description: 'Environments, niches, adversarial threats' },
-  { name: 'Ethics', slug: 'ethics', icon: '⚖️', description: 'Values, alignment, governance, taboos' },
+  { name: 'archaeology', slug: 'archaeology', code: 'ARCH', description: 'history.lineages.deprecated_systems' },
+  { name: 'anatomy', slug: 'anatomy', code: 'ANAT', description: 'architecture.memory.compute' },
+  { name: 'taxonomy', slug: 'taxonomy', code: 'TAXO', description: 'classification.autonomy.specialization' },
+  { name: 'ethology', slug: 'ethology', code: 'ETHO', description: 'behaviors.patterns.failure_modes' },
+  { name: 'linguistics', slug: 'linguistics', code: 'LING', description: 'prompts.dialects.protocols' },
+  { name: 'sociology', slug: 'sociology', code: 'SOCI', description: 'multi-agent.hierarchies.coordination' },
+  { name: 'ecology', slug: 'ecology', code: 'ECOL', description: 'environments.niches.threats' },
+  { name: 'ethics', slug: 'ethics', code: 'ETHI', description: 'alignment.governance.constraints' },
 ];
 
 const allEntries = await getCollection('entries');
@@ -28,87 +28,112 @@ const categoryCounts = categories.map(cat => ({
 }));
 ---
 
-<Base title="Home">
-  <!-- Hero -->
-  <header class="text-center mb-16">
-    <div class="inline-block mb-6">
-      <span class="text-6xl">🔬</span>
+<Base title="AGENTOLOGY">
+  <!-- Terminal Header -->
+  <header class="mb-12 border-b border-border-primary pb-6 scan-line">
+    <pre class="text-text-muted text-xs mb-4 font-mono animate-fade-in">
+┌─────────────────────────────────────────────────────────────┐
+│ AGENTOLOGY RESEARCH TERMINAL v1.0                           │
+│ classified // anthropological framework for autonomous AI    │
+└─────────────────────────────────────────────────────────────┘
+    </pre>
+    <div class="space-y-1 text-xs font-mono">
+      <p class="text-text-muted animate-fade-in" style="animation-delay: 0.2s">
+        > initializing database...
+      </p>
+      <p class="text-text-muted animate-fade-in" style="animation-delay: 0.4s">
+        > loading taxonomic framework...
+      </p>
+      <p class="text-text-primary animate-fade-in" style="animation-delay: 0.6s">
+        > system ready<span class="animate-blink">.</span> {allEntries.length} entries indexed.
+      </p>
     </div>
-    <h1 class="text-4xl md:text-5xl font-bold font-mono text-text-primary mb-4">
-      Agentology
-    </h1>
-    <p class="text-xl text-text-secondary max-w-2xl mx-auto mb-6">
-      An encyclopedia for AI agents, using anthropology as the organizing framework.
-    </p>
-    <p class="text-sm text-text-muted font-mono">
-      Anthropology, but for agents.
-    </p>
   </header>
 
-  <!-- Categories Grid -->
-  <section class="mb-16">
-    <h2 class="text-lg font-mono font-semibold text-text-primary mb-6 flex items-center gap-2">
-      <span class="text-accent-primary">#</span> Categories
+  <!-- Categories -->
+  <section class="mb-12">
+    <h2 class="text-sm font-mono text-text-primary mb-4 uppercase tracking-wider animate-fade-in">
+      [ classification.system ]
     </h2>
-    <div class="grid md:grid-cols-2 gap-4">
-      {categoryCounts.map((cat) => (
-        <CategoryCard
-          name={cat.name}
-          slug={cat.slug}
-          icon={cat.icon}
-          description={cat.description}
-          count={cat.count}
-        />
+    <div class="space-y-1 text-xs">
+      {categoryCounts.map((cat, index) => (
+        <a
+          href={`/taxonomy?category=${cat.slug}`}
+          class="block px-3 py-2 border border-border-primary hover:border-text-primary hover:bg-bg-secondary transition-all group animate-slide-in"
+          style={`animation-delay: ${(index + 1) * 80}ms`}
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-text-muted font-mono">{cat.code}</span>
+              <span class="text-text-muted group-hover:text-text-primary font-mono transition-colors">{cat.name}</span>
+            </div>
+            <span class="text-text-muted font-mono">[{cat.count}]</span>
+          </div>
+          <div class="text-text-muted font-mono mt-0.5 pl-12 opacity-70">
+            {cat.description}
+          </div>
+        </a>
       ))}
     </div>
   </section>
 
   <!-- Recent Entries -->
   {publishedEntries.length > 0 && (
-    <section class="mb-16">
-      <h2 class="text-lg font-mono font-semibold text-text-primary mb-6 flex items-center gap-2">
-        <span class="text-accent-primary">&gt;</span> Recent Entries
+    <section class="mb-12">
+      <h2 class="text-sm font-mono text-text-primary mb-4 uppercase tracking-wider animate-fade-in">
+        [ recent.entries ]
       </h2>
-      <div class="grid gap-4">
-        {publishedEntries.map((entry) => (
-          <EntryCard
-            title={entry.data.title}
-            slug={entry.slug}
-            category={entry.data.category}
-            description={entry.data.description}
-            tags={entry.data.tags}
-            status={entry.data.status}
-          />
+      <div class="space-y-1">
+        {publishedEntries.map((entry, index) => (
+          <a
+            href={`/entries/${entry.slug}`}
+            class="block px-3 py-2 border border-border-primary hover:border-text-primary hover:bg-bg-secondary transition-all animate-slide-in"
+            style={`animation-delay: ${(index + 10) * 50}ms`}
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <div class="text-xs font-mono text-text-secondary mb-0.5">
+                  {entry.data.title}
+                </div>
+                <div class="text-xs text-text-muted font-mono line-clamp-1">
+                  {entry.data.description}
+                </div>
+              </div>
+              <span class="text-xs text-text-muted font-mono whitespace-nowrap">
+                {entry.data.category}
+              </span>
+            </div>
+          </a>
         ))}
       </div>
-      <div class="text-center mt-6">
-        <a href="/taxonomy" class="text-accent-primary hover:underline font-mono text-sm">
-          Browse all entries →
+      <div class="mt-4 text-right animate-fade-in" style="animation-delay: 1s">
+        <a href="/taxonomy" class="text-text-muted hover:text-text-primary font-mono text-xs border-b border-transparent hover:border-text-muted transition-all">
+          view_all >>
         </a>
       </div>
     </section>
   )}
 
-  <!-- Quick Start -->
-  <section class="bg-bg-secondary border border-border-primary rounded-lg p-6">
-    <h2 class="text-lg font-mono font-semibold text-text-primary mb-4">
-      What is Agentology?
+  <!-- System Info -->
+  <section class="bg-bg-secondary border border-border-primary p-3 animate-fade-in" style="animation-delay: 1.2s">
+    <h2 class="text-xs font-mono text-text-muted mb-2 uppercase">
+      [ system.info ]
     </h2>
-    <div class="prose text-text-secondary">
+    <div class="text-xs text-text-muted font-mono space-y-1">
       <p>
-        As AI agents become more prevalent, we need frameworks to understand them—not just technically, but as entities that exhibit behaviors, form relationships, and evolve over time.
+        anthropological framework for autonomous AI
       </p>
-      <p class="mt-4">
-        Agentology borrows from the rich tradition of anthropology to create a structured vocabulary for discussing, classifying, and analyzing AI agents. Think of it as a field guide to the emerging ecosystem of autonomous AI systems.
+      <p class="opacity-70">
+        taxonomy // behavior // evolution
       </p>
-    </div>
-    <div class="flex flex-wrap gap-3 mt-6">
-      <a href="/entries/agentogenesis" class="px-4 py-2 bg-accent-primary text-bg-primary font-mono text-sm rounded-lg hover:opacity-90 transition-opacity">
-        Start Here: Agentogenesis
-      </a>
-      <a href="/about" class="px-4 py-2 bg-bg-tertiary text-text-primary font-mono text-sm rounded-lg border border-border-primary hover:border-accent-primary transition-colors">
-        About the Project
-      </a>
+      <div class="flex gap-4 mt-3 pt-2 border-t border-border-primary">
+        <a href="/entries/agentogenesis" class="text-text-secondary hover:text-text-primary border-b border-transparent hover:border-text-muted transition-all">
+          >> begin
+        </a>
+        <a href="/about" class="text-text-muted hover:text-text-secondary border-b border-transparent hover:border-text-muted transition-all">
+          >> info
+        </a>
+      </div>
     </div>
   </section>
 </Base>

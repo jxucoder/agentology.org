@@ -2,32 +2,30 @@
 interface Props {
   name: string;
   slug: string;
-  icon: string;
+  code: string;
   description: string;
   count?: number;
 }
 
-const { name, slug, icon, description, count = 0 } = Astro.props;
+const { name, slug, code, description, count = 0 } = Astro.props;
 ---
 
 <a
   href={`/taxonomy?category=${slug}`}
-  class={`category-card block p-5 bg-bg-secondary border border-border-primary rounded-lg hover:border-accent-primary transition-all group`}
+  class={`category-card block p-3 bg-bg-secondary border border-border-primary hover:border-text-primary transition-all group`}
 >
-  <div class="flex items-start gap-4">
-    <span class="text-3xl">{icon}</span>
-    <div class="flex-1">
-      <div class="flex items-center justify-between">
-        <h3 class="font-mono font-bold text-text-primary group-hover:text-accent-primary transition-colors">
-          {name}
-        </h3>
-        {count > 0 && (
-          <span class="text-xs font-mono text-text-muted bg-bg-tertiary px-2 py-0.5 rounded">
-            {count}
-          </span>
-        )}
-      </div>
-      <p class="text-sm text-text-secondary mt-1">{description}</p>
+  <div class="flex items-start justify-between mb-1">
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-mono text-text-muted">[{code}]</span>
+      <h3 class="font-mono font-semibold text-sm text-text-primary group-hover:text-accent-primary transition-colors">
+        {name}
+      </h3>
     </div>
+    {count > 0 && (
+      <span class="text-xs font-mono text-text-muted">
+        {count}
+      </span>
+    )}
   </div>
+  <p class="text-xs text-text-muted font-mono pl-12">{description}</p>
 </a>

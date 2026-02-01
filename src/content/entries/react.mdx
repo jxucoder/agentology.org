@@ -31,29 +31,21 @@ Reasoning helps the agent plan actions and interpret observations. Acting provid
 
 The pattern follows a simple structure:
 
-<Diagram type="ascii" caption="The ReAct cycle">
-{`
-┌──────────────────────────────────────────────────────┐
-│                     ReAct LOOP                       │
-├──────────────────────────────────────────────────────┤
-│                                                      │
-│   Thought → "I need to find the population of       │
-│              Tokyo to answer this question"          │
-│       │                                              │
-│       ▼                                              │
-│   Action → search("Tokyo population 2024")           │
-│       │                                              │
-│       ▼                                              │
-│   Observation → "Tokyo has a population of           │
-│                  approximately 13.96 million"        │
-│       │                                              │
-│       ▼                                              │
-│   Thought → "Now I have the answer, I can           │
-│              formulate my response"                  │
-│       │                                              │
-│       └──────────────→ (continue or finish)          │
-│                                                      │
-└──────────────────────────────────────────────────────┘
+<Diagram type="mermaid" caption="thought → action → observation loop">
+{`graph TD
+    T1["Thought<br/>need population data for Tokyo"] --> A1["Action<br/>search('Tokyo population 2024')"]
+    A1 --> O1["Observation<br/>Tokyo: 13.96 million"]
+    O1 --> T2["Thought<br/>have answer, can respond now"]
+    T2 --> D{continue?}
+    D -.yes.-> T1
+    D -.no.-> F[finish]
+
+    style T1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style A1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style O1 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style T2 fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style F fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
 `}
 </Diagram>
 

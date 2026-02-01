@@ -3,30 +3,35 @@ interface Props {
   src?: string;
   alt?: string;
   caption?: string;
-  type?: 'image' | 'ascii';
+  type?: 'image' | 'ascii' | 'mermaid';
 }
 
 const { src, alt = 'Diagram', caption, type = 'image' } = Astro.props;
+const diagramId = `diagram-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
-<figure class="diagram my-8">
+<figure class="diagram my-6 animate-fade-in">
   {type === 'image' && src ? (
-    <div class="bg-bg-secondary border border-border-primary rounded-lg p-4 overflow-x-auto">
+    <div class="bg-bg-secondary border border-border-primary p-4 overflow-x-auto">
       <img
         src={src}
         alt={alt}
-        class="max-w-full h-auto mx-auto rounded"
+        class="max-w-full h-auto mx-auto"
         loading="lazy"
       />
     </div>
+  ) : type === 'mermaid' ? (
+    <div class="bg-bg-secondary border border-border-primary p-4 overflow-x-auto mermaid-container">
+      <pre id={diagramId} class="mermaid text-xs"><slot /></pre>
+    </div>
   ) : (
-    <div class="bg-bg-secondary border border-border-primary rounded-lg p-6 overflow-x-auto">
-      <pre class="font-mono text-sm text-text-primary whitespace-pre leading-relaxed"><slot /></pre>
+    <div class="bg-bg-secondary border border-border-primary p-4 overflow-x-auto">
+      <pre class="font-mono text-xs text-text-primary whitespace-pre leading-tight"><slot /></pre>
     </div>
   )}
 
   {caption && (
-    <figcaption class="text-center text-sm text-text-muted mt-3 italic">
+    <figcaption class="text-center text-xs text-text-muted mt-2 font-mono">
       {caption}
     </figcaption>
   )}

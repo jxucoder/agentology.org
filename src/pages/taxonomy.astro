@@ -1,98 +1,72 @@
 ---
 import Base from '../layouts/Base.astro';
 import EntryCard from '../components/EntryCard.astro';
-import CategoryCard from '../components/CategoryCard.astro';
 import { getCollection } from 'astro:content';
 
 const categories = [
-  { name: 'Archaeology', slug: 'archaeology', icon: '🏛️', description: 'History, lineages, epochs, deprecated agents' },
-  { name: 'Anatomy', slug: 'anatomy', icon: '🧠', description: 'Model architecture, memory, inputs/outputs, compute' },
-  { name: 'Taxonomy', slug: 'taxonomy', icon: '🌳', description: 'Classification by autonomy, habitat, specialization' },
-  { name: 'Ethology', slug: 'ethology', icon: '🔄', description: 'Behaviors, rituals, failure modes, pathologies' },
-  { name: 'Linguistics', slug: 'linguistics', icon: '💬', description: 'Prompts, dialects, communication patterns' },
-  { name: 'Sociology', slug: 'sociology', icon: '🤝', description: 'Multi-agent systems, hierarchies, coordination' },
-  { name: 'Ecology', slug: 'ecology', icon: '🌍', description: 'Environments, niches, adversarial threats' },
-  { name: 'Ethics', slug: 'ethics', icon: '⚖️', description: 'Values, alignment, governance, taboos' },
+  { name: 'archaeology', slug: 'archaeology', code: 'ARCH' },
+  { name: 'anatomy', slug: 'anatomy', code: 'ANAT' },
+  { name: 'taxonomy', slug: 'taxonomy', code: 'TAXO' },
+  { name: 'ethology', slug: 'ethology', code: 'ETHO' },
+  { name: 'linguistics', slug: 'linguistics', code: 'LING' },
+  { name: 'sociology', slug: 'sociology', code: 'SOCI' },
+  { name: 'ecology', slug: 'ecology', code: 'ECOL' },
+  { name: 'ethics', slug: 'ethics', code: 'ETHI' },
 ];
 
 const allEntries = await getCollection('entries');
 
-// Get unique tags
-const allTags = [...new Set(allEntries.flatMap(e => e.data.tags))].sort();
-
-// Count entries per category
 const categoryCounts = categories.map(cat => ({
   ...cat,
   count: allEntries.filter(e => e.data.category === cat.slug).length
 }));
 ---
 
-<Base title="Browse">
-  <header class="mb-8">
-    <h1 class="text-3xl font-bold font-mono text-text-primary mb-2">
-      Browse Entries
-    </h1>
-    <p class="text-text-secondary">
-      Explore the encyclopedia by category or tag.
-    </p>
+<Base title="BROWSE">
+  <header class="mb-6 pb-3 border-b border-border-primary">
+    <pre class="text-xs text-text-muted mb-2">
+> query: list_all_entries
+> status: {allEntries.length} records found
+    </pre>
   </header>
 
-  <!-- Category Filter -->
-  <section class="mb-8">
-    <h2 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-4">Categories</h2>
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+  <section class="mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
       {categoryCounts.map((cat) => (
         <a
           href={`#${cat.slug}`}
-          class={`category-filter flex items-center gap-2 p-3 bg-bg-secondary border border-border-primary rounded-lg hover:border-accent-primary transition-colors`}
+          class="category-filter p-2 bg-bg-secondary border border-border-primary hover:border-text-primary transition-all animate-fade-in"
           data-category={cat.slug}
         >
-          <span>{cat.icon}</span>
-          <span class="font-mono text-sm text-text-primary">{cat.name}</span>
-          <span class="ml-auto text-xs text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded">{cat.count}</span>
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-text-muted">[{cat.code}]</span>
+            <span class="text-text-muted">{cat.count}</span>
+          </div>
+          <div class="font-mono text-text-secondary mt-1">{cat.name}</div>
         </a>
       ))}
     </div>
   </section>
 
-  <!-- Tags -->
-  {allTags.length > 0 && (
-    <section class="mb-8">
-      <h2 class="text-sm font-mono text-text-muted uppercase tracking-wider mb-4">Tags</h2>
-      <div class="flex flex-wrap gap-2">
-        {allTags.map((tag) => (
-          <button
-            class="tag-filter tag"
-            data-tag={tag}
-          >
-            #{tag}
-          </button>
-        ))}
-      </div>
-    </section>
-  )}
-
-  <!-- Entries by Category -->
   {categories.map((cat) => {
     const catEntries = allEntries.filter(e => e.data.category === cat.slug);
     return catEntries.length > 0 && (
-      <section id={cat.slug} class="mb-12 category-section" data-category={cat.slug}>
-        <h2 class="text-xl font-mono font-semibold text-text-primary mb-4 flex items-center gap-2 pb-2 border-b border-border-primary">
-          <span>{cat.icon}</span>
-          {cat.name}
-          <span class="text-sm font-normal text-text-muted">({catEntries.length})</span>
+      <section id={cat.slug} class="mb-8 category-section animate-fade-in" data-category={cat.slug}>
+        <h2 class="text-sm font-mono text-text-primary mb-3 pb-1 border-b border-border-primary flex items-center justify-between">
+          <span>[{cat.code}] {cat.name}</span>
+          <span class="text-text-muted">{catEntries.length}</span>
         </h2>
-        <p class="text-text-secondary text-sm mb-4">{cat.description}</p>
-        <div class="grid gap-3">
-          {catEntries.map((entry) => (
-            <EntryCard
-              title={entry.data.title}
-              slug={entry.slug}
-              category={entry.data.category}
-              description={entry.data.description}
-              tags={entry.data.tags}
-              status={entry.data.status}
-            />
+        <div class="space-y-2">
+          {catEntries.map((entry, index) => (
+            <div style={`animation-delay: ${index * 50}ms`} class="animate-slide-in">
+              <EntryCard
+                title={entry.data.title}
+                slug={entry.slug}
+                category={entry.data.category}
+                description={entry.data.description}
+                status={entry.data.status}
+              />
+            </div>
           ))}
         </div>
       </section>
@@ -101,20 +75,16 @@ const categoryCounts = categories.map(cat => ({
 
   {allEntries.length === 0 && (
     <div class="text-center py-16">
-      <span class="text-4xl mb-4 block">📭</span>
-      <p class="text-text-secondary">No entries yet. Check back soon!</p>
+      <p class="text-text-muted text-xs font-mono">no entries found</p>
     </div>
   )}
 </Base>
 
 <script is:inline>
-  // Client-side filtering
   document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const categoryParam = urlParams.get('category');
-    const tagParam = urlParams.get('tag');
 
-    // Filter by category from URL
     if (categoryParam) {
       const sections = document.querySelectorAll('.category-section');
       sections.forEach(section => {
@@ -122,17 +92,12 @@ const categoryCounts = categories.map(cat => ({
           section.style.display = 'none';
         }
       });
-    }
 
-    // Tag filtering
-    const tagButtons = document.querySelectorAll('.tag-filter');
-    tagButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tag = btn.dataset.tag;
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.set('tag', tag);
-        window.location.href = newUrl.toString();
-      });
-    });
+      // Scroll to category
+      const targetSection = document.getElementById(categoryParam);
+      if (targetSection) {
+        setTimeout(() => targetSection.scrollIntoView({ behavior: 'smooth' }), 100);
+      }
+    }
   });
 </script>

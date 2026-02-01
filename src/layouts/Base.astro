@@ -9,14 +9,14 @@ interface Props {
 const { title, description = 'Agentology — An encyclopedia for AI agents, using anthropology as the organizing framework.' } = Astro.props;
 
 const categories = [
-  { name: 'Archaeology', slug: 'archaeology', icon: '🏛️', description: 'History, lineages, epochs' },
-  { name: 'Anatomy', slug: 'anatomy', icon: '🧠', description: 'Architecture, memory, compute' },
-  { name: 'Taxonomy', slug: 'taxonomy', icon: '🌳', description: 'Classification, species' },
-  { name: 'Ethology', slug: 'ethology', icon: '🔄', description: 'Behaviors, rituals, patterns' },
-  { name: 'Linguistics', slug: 'linguistics', icon: '💬', description: 'Prompts, dialects' },
-  { name: 'Sociology', slug: 'sociology', icon: '🤝', description: 'Multi-agent systems' },
-  { name: 'Ecology', slug: 'ecology', icon: '🌍', description: 'Environments, niches' },
-  { name: 'Ethics', slug: 'ethics', icon: '⚖️', description: 'Values, alignment' },
+  { name: 'archaeology', slug: 'archaeology', code: 'ARCH', description: 'history.lineages.epochs' },
+  { name: 'anatomy', slug: 'anatomy', code: 'ANAT', description: 'architecture.memory.compute' },
+  { name: 'taxonomy', slug: 'taxonomy', code: 'TAXO', description: 'classification.species' },
+  { name: 'ethology', slug: 'ethology', code: 'ETHO', description: 'behaviors.patterns' },
+  { name: 'linguistics', slug: 'linguistics', code: 'LING', description: 'prompts.dialects' },
+  { name: 'sociology', slug: 'sociology', code: 'SOCI', description: 'multi-agent.systems' },
+  { name: 'ecology', slug: 'ecology', code: 'ECOL', description: 'environments.niches' },
+  { name: 'ethics', slug: 'ethics', code: 'ETHI', description: 'values.alignment' },
 ];
 ---
 
@@ -29,22 +29,53 @@ const categories = [
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-    <title>{title} — Agentology</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>{title} — AGENTOLOGY</title>
     <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
     <script src="/pagefind/pagefind-ui.js" is:inline></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'base',
+        themeVariables: {
+          primaryColor: '#00ff00',
+          primaryTextColor: '#cccccc',
+          primaryBorderColor: '#333333',
+          lineColor: '#00ff00',
+          secondaryColor: '#0a0a0a',
+          tertiaryColor: '#1a1a1a',
+          background: '#000000',
+          mainBkg: '#0a0a0a',
+          secondBkg: '#1a1a1a',
+          mainContrastColor: '#00ff00',
+          darkMode: true,
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: '12px'
+        },
+        flowchart: {
+          curve: 'linear',
+          padding: 10
+        }
+      });
+    </script>
   </head>
   <body class="bg-bg-primary min-h-screen">
     <div class="flex">
       <!-- Sidebar -->
-      <aside class="fixed left-0 top-0 h-screen w-64 bg-bg-secondary border-r border-border-primary overflow-y-auto hidden lg:block">
-        <div class="p-6">
+      <aside class="fixed left-0 top-0 h-screen w-56 bg-bg-secondary border-r border-border-primary overflow-y-auto hidden lg:block">
+        <div class="p-4">
           <!-- Logo -->
-          <a href="/" class="block mb-8">
-            <h1 class="text-xl font-bold font-mono text-text-primary">
-              <span class="text-accent-primary">&gt;</span> agentology
-            </h1>
-            <p class="text-xs text-text-muted mt-1">anthropology for agents</p>
+          <a href="/" class="block mb-6 pb-4 border-b border-border-primary scan-line">
+            <pre class="text-xs text-text-primary leading-tight animate-fade-in">
+ █████╗  ██████╗
+██╔══██╗██╔════╝
+███████║██║  ███╗
+██╔══██║██║   ██║
+██║  ██║╚██████╔╝
+╚═╝  ╚═╝ ╚═════╝ </pre>
+            <p class="text-xs text-text-muted mt-2 font-mono">SYSTEM_ID: agentology</p>
+            <p class="text-xs text-text-muted font-mono">STATUS: <span class="text-text-primary animate-blink">█</span> active</p>
           </a>
 
           <!-- Search -->
@@ -53,44 +84,43 @@ const categories = [
           </div>
 
           <!-- Navigation -->
-          <nav class="space-y-6">
+          <nav class="space-y-4">
             <div>
-              <h2 class="text-xs font-mono text-text-muted uppercase tracking-wider mb-3">Navigate</h2>
-              <ul class="space-y-1">
+              <h2 class="text-xs font-mono text-text-muted mb-2">[ NAVIGATE ]</h2>
+              <ul class="space-y-0.5 text-xs">
                 <li>
-                  <a href="/" class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
-                    <span class="text-text-muted">~</span> Home
+                  <a href="/" class="block px-2 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all">
+                    > index
                   </a>
                 </li>
                 <li>
-                  <a href="/taxonomy" class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
-                    <span class="text-text-muted">/</span> Browse
+                  <a href="/taxonomy" class="block px-2 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all">
+                    > browse
                   </a>
                 </li>
                 <li>
-                  <a href="/glossary" class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
-                    <span class="text-text-muted">#</span> Glossary
+                  <a href="/glossary" class="block px-2 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all">
+                    > glossary
                   </a>
                 </li>
                 <li>
-                  <a href="/about" class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors">
-                    <span class="text-text-muted">?</span> About
+                  <a href="/about" class="block px-2 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all">
+                    > about
                   </a>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h2 class="text-xs font-mono text-text-muted uppercase tracking-wider mb-3">Categories</h2>
-              <ul class="space-y-1">
+              <h2 class="text-xs font-mono text-text-muted mb-2">[ CATEGORIES ]</h2>
+              <ul class="space-y-0.5 text-xs">
                 {categories.map((cat) => (
                   <li>
                     <a
                       href={`/taxonomy?category=${cat.slug}`}
-                      class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-lg transition-colors group"
+                      class="block px-2 py-1 text-text-muted hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all"
                     >
-                      <span class="w-5 text-center">{cat.icon}</span>
-                      <span>{cat.name}</span>
+                      <span class="text-text-muted">{cat.code}</span> {cat.name}
                     </a>
                   </li>
                 ))}
@@ -101,38 +131,36 @@ const categories = [
 
         <!-- Footer -->
         <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-border-primary bg-bg-secondary">
-          <p class="text-xs text-text-muted text-center">
-            Built with curiosity
+          <p class="text-[10px] text-text-muted text-center font-mono">
+            v1.0.0 // classified
           </p>
         </div>
       </aside>
 
       <!-- Mobile Header -->
-      <header class="fixed top-0 left-0 right-0 h-14 bg-bg-secondary border-b border-border-primary lg:hidden z-50">
-        <div class="flex items-center justify-between h-full px-4">
-          <a href="/" class="font-mono font-bold text-text-primary">
-            <span class="text-accent-primary">&gt;</span> agentology
+      <header class="fixed top-0 left-0 right-0 bg-bg-secondary border-b border-border-primary lg:hidden z-50">
+        <div class="flex items-center justify-between px-4 py-2">
+          <a href="/" class="font-mono text-sm text-text-primary">
+            AG // agentology
           </a>
           <button id="mobile-menu-btn" class="p-2 text-text-secondary hover:text-text-primary">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            [MENU]
           </button>
         </div>
       </header>
 
       <!-- Mobile Menu Overlay -->
-      <div id="mobile-menu" class="fixed inset-0 bg-bg-primary/95 z-40 hidden lg:hidden">
-        <div class="p-6 pt-20">
-          <nav class="space-y-4">
-            <a href="/" class="block py-2 text-lg text-text-primary">Home</a>
-            <a href="/taxonomy" class="block py-2 text-lg text-text-primary">Browse</a>
-            <a href="/glossary" class="block py-2 text-lg text-text-primary">Glossary</a>
-            <a href="/about" class="block py-2 text-lg text-text-primary">About</a>
-            <hr class="border-border-primary my-4" />
+      <div id="mobile-menu" class="fixed inset-0 bg-bg-primary z-40 hidden lg:hidden">
+        <div class="p-6 pt-16">
+          <nav class="space-y-2 text-sm">
+            <a href="/" class="block py-1 text-text-primary">> index</a>
+            <a href="/taxonomy" class="block py-1 text-text-primary">> browse</a>
+            <a href="/glossary" class="block py-1 text-text-primary">> glossary</a>
+            <a href="/about" class="block py-1 text-text-primary">> about</a>
+            <hr class="border-border-primary my-3" />
             {categories.map((cat) => (
-              <a href={`/taxonomy?category=${cat.slug}`} class="block py-2 text-text-secondary">
-                {cat.icon} {cat.name}
+              <a href={`/taxonomy?category=${cat.slug}`} class="block py-1 text-text-muted">
+                {cat.code} {cat.name}
               </a>
             ))}
           </nav>
@@ -140,8 +168,8 @@ const categories = [
       </div>
 
       <!-- Main Content -->
-      <main class="flex-1 lg:ml-64 min-h-screen pt-14 lg:pt-0">
-        <div class="max-w-4xl mx-auto px-6 py-12">
+      <main class="flex-1 lg:ml-56 min-h-screen pt-14 lg:pt-0">
+        <div class="max-w-4xl mx-auto px-6 py-8">
           <slot />
         </div>
       </main>
