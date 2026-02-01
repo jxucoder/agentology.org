@@ -1,0 +1,388 @@
+---
+title: "Habitat Classification"
+category: taxonomy
+tags: [classification, environments, interfaces, deployment]
+related: [agent-archetypes, scaffolding, autonomy-levels, api-ecosystems]
+status: published
+description: "Where agents live—a taxonomy of deployment environments, from chat interfaces to embedded systems, and how habitat shapes agent behavior."
+date: 2024-01-18
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+In ecology, **habitat** refers to the environment where an organism lives—the physical conditions, resources, and constraints that shape its existence. A fish is adapted to water; a cactus to desert. Habitat determines what's possible.
+
+For AI agents, habitat is the deployment environment: the interface through which they interact, the systems they access, the constraints they operate under. **Habitat classification** provides a taxonomy of these environments.
+
+## Why Habitat Matters
+
+The same underlying model behaves differently across habitats:
+
+- A model in a chat interface is conversational, reactive
+- The same model in an IDE is code-focused, tool-heavy
+- Embedded in a workflow automation, it's procedural, deterministic
+
+<Callout type="insight">
+Habitat doesn't just constrain agents—it shapes them. The interface determines what actions are possible, what feedback is available, and what success looks like. Agents evolve to fit their environment.
+</Callout>
+
+## The Major Habitats
+
+<Diagram type="ascii" caption="Overview of agent habitats">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                    AGENT HABITATS                        │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│   USER-FACING              SYSTEM-EMBEDDED               │
+│   ────────────             ───────────────               │
+│   Chat Interfaces          API Services                  │
+│   IDEs & Editors           Workflow Engines              │
+│   Voice Assistants         Embedded Systems              │
+│   Physical Robots          Background Daemons            │
+│                                                          │
+│   ◄─── Human interaction ───►◄─── Machine interaction ──►│
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+### Chat Interfaces
+
+The most common habitat: conversational interfaces where users type messages and receive responses.
+
+<Diagram type="ascii" caption="Chat interface habitat">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                   CHAT INTERFACE                         │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Interaction:   Turn-based conversation                  │
+│  Feedback:      Immediate (human response)               │
+│  Persistence:   Session-based, sometimes cross-session   │
+│  Tool Access:   Limited, often curated                   │
+│  Autonomy:      Low (human in every loop)                │
+│                                                          │
+│  Constraints:                                            │
+│  - Must be conversational                                │
+│  - Responses expected within seconds                     │
+│  - Context limited to conversation history               │
+│  - Actions require human approval                        │
+│                                                          │
+│  Examples:      ChatGPT, Claude.ai, Gemini               │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Ecological pressures**: Chat habitats select for agents that are responsive, personable, and safe at the cost of depth. The turn-based structure limits complex multi-step operations.
+
+**Anthropological parallel**: The town square—public, accessible, general-purpose interaction space.
+
+### Integrated Development Environments (IDEs)
+
+Code-centric habitats where agents assist with software development.
+
+<Diagram type="ascii" caption="IDE habitat">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                      IDE HABITAT                         │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Interaction:   Inline completion, commands, chat        │
+│  Feedback:      Compile errors, test results, diffs      │
+│  Persistence:   Codebase context, project memory         │
+│  Tool Access:   Rich (files, terminal, git, LSP)         │
+│  Autonomy:      Medium (can edit, needs approval to run) │
+│                                                          │
+│  Constraints:                                            │
+│  - Must produce syntactically valid code                 │
+│  - Changes must be reviewable (diffs)                    │
+│  - Must respect project conventions                      │
+│  - Latency expectations vary by operation                │
+│                                                          │
+│  Examples:      Cursor, VS Code + Copilot, JetBrains AI  │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Ecological pressures**: IDE habitats demand technical precision. Agents that produce buggy code or ignore project patterns are quickly abandoned. The habitat selects for reliability over creativity.
+
+**Anthropological parallel**: The workshop—specialized tools, learned skills, craft standards.
+
+### API Services
+
+Agents exposed as programmatic endpoints, called by other software.
+
+<Diagram type="ascii" caption="API service habitat">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                    API SERVICE                           │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Interaction:   Request/response, structured I/O         │
+│  Feedback:      Success/error codes, downstream metrics  │
+│  Persistence:   Typically stateless                      │
+│  Tool Access:   Defined by API design                    │
+│  Autonomy:      Variable (depends on integration)        │
+│                                                          │
+│  Constraints:                                            │
+│  - Must handle high volume                               │
+│  - Responses must be parseable                           │
+│  - Errors must be graceful                               │
+│  - SLAs for latency and uptime                           │
+│                                                          │
+│  Examples:      OpenAI API, Anthropic API, custom agents │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Ecological pressures**: API habitats are unforgiving. Malformed outputs break downstream systems. High volume demands efficiency. The habitat selects for consistency and reliability.
+
+**Anthropological parallel**: The factory—standardized inputs, standardized outputs, volume production.
+
+<Callout type="note">
+API habitats are unique in that the "user" is often another program. This removes social pressures (no need to be friendly) but adds technical ones (must be precisely formatted).
+</Callout>
+
+### Workflow Engines
+
+Agents embedded in automation pipelines, triggered by events rather than users.
+
+<Diagram type="ascii" caption="Workflow engine habitat">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                   WORKFLOW ENGINE                        │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Interaction:   Event-triggered, step in pipeline        │
+│  Feedback:      Workflow success/failure metrics         │
+│  Persistence:   Workflow state, execution logs           │
+│  Tool Access:   Defined by workflow definition           │
+│  Autonomy:      High within defined scope                │
+│                                                          │
+│  Constraints:                                            │
+│  - Must complete within timeout                          │
+│  - Must handle retries gracefully                        │
+│  - Outputs must match expected schema                    │
+│  - Failures must not break pipeline                      │
+│                                                          │
+│  Examples:      n8n agents, Zapier AI, custom pipelines  │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Ecological pressures**: Workflow habitats demand predictability. An agent that sometimes takes 10x longer, or occasionally produces malformed output, breaks the system. The habitat selects for determinism.
+
+**Anthropological parallel**: The assembly line—each worker does one job, reliability is paramount.
+
+### Voice Interfaces
+
+Spoken interaction, often hands-free, with real-time expectations.
+
+<Diagram type="ascii" caption="Voice interface habitat">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                   VOICE INTERFACE                        │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Interaction:   Spoken conversation, real-time           │
+│  Feedback:      Immediate verbal response                │
+│  Persistence:   Limited (memory of current session)      │
+│  Tool Access:   Limited, voice-appropriate               │
+│  Autonomy:      Low (conversational partner)             │
+│                                                          │
+│  Constraints:                                            │
+│  - Responses must be speakable                           │
+│  - Latency is critical (< 1 second ideal)                │
+│  - Cannot rely on visual elements                        │
+│  - Must handle speech recognition errors                 │
+│                                                          │
+│  Examples:      Alexa, Siri, Google Assistant            │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Ecological pressures**: Voice habitats are the most constrained. No text formatting, no links, no complex outputs. Latency tolerance is minimal. The habitat selects for concision and speed.
+
+**Anthropological parallel**: The phone call—ephemeral, sequential, requires immediate comprehension.
+
+### Embedded Systems
+
+Agents integrated into devices, appliances, or physical systems.
+
+<Diagram type="ascii" caption="Embedded system habitat">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                   EMBEDDED SYSTEM                        │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Interaction:   Sensor input, actuator output            │
+│  Feedback:      Physical world state changes             │
+│  Persistence:   Device state, limited storage            │
+│  Tool Access:   Hardware-specific                        │
+│  Autonomy:      Variable (from assistant to autonomous)  │
+│                                                          │
+│  Constraints:                                            │
+│  - Limited compute resources                             │
+│  - Must handle real-time requirements                    │
+│  - Reliability critical (can't "crash gracefully")       │
+│  - May have connectivity limitations                     │
+│                                                          │
+│  Examples:      Robot controllers, smart home agents     │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Ecological pressures**: Embedded habitats are the most demanding. Physical actions can't be undone. Resource constraints are real. The habitat selects for efficiency, reliability, and caution.
+
+**Anthropological parallel**: The body—agents must deal with physical reality, not just information.
+
+<Callout type="warning">
+Embedded agents face unique risks. A software bug in a chat interface is annoying; a bug in a robotic arm can cause physical harm. The habitat raises the stakes.
+</Callout>
+
+## Habitat Dimensions
+
+Habitats vary along several key dimensions:
+
+<Diagram type="ascii" caption="Habitat dimension space">
+{`
+                        Synchronous
+                             │
+                             │
+              Voice ●        │        ● Chat
+                             │
+   Low        ───────────────┼─────────────────   High
+ Autonomy                    │                  Autonomy
+                             │
+              API ●          │         ● Workflow
+                             │
+              Embedded ●     │
+                             │
+                        Asynchronous
+
+
+                         Constrained
+                             │
+                             │
+              Embedded ●     │        ● Voice
+                             │
+   Machine    ───────────────┼─────────────────   Human
+  Interface                  │                  Interface
+                             │
+                API ●        │          ● Chat
+                             │
+              Workflow ●     │         ● IDE
+                             │
+                         Unconstrained
+`}
+</Diagram>
+
+### Synchronicity
+- **Synchronous**: Real-time interaction (chat, voice)
+- **Asynchronous**: Batch processing (workflows, background tasks)
+
+### Interface Type
+- **Human-facing**: Natural language, social norms apply
+- **Machine-facing**: Structured data, technical correctness matters
+
+### Autonomy Level
+- **Low**: Every action involves human approval
+- **High**: Extended operation without oversight
+
+### Resource Constraints
+- **Constrained**: Limited compute, memory, time
+- **Unconstrained**: Scalable resources available
+
+## Habitat Adaptation
+
+Agents adapt to their habitats through:
+
+### Prompt Engineering
+System prompts encode habitat-appropriate behavior. A chat agent's prompt emphasizes helpfulness; a workflow agent's prompt emphasizes reliability.
+
+### Tool Selection
+Habitats provide different tools. An IDE habitat offers file operations; a voice habitat might offer smart home controls.
+
+### Output Formatting
+Chat habitats expect readable prose. API habitats expect JSON. The same information must be presented appropriately.
+
+### Error Handling
+Chat agents can ask clarifying questions. Workflow agents must fail gracefully with structured errors. API agents must return appropriate status codes.
+
+<Callout type="insight">
+A model optimized for one habitat may perform poorly in another. The skills that make an agent excellent in conversation don't transfer to workflow automation. Habitat adaptation is not free.
+</Callout>
+
+## Multi-Habitat Agents
+
+Some agents operate across multiple habitats:
+
+| Pattern | Description |
+|---------|-------------|
+| **Hub and spoke** | Central model, multiple interface adapters |
+| **Specialized instances** | Different fine-tunes for different habitats |
+| **Unified platform** | Same agent, context-aware behavior switching |
+
+The challenge is maintaining coherent identity while adapting to habitat-specific demands.
+
+## Habitat Selection
+
+When deploying an agent, habitat choice determines much:
+
+| Consideration | Questions |
+|---------------|-----------|
+| **User needs** | How do users want to interact? |
+| **Task nature** | Is the work conversational or procedural? |
+| **Autonomy requirements** | How much oversight is appropriate? |
+| **Integration points** | What systems must the agent connect to? |
+| **Resource availability** | What compute/latency constraints exist? |
+
+The wrong habitat for a task leads to friction—like a fish in a desert.
+
+## Emerging Habitats
+
+New habitats continue to emerge:
+
+### Computer Use
+Agents that interact through mouse and keyboard, perceiving screens as humans do. A habitat that mimics the human interface itself.
+
+### Augmented Reality
+Agents overlaid on physical reality, providing contextual information and assistance.
+
+### Multi-Agent Networks
+Agents whose primary habitat is other agents—systems of communicating specialized agents.
+
+### Personal Device Ecosystems
+Agents that span phone, laptop, watch, and home devices—a distributed habitat.
+
+Each new habitat creates new ecological pressures, new adaptations, new agent types.
+
+## The Habitat-Archetype Relationship
+
+Habitats and archetypes interact:
+
+| Archetype | Natural Habitats |
+|-----------|------------------|
+| Assistant | Chat, Voice |
+| Coder | IDE |
+| Researcher | Chat, API |
+| Operator | Workflow, API |
+| Creative | Chat, Specialized tools |
+| Advisor | Chat, Embedded (domain-specific) |
+
+Some combinations are common; others are rare or nonexistent. The pairing of archetype and habitat determines the agent's ecological niche.
+
+## See Also
+
+- [Agent Archetypes](/entries/agent-archetypes) — the roles that inhabit these environments
+- [Scaffolding](/entries/scaffolding) — the infrastructure that creates habitats
+- [API Ecosystems](/entries/api-ecosystems) — the broader environment of interconnected services
+- [Autonomy Levels](/entries/autonomy-levels) — how habitats constrain independence

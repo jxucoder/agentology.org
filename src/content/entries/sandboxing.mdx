@@ -1,0 +1,459 @@
+---
+title: "Sandboxing"
+category: ecology
+tags: [security, containment, isolation, safety]
+related: [tool-use, autonomy-levels, prompt-injection, scaffolding]
+status: published
+description: "Habitat containment for AI agents—the boundaries, barriers, and isolation techniques that limit agent reach and protect both systems and agents from harm."
+date: 2024-01-21
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+In ecology, certain environments are naturally bounded—islands, oases, tide pools. These boundaries shape what can enter, what can leave, and what can thrive within. The boundary itself is part of the ecosystem.
+
+**Sandboxing** is the deliberate creation of such boundaries for AI agents—controlled environments that limit what agents can access, modify, and affect. It's the practice of habitat containment.
+
+## Why Sandboxing Matters
+
+Agents are powerful. That power cuts both ways.
+
+<Diagram type="ascii" caption="The sandboxing imperative">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                     UNSANDBOXED                          │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│   Agent can:                                             │
+│   • Access any file on the system                        │
+│   • Execute arbitrary code                               │
+│   • Make network requests anywhere                       │
+│   • Modify system configuration                          │
+│   • Access credentials and secrets                       │
+│                                                          │
+│   Risk: A compromised or misbehaving agent can           │
+│         cause unbounded damage                           │
+│                                                          │
+├─────────────────────────────────────────────────────────┤
+│                      SANDBOXED                           │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│   Agent can:                                             │
+│   • Access only designated files                         │
+│   • Execute only allowed operations                      │
+│   • Connect only to approved endpoints                   │
+│   • Operate within resource limits                       │
+│   • See only sanitized information                       │
+│                                                          │
+│   Risk: Bounded by sandbox design                        │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+<Callout type="insight">
+Sandboxing isn't about distrust—it's about defense in depth. Even a perfectly aligned agent can be manipulated (prompt injection) or make mistakes (hallucination). Sandboxes limit the blast radius.
+</Callout>
+
+## The Anthropological Frame
+
+Human societies have developed analogous containment mechanisms:
+
+| Human Society | Agent Sandboxing |
+|---------------|------------------|
+| Quarantine zones | Network isolation |
+| Security clearances | Permission systems |
+| Probationary periods | Staged autonomy |
+| Constitutional limits | Capability constraints |
+| Audit requirements | Logging and monitoring |
+
+These aren't signs of dysfunction—they're how complex systems manage risk while enabling action.
+
+## Sandboxing Dimensions
+
+Agent sandboxes restrict along multiple dimensions:
+
+<Diagram type="ascii" caption="Dimensions of sandboxing">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                   SANDBOX DIMENSIONS                     │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  FILESYSTEM        │ What files can be read/written?    │
+│  ──────────────────┼───────────────────────────────────│
+│                    │ • Read-only access                 │
+│                    │ • Directory restrictions           │
+│                    │ • File type limits                 │
+│                    │                                    │
+│  NETWORK           │ What connections are allowed?      │
+│  ──────────────────┼───────────────────────────────────│
+│                    │ • Allowlisted domains              │
+│                    │ • No outbound access               │
+│                    │ • Proxied/logged connections       │
+│                    │                                    │
+│  EXECUTION         │ What code can run?                 │
+│  ──────────────────┼───────────────────────────────────│
+│                    │ • Allowed languages/runtimes       │
+│                    │ • Prohibited operations            │
+│                    │ • Resource limits (CPU, memory)    │
+│                    │                                    │
+│  DATA              │ What information is visible?       │
+│  ──────────────────┼───────────────────────────────────│
+│                    │ • Credential masking               │
+│                    │ • PII filtering                    │
+│                    │ • Context limitations              │
+│                    │                                    │
+│  TIME              │ How long can it run?               │
+│  ──────────────────┼───────────────────────────────────│
+│                    │ • Execution timeouts               │
+│                    │ • Session limits                   │
+│                    │ • Rate limiting                    │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+### Filesystem Sandboxing
+
+Restricting what files the agent can see and modify.
+
+**Techniques:**
+- Chroot jails (Unix)
+- Container isolation (Docker)
+- Virtual file systems
+- Path allowlists/denylists
+
+**Considerations:**
+- Agents often need *some* file access to be useful
+- Overly restrictive limits reduce capability
+- Sensitive files (credentials, configs) need extra protection
+
+### Network Sandboxing
+
+Controlling what network resources the agent can reach.
+
+**Techniques:**
+- Firewall rules
+- Network namespaces
+- Proxy servers with filtering
+- DNS restrictions
+
+**Considerations:**
+- Many agent tasks require network access (search, APIs)
+- Outbound data exfiltration is a key risk
+- Proxies enable logging and inspection
+
+### Execution Sandboxing
+
+Limiting what code the agent can run and how.
+
+**Techniques:**
+- Containerization
+- Seccomp profiles
+- Language-level restrictions
+- Interpreter sandboxes (WebAssembly)
+
+**Considerations:**
+- Code execution is both powerful and dangerous
+- Resource limits prevent denial-of-service
+- Some operations (syscalls) should be blocked entirely
+
+<Callout type="warning">
+Execution sandboxing is among the hardest to get right. Sandbox escapes are a constant security concern. Defense in depth is essential.
+</Callout>
+
+### Data Sandboxing
+
+Controlling what information the agent can access.
+
+**Techniques:**
+- Credential vaulting (secrets never in context)
+- PII detection and masking
+- Context window filtering
+- Output sanitization
+
+**Considerations:**
+- Agents need information to be useful
+- Sensitive data leakage through outputs is a risk
+- Prompt injection can attempt to exfiltrate data
+
+### Temporal Sandboxing
+
+Limiting how long and how often the agent can act.
+
+**Techniques:**
+- Execution timeouts
+- Rate limiting
+- Session duration limits
+- Cool-down periods
+
+**Considerations:**
+- Long-running tasks may legitimately need time
+- Infinite loops can consume unbounded resources
+- Rate limits prevent abuse while allowing legitimate use
+
+## Sandbox Architectures
+
+### The Strict Sandbox
+
+Maximum isolation. The agent can only do exactly what's explicitly allowed.
+
+<Diagram type="ascii" caption="Strict sandbox architecture">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│    ┌─────────────────────────────────────────────────┐  │
+│    │                   SANDBOX                        │  │
+│    │  ┌─────────────────────────────────────────┐   │  │
+│    │  │                                          │   │  │
+│    │  │                 AGENT                    │   │  │
+│    │  │                                          │   │  │
+│    │  └──────────────────┬───────────────────────┘   │  │
+│    │                     │                           │  │
+│    │            ┌────────▼────────┐                  │  │
+│    │            │    ALLOWLIST    │                  │  │
+│    │            │   (explicit     │                  │  │
+│    │            │   permissions)  │                  │  │
+│    │            └────────┬────────┘                  │  │
+│    │                     │                           │  │
+│    └─────────────────────┼───────────────────────────┘  │
+│                          │                              │
+│              Only allowlisted actions pass              │
+│                          │                              │
+│                          ▼                              │
+│                    OUTSIDE WORLD                        │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Pros**: Maximum safety, minimal attack surface
+**Cons**: Limited capability, high configuration overhead
+
+### The Permissive Sandbox
+
+Default allow with specific restrictions. The agent can do anything except what's explicitly blocked.
+
+<Diagram type="ascii" caption="Permissive sandbox architecture">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│    ┌─────────────────────────────────────────────────┐  │
+│    │                   SANDBOX                        │  │
+│    │  ┌─────────────────────────────────────────┐   │  │
+│    │  │                                          │   │  │
+│    │  │                 AGENT                    │   │  │
+│    │  │                                          │   │  │
+│    │  └──────────────────┬───────────────────────┘   │  │
+│    │                     │                           │  │
+│    │            ┌────────▼────────┐                  │  │
+│    │            │    DENYLIST     │                  │  │
+│    │            │   (blocked      │                  │  │
+│    │            │   operations)   │                  │  │
+│    │            └────────┬────────┘                  │  │
+│    │                     │                           │  │
+│    └─────────────────────┼───────────────────────────┘  │
+│                          │                              │
+│           Everything except denylisted passes           │
+│                          │                              │
+│                          ▼                              │
+│                    OUTSIDE WORLD                        │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Pros**: Maximum capability, easier configuration
+**Cons**: Larger attack surface, unknown risks
+
+### The Layered Sandbox
+
+Multiple nested boundaries. Actions must pass through several checkpoints.
+
+<Diagram type="ascii" caption="Layered sandbox architecture">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  OUTER SANDBOX (coarse restrictions)              │  │
+│  │  ┌─────────────────────────────────────────────┐ │  │
+│  │  │  MIDDLE SANDBOX (medium restrictions)       │ │  │
+│  │  │  ┌───────────────────────────────────────┐ │ │  │
+│  │  │  │  INNER SANDBOX (fine restrictions)    │ │ │  │
+│  │  │  │  ┌─────────────────────────────────┐ │ │ │  │
+│  │  │  │  │                                 │ │ │ │  │
+│  │  │  │  │            AGENT                │ │ │ │  │
+│  │  │  │  │                                 │ │ │ │  │
+│  │  │  │  └─────────────────────────────────┘ │ │ │  │
+│  │  │  └───────────────────────────────────────┘ │ │  │
+│  │  └─────────────────────────────────────────────┘ │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                          │
+│  Defense in depth: multiple barriers to breach          │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Pros**: Defense in depth, graceful degradation
+**Cons**: Complexity, potential performance overhead
+
+<Callout type="note">
+Most production systems use layered sandboxing. No single boundary is trusted completely. Each layer catches different classes of problems.
+</Callout>
+
+## The Sandbox-Capability Tradeoff
+
+Tighter sandboxes mean less risk but also less capability:
+
+<Diagram type="ascii" caption="The fundamental tradeoff">
+{`
+                         High Capability
+                              │
+                              │    ● No sandbox
+                              │       (maximum risk)
+                              │
+                              │         ● Permissive
+                              │            sandbox
+                              │
+                              │              ● Layered
+                              │                 sandbox
+                              │
+                              │                   ● Strict
+                              │                      sandbox
+                              │
+                              │                        ● Pure
+                              │                           isolation
+                              │                           (no capability)
+   Low Risk ──────────────────┼────────────────────── High Risk
+                              │
+                              │
+                         Low Capability
+`}
+</Diagram>
+
+The art is finding the right balance for your use case.
+
+| Use Case | Sandbox Level | Rationale |
+|----------|---------------|-----------|
+| Production backend | Strict | High stakes, predictable tasks |
+| Development assistant | Medium | Needs access, lower stakes |
+| Research sandbox | Permissive | Exploration valued over safety |
+| Public-facing chat | Strict | Adversarial users expected |
+
+## Implementation Patterns
+
+### Container-Based Sandboxing
+
+Using Docker or similar to isolate agent execution:
+
+```
+┌─────────────────────────────────────┐
+│           HOST SYSTEM               │
+│                                     │
+│  ┌───────────────────────────────┐  │
+│  │      CONTAINER                │  │
+│  │  • Isolated filesystem        │  │
+│  │  • Limited network            │  │
+│  │  • Resource constraints       │  │
+│  │  • Minimal privileges         │  │
+│  │                               │  │
+│  │        [AGENT]                │  │
+│  └───────────────────────────────┘  │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+**Tools**: Docker, Podman, gVisor, Firecracker
+
+### Language-Level Sandboxing
+
+Restricting at the interpreter/runtime level:
+
+- Python: RestrictedPython, limited builtins
+- JavaScript: vm2, isolated-vm
+- WebAssembly: inherently sandboxed
+
+**Limitation**: Harder to enforce, easier to bypass
+
+### API-Level Sandboxing
+
+The agent only interacts through a controlled API:
+
+```
+Agent → API Gateway → Validated Actions → System
+         │
+         └── Logging, filtering, rate limiting
+```
+
+This is common for agents-as-a-service, where the sandbox is the API itself.
+
+## Sandbox Escape
+
+**Sandbox escape** is when an agent (or attacker through an agent) breaks out of containment.
+
+### Escape Vectors
+
+| Vector | Description |
+|--------|-------------|
+| Vulnerability exploitation | Bugs in sandbox implementation |
+| Resource exhaustion | Overwhelming the sandbox |
+| Side channels | Extracting info through timing, etc. |
+| Social engineering | Convincing humans to weaken sandbox |
+| Prompt injection | Manipulating agent to attempt escape |
+
+### Defense Strategies
+
+1. **Defense in depth**: Multiple independent boundaries
+2. **Principle of least privilege**: Only grant necessary permissions
+3. **Regular updates**: Patch known vulnerabilities
+4. **Monitoring**: Detect escape attempts
+5. **Assume breach**: Design for containment failure
+
+<Callout type="warning">
+No sandbox is perfect. The goal is to make escape difficult and expensive enough to deter most attacks, while having detection and response capabilities for sophisticated attempts.
+</Callout>
+
+## Sandboxing and Trust
+
+Sandboxing relates directly to trust levels:
+
+| Trust Level | Sandbox Approach |
+|-------------|------------------|
+| No trust | Strict isolation, read-only, no network |
+| Low trust | Tight sandbox, allowlisted actions |
+| Medium trust | Moderate sandbox, denylisted dangers |
+| High trust | Light sandbox, mostly monitoring |
+| Full trust | No sandbox (rarely appropriate) |
+
+Trust should be earned through demonstrated safe behavior, not assumed.
+
+## Dynamic Sandboxing
+
+Advanced systems adjust sandbox boundaries based on context:
+
+- **Task-based**: Different limits for different operations
+- **Confidence-based**: Tighter sandbox when agent is uncertain
+- **Escalation-based**: Human approval expands sandbox temporarily
+- **Reputation-based**: Track record influences permissions
+
+This mirrors human society: we grant more freedom to those who've demonstrated responsibility.
+
+## The Future of Sandboxing
+
+As agents become more capable, sandboxing must evolve:
+
+- **Semantic sandboxing**: Restricting based on intent, not just mechanics
+- **Formal verification**: Mathematically proving sandbox properties
+- **Self-sandboxing**: Agents that understand and respect their own limits
+- **Distributed sandboxing**: Containment across multi-agent systems
+
+The challenge: maintaining useful capability while managing increasing power.
+
+## See Also
+
+- [Tool Use](/entries/tool-use) — what sandboxes constrain
+- [Autonomy Levels](/entries/autonomy-levels) — how sandboxing implements oversight
+- [Prompt Injection](/entries/prompt-injection) — attacks that sandboxes help mitigate
+- [Scaffolding](/entries/scaffolding) — where sandboxes are implemented

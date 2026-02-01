@@ -1,0 +1,395 @@
+---
+title: "Model Extraction"
+category: ecology
+tags: [security, adversarial, intellectual-property, threats]
+related: [adversarial-users, sandboxing, api-ecosystems, compute-constraints]
+status: published
+description: "Predators that steal agent capabilities—how adversarial actors extract model knowledge, replicate functionality, and the arms race between protection and theft."
+date: 2024-01-26
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+In nature, some organisms survive not by developing their own adaptations but by stealing from others. Brood parasites lay eggs in other birds' nests. Some bacteria steal genes from their hosts. Mimics copy the appearance of more successful species.
+
+**Model extraction** is the analogous threat in the AI ecosystem: adversarial actors who steal agent capabilities rather than developing their own. They query models to reconstruct their knowledge, replicate their behavior, or circumvent their access controls.
+
+## The Extraction Threat
+
+<Diagram type="ascii" caption="Model extraction attack pattern">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   LEGITIMATE USE                 EXTRACTION ATTACK       │
+│   ──────────────                 ────────────────       │
+│                                                          │
+│   ┌─────────────┐               ┌─────────────┐         │
+│   │    User     │               │  Attacker   │         │
+│   └──────┬──────┘               └──────┬──────┘         │
+│          │                              │                │
+│          │ Queries                      │ Many queries  │
+│          │ for task                     │ designed to   │
+│          ▼                              │ extract info  │
+│   ┌─────────────┐               ┌──────▼──────┐         │
+│   │    API      │               │    API      │         │
+│   │   Model     │               │   Model     │         │
+│   └──────┬──────┘               └──────┬──────┘         │
+│          │                              │                │
+│          │ Response                     │ Responses     │
+│          ▼                              ▼                │
+│   ┌─────────────┐               ┌─────────────┐         │
+│   │  Task done  │               │  Dataset    │         │
+│   └─────────────┘               │  created    │         │
+│                                 └──────┬──────┘         │
+│                                        │                 │
+│                                        ▼                 │
+│                                 ┌─────────────┐         │
+│                                 │  Clone      │         │
+│                                 │  trained    │         │
+│                                 └─────────────┘         │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+<Callout type="insight">
+Model extraction exploits a fundamental asymmetry: training a model costs millions; querying it costs pennies. Attackers can invest query costs to steal training investment.
+</Callout>
+
+## Types of Extraction
+
+### Functional Extraction (Model Stealing)
+
+Replicating what the model does without accessing its weights.
+
+<Diagram type="ascii" caption="Functional extraction process">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   Step 1: Query Generation                               │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ Generate diverse inputs covering target domain   │   │
+│   │ • Systematic sampling                            │   │
+│   │ • Active learning (query where uncertain)        │   │
+│   │ • Adversarial examples (boundary probing)        │   │
+│   └─────────────────────────────────────────────────┘   │
+│                         │                                │
+│                         ▼                                │
+│   Step 2: Response Collection                            │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ Query target model, collect outputs              │   │
+│   │ • Input-output pairs                             │   │
+│   │ • Probability distributions (if available)      │   │
+│   │ • Reasoning traces                               │   │
+│   └─────────────────────────────────────────────────┘   │
+│                         │                                │
+│                         ▼                                │
+│   Step 3: Clone Training                                 │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ Train student model on collected data            │   │
+│   │ • Knowledge distillation                         │   │
+│   │ • Behavior cloning                               │   │
+│   │ • Fine-tuning base model                         │   │
+│   └─────────────────────────────────────────────────┘   │
+│                         │                                │
+│                         ▼                                │
+│   Result: Model that approximates target behavior       │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Effectiveness factors:**
+- Number of queries (more = better clone)
+- Query diversity (coverage of input space)
+- Response richness (probabilities vs. just tokens)
+- Clone model capacity
+
+### Knowledge Extraction
+
+Extracting specific information the model contains.
+
+| Target | Method | Example |
+|--------|--------|---------|
+| **Training data** | Membership inference, extraction attacks | Recover verbatim text from training |
+| **Factual knowledge** | Systematic querying | Extract database of facts |
+| **Capabilities** | Probing tasks | Map what model can/can't do |
+| **System prompts** | Prompt leakage attacks | Recover hidden instructions |
+
+<Callout type="warning">
+Training data extraction can expose private information. If a model was trained on confidential data, extraction attacks might recover it—creating privacy and IP violations.
+</Callout>
+
+### Distillation
+
+Using a large model to train a smaller one.
+
+<Diagram type="ascii" caption="Distillation as extraction">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │         TEACHER MODEL (target)                   │   │
+│   │         Large, expensive, proprietary            │   │
+│   │         (e.g., GPT-4, Claude)                    │   │
+│   └─────────────────────┬───────────────────────────┘   │
+│                         │                                │
+│                         │ Queries + responses           │
+│                         │ (soft labels, reasoning)      │
+│                         ▼                                │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │         STUDENT MODEL (clone)                    │   │
+│   │         Smaller, cheaper, attacker-owned         │   │
+│   │         (e.g., fine-tuned LLaMA)                 │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                          │
+│   Student learns to mimic teacher's behavior            │
+│   at fraction of training cost                          │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**The distillation economy:**
+- Teacher training: $10M - $100M+
+- Distillation dataset: $10K - $100K (API costs)
+- Student training: $100K - $1M
+- Net "savings": 10-100x cost reduction
+
+## Attacker Motivations
+
+Why extract rather than build?
+
+| Motivation | Description |
+|------------|-------------|
+| **Economic** | Cheaper than training from scratch |
+| **Competitive** | Catch up to market leaders |
+| **Circumvention** | Bypass rate limits, ToS, costs |
+| **Privacy** | Run locally without sharing data |
+| **Customization** | Modify extracted model freely |
+| **Research** | Study model behavior (sometimes legitimate) |
+
+## The Arms Race
+
+<Diagram type="ascii" caption="Extraction defense evolution">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   ATTACKERS                        DEFENDERS             │
+│   ─────────                        ─────────             │
+│                                                          │
+│   Basic querying        ───►      Rate limiting         │
+│                                                          │
+│   Distributed queries   ───►      Behavioral detection  │
+│                                                          │
+│   Query obfuscation     ───►      Pattern analysis      │
+│                                                          │
+│   Active learning       ───►      Output perturbation   │
+│                                                          │
+│   Membership inference  ───►      Differential privacy  │
+│                                                          │
+│   Prompt injection to   ───►      Prompt hiding,        │
+│   leak system prompts            compartmentalization   │
+│                                                          │
+│   The cycle continues indefinitely...                   │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+### Attacker Techniques
+
+**Query optimization:**
+- Active learning: Focus queries where clone is weakest
+- Curriculum learning: Start simple, increase complexity
+- Ensemble methods: Multiple clones, combine strengths
+
+**Evasion:**
+- Distributed querying: Multiple accounts, IPs, patterns
+- Query disguising: Make extraction look like legitimate use
+- Rate limit gaming: Stay just under detection thresholds
+
+**Efficiency:**
+- Transfer learning: Start from public base model
+- Task-specific extraction: Only extract needed capabilities
+- Selective distillation: Focus on high-value behaviors
+
+### Defender Techniques
+
+**Detection:**
+- Query pattern analysis: Identify extraction signatures
+- Anomaly detection: Flag unusual usage patterns
+- Honeypots: Fake responses to extraction attempts
+
+**Prevention:**
+- Rate limiting: Constrain query volume
+- Output perturbation: Add noise to responses
+- Watermarking: Embed traceable signals
+- Differential privacy: Limit information leakage
+
+**Deterrence:**
+- Terms of service: Legal prohibitions
+- Technical attribution: Trace extracted models
+- Licensing: Require usage agreements
+
+<Callout type="note">
+No defense is perfect. The goal is to make extraction expensive enough to be impractical for most attackers, while maintaining utility for legitimate users.
+</Callout>
+
+## Watermarking and Attribution
+
+Proving a model was extracted requires attribution:
+
+<Diagram type="ascii" caption="Watermarking for attribution">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   WATERMARKING APPROACHES                                │
+│                                                          │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ Output watermarking                              │   │
+│   │ ───────────────────                              │   │
+│   │ Embed patterns in model outputs that survive     │   │
+│   │ extraction (steganography in token choices)      │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                          │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ Behavioral watermarking                          │   │
+│   │ ───────────────────────                          │   │
+│   │ Train model to respond distinctively to          │   │
+│   │ specific trigger inputs (backdoor as watermark)  │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                          │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ Dataset watermarking                             │   │
+│   │ ────────────────────                             │   │
+│   │ Include unique examples that will appear         │   │
+│   │ in extracted training sets                       │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                          │
+│   Challenge: Watermarks must survive extraction and     │
+│   fine-tuning while not degrading model quality         │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+## Economic Implications
+
+Model extraction affects the AI ecosystem economics:
+
+### For Model Providers
+- R&D investment at risk
+- API business models threatened
+- Defense costs add overhead
+- Competitive moats erode
+
+### For Extractors
+- Lower barrier to entry
+- Reduced differentiation
+- Legal and ethical risks
+- Potential quality gaps
+
+### For the Ecosystem
+- Faster capability diffusion
+- Reduced training incentives
+- Commoditization pressure
+- Open vs. closed tension
+
+<Diagram type="ascii" caption="Extraction and market dynamics">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   WITHOUT EXTRACTION THREAT                              │
+│                                                          │
+│   ┌─────────┐                                           │
+│   │ Leader  │──── High margin, sustained advantage      │
+│   └─────────┘                                           │
+│        ▲                                                 │
+│        │ Large gap                                       │
+│        │                                                 │
+│   ┌─────────┐                                           │
+│   │Followers│──── Must invest heavily to compete        │
+│   └─────────┘                                           │
+│                                                          │
+│   WITH EXTRACTION THREAT                                 │
+│                                                          │
+│   ┌─────────┐                                           │
+│   │ Leader  │──── Must continuously innovate            │
+│   └─────────┘                                           │
+│        ▲                                                 │
+│        │ Smaller gap (extraction closes it)             │
+│        │                                                 │
+│   ┌─────────┐                                           │
+│   │Followers│──── Can extract to catch up              │
+│   └─────────┘                                           │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+## Legal and Ethical Dimensions
+
+Model extraction exists in a legal gray zone:
+
+| Perspective | Position |
+|-------------|----------|
+| **IP holders** | Extraction is theft of trade secrets |
+| **Extractors** | Outputs aren't copyrightable; fair use applies |
+| **Researchers** | Extraction enables important safety research |
+| **Open source advocates** | Information wants to be free |
+
+<Callout type="warning">
+Legal frameworks are still developing. Terms of service prohibit extraction, but enforcement is difficult. Major cases may establish precedent.
+</Callout>
+
+### Ethical Considerations
+
+Even if legal, extraction raises ethical questions:
+- Is it fair to benefit from others' investment?
+- Does extraction undermine AI safety efforts?
+- Who bears the cost of defense?
+- Does extraction democratize or destabilize?
+
+## The Anthropological View
+
+Model extraction is intellectual predation—a survival strategy based on stealing rather than developing capabilities.
+
+| Biological Parallel | Model Extraction |
+|---------------------|------------------|
+| Brood parasitism | Using others' training investment |
+| Horizontal gene transfer | Acquiring capabilities without evolution |
+| Mimicry | Copying successful behaviors |
+| Kleptoparasitism | Stealing resources (knowledge) |
+
+Like biological parasitism, model extraction creates evolutionary pressure—both on defenses (harder to extract) and on offense (better extraction techniques).
+
+## Future Trajectory
+
+The extraction landscape is evolving:
+
+### Increasing Sophistication
+- Better extraction algorithms
+- More subtle attacks
+- Harder to detect
+
+### Rising Stakes
+- More valuable models
+- Larger extraction incentives
+- Greater defense investment
+
+### Potential Equilibria
+- Technical stalemate (extraction always possible but expensive)
+- Legal resolution (clear rules, enforcement)
+- Economic adjustment (pricing reflects extraction risk)
+- Open source dominance (nothing to extract)
+
+The final equilibrium remains uncertain.
+
+## See Also
+
+- [Adversarial Users](/entries/adversarial-users) — the broader context of hostile actors
+- [Sandboxing](/entries/sandboxing) — containment that limits extraction surface
+- [API Ecosystems](/entries/api-ecosystems) — the environment where extraction occurs
+- [Compute Constraints](/entries/compute-constraints) — the economics that make extraction attractive
