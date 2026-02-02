@@ -2,7 +2,7 @@
 title: "The Agent Loop"
 category: ethology
 tags: [architecture, patterns, fundamentals, behavior]
-related: [react, tool-use, agentogenesis]
+related: [react, tool-use, agentogenesis, perception-action-cycle]
 status: published
 description: "The fundamental cycle that defines agent behavior: observe → reason → act → observe. The heartbeat of agency."
 date: 2024-01-05
@@ -178,8 +178,28 @@ Understanding this loop provides:
 
 Every agent, no matter how sophisticated, reduces to some form of this cycle.
 
+## Connection to the Perception-Action Cycle
+
+The agent loop is the software engineering formalization of the **perception-action cycle** from cognitive science and neuroscience. The two describe the same fundamental pattern:
+
+| Perception-Action Cycle | Agent Loop |
+|------------------------|-----------|
+| Perception (sensing) | Observe |
+| Processing (cognition) | Reason |
+| Action (effectors) | Act |
+| World feedback | Observe (next iteration) |
+
+<Callout type="insight">
+The agent loop embodies a deep principle of embodied cognition: intelligence emerges from the closed loop between sensing and acting. There is no pure reasoning divorced from perception and action—cognition exists to guide behavior in the world.
+</Callout>
+
+This connection reveals that the agent loop isn't an arbitrary software pattern—it reflects the structure of embodied intelligence itself. Biological organisms, robots, and AI agents all operate through this same fundamental cycle because it's the basic architecture of goal-directed behavior in uncertain environments.
+
+The perception-action cycle emphasizes the **continuous, circular** nature of this process: actions change what is perceived, and perceptions guide future actions. Modern agents that implement this loop effectively are, in a real sense, engaging in embodied cognition—even when their "body" is digital rather than physical.
+
 ## See Also
 
+- [Perception-Action Cycle](/entries/perception-action-cycle) — the cognitive science foundation of the agent loop
 - [ReAct](/entries/react) — a specific instantiation of the loop with explicit reasoning
 - [Tool Use](/entries/tool-use) — the mechanics of the "act" phase
 - [Agentogenesis](/entries/agentogenesis) — how this pattern emerged

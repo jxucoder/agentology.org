@@ -2,7 +2,7 @@
 title: "Memory Systems"
 category: anatomy
 tags: [architecture, persistence, retrieval, context]
-related: [scaffolding, the-agent-loop, grounding]
+related: [scaffolding, the-agent-loop, grounding, bdi-model]
 status: published
 description: "How agents remember—from ephemeral context windows to persistent knowledge stores, and the mechanisms that connect past experience to present action."
 date: 2024-01-15
@@ -97,6 +97,7 @@ Knowledge of how to do things—skills, procedures, strategies. The agent's capa
 - Tool definitions
 - Code libraries
 - Learned heuristics
+- Plan libraries (as in BDI architectures)
 
 **Use cases:**
 - "How do I accomplish this task?"
@@ -104,7 +105,7 @@ Knowledge of how to do things—skills, procedures, strategies. The agent's capa
 - "What steps does this require?"
 
 <Callout type="note">
-This taxonomy mirrors human memory research. The parallel isn't coincidental—agents face similar memory challenges to biological minds, even if the implementations differ.
+This taxonomy mirrors human memory research. The parallel isn't coincidental—agents face similar memory challenges to biological minds, even if the implementations differ. Classical BDI architectures explicitly separate these memory types into belief bases (semantic), plan libraries (procedural), and intention stacks (episodic active goals).
 </Callout>
 
 ## Memory Architecture
@@ -244,3 +245,4 @@ The goal: agents that truly learn from experience, building knowledge over time.
 - [Scaffolding](/entries/scaffolding) — memory systems as scaffold components
 - [The Agent Loop](/entries/the-agent-loop) — where memory connects to action
 - [Grounding](/entries/grounding) — memory as connection to reality
+- [BDI Model](/entries/bdi-model) — formal architecture for beliefs, desires, and intentions as memory structures

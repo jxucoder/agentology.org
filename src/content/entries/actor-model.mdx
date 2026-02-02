@@ -1,0 +1,328 @@
+---
+title: "Actor Model"
+category: anatomy
+tags: [concurrency, architecture, distributed-systems, message-passing]
+related: [bdi-model, multi-agent-systems, the-agent-loop]
+status: published
+description: "Carl Hewitt's model of computation as autonomous actors communicating via messages—the theoretical foundation for distributed agent systems."
+date: 2026-02-01
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+The **Actor Model** is a mathematical theory of computation proposed by Carl Hewitt in 1973 that treats "actors" as the fundamental units of concurrent computation. Each actor can receive messages, make local decisions, create new actors, and send messages to other actors—all asynchronously and independently.
+
+While developed for computer science theory, the Actor Model provides a natural framework for understanding multi-agent AI systems where autonomous entities coordinate through communication.
+
+## The Core Concept
+
+An **actor** is a computational entity that:
+1. Has a unique address (identity)
+2. Has private state (memory)
+3. Processes messages sequentially (one at a time)
+4. Can perform three types of actions in response to a message:
+   - **Send** messages to other actors
+   - **Create** new actors
+   - **Update** its own internal state
+
+<Callout type="insight">
+The Actor Model's key insight: computation is fundamentally about independent entities communicating asynchronously, not about sequential instruction execution or shared memory manipulation.
+</Callout>
+
+This parallels biological systems—neurons, organisms, societies—where autonomous units coordinate through messaging rather than direct state access.
+
+## Basic Architecture
+
+<Diagram type="mermaid" caption="Actor model fundamentals">
+{`graph TD
+    A1[ACTOR 1<br/>state // behavior] -.message.-> A2[ACTOR 2<br/>state // behavior]
+    A2 -.message.-> A3[ACTOR 3<br/>state // behavior]
+    A3 -.message.-> A1
+
+    A1 -.creates.-> A4[ACTOR 4<br/>new_actor]
+
+    MB1[Mailbox queue] --> A1
+    MB2[Mailbox queue] --> A2
+    MB3[Mailbox queue] --> A3
+
+    EXT[External sender] -.message.-> MB1
+
+    style A1 fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style A2 fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style A3 fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style A4 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style MB1 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style MB2 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style MB3 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+### Key Properties
+
+**Encapsulation**: An actor's state is private—only accessible through messages
+**Asynchrony**: Sending a message doesn't block; sender continues immediately
+**Location transparency**: Actors don't need to know where other actors physically reside
+**Fairness**: Messages are eventually delivered (in practical implementations)
+
+## Message Passing Semantics
+
+Unlike function calls or shared memory, actors communicate exclusively through messages:
+
+<Diagram type="mermaid" caption="Message passing vs function calls">
+{`graph TD
+    subgraph FUNCTION["FUNCTION CALLS<br/>synchronous"]
+        F1[Caller] -->|call| F2[Function]
+        F2 -->|return| F1
+        F1 -.blocks_until_return.-> F2
+    end
+
+    subgraph ACTOR["ACTOR MODEL<br/>asynchronous"]
+        A1[Sender] -.send.-> MB[Mailbox]
+        MB --> A2[Receiver]
+        A1 -->|continues_immediately| A1B[Next action]
+        A2 -.later_reply.-> MB2[Sender mailbox]
+    end
+
+    style FUNCTION fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style ACTOR fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style F1 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style F2 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style A1 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style A2 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+**Benefits:**
+- No deadlocks (no mutual waiting)
+- Natural distribution (messages work across networks)
+- Scalability (actors can be on different machines)
+- Fault isolation (actor failure doesn't crash others)
+
+**Challenges:**
+- Coordination complexity (asynchrony requires protocols)
+- Message ordering (out-of-order delivery)
+- Debugging difficulty (non-deterministic interleaving)
+
+## Actor Lifecycle
+
+An actor has a simple lifecycle:
+
+1. **Creation**: Another actor creates it (or it's a root actor)
+2. **Reception**: Processes messages from mailbox sequentially
+3. **Processing**: For each message:
+   - Read current state
+   - Execute behavior (send/create/update)
+   - Become ready for next message
+4. **Termination**: Actor stops processing (rarely explicit in theory)
+
+<Diagram type="mermaid" caption="Actor lifecycle and message processing">
+{`graph TD
+    CREATE[Actor created] --> IDLE[Idle<br/>waiting_for_message]
+    IDLE --> MSG{Message in mailbox?}
+    MSG -->|No| IDLE
+    MSG -->|Yes| PROCESS[Process message]
+    PROCESS --> SEND[Send messages?]
+    SEND --> NEW[Create actors?]
+    NEW --> UPDATE[Update state?]
+    UPDATE --> IDLE
+
+    style CREATE fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style IDLE fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style PROCESS fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style MSG fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style SEND fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style NEW fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style UPDATE fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+## The Actor Model and AI Agents
+
+The Actor Model provides a natural computational framework for multi-agent systems:
+
+| Actor Model Concept | AI Agent Mapping |
+|---------------------|------------------|
+| **Actor** | Autonomous agent |
+| **Message** | Communication between agents |
+| **Private state** | Agent's beliefs, memory |
+| **Behavior** | Agent's reasoning and decision-making |
+| **Creating actors** | Spawning sub-agents or specialists |
+| **Mailbox** | Message queue, notification system |
+| **Asynchrony** | Concurrent agent execution |
+
+### Single Agent as Actor System
+
+Even a single AI agent can be viewed as an actor system internally:
+
+<Diagram type="mermaid" caption="Agent as composition of actors">
+{`graph TD
+    USER[User] -.message.-> COORD[Coordinator Actor<br/>main_agent_loop]
+
+    COORD -.task.-> PERC[Perception Actor<br/>parse_input]
+    COORD -.task.-> REASON[Reasoning Actor<br/>LLM_inference]
+    COORD -.task.-> MEM[Memory Actor<br/>retrieve_context]
+    COORD -.task.-> TOOL[Tool Actor<br/>execute_functions]
+
+    PERC -.result.-> COORD
+    REASON -.result.-> COORD
+    MEM -.result.-> COORD
+    TOOL -.result.-> COORD
+
+    style COORD fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style PERC fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style REASON fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style MEM fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style TOOL fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+This decomposition enables:
+- **Parallel execution** (perception while reasoning)
+- **Fault isolation** (tool failure doesn't crash agent)
+- **Modularity** (swap components independently)
+
+### Multi-Agent Systems as Actor Networks
+
+Multiple AI agents naturally form actor networks:
+
+**Patterns:**
+- **Request-response**: Agent A asks Agent B for information
+- **Publish-subscribe**: Agents broadcast to interested subscribers
+- **Hierarchical delegation**: Manager agents coordinate worker agents
+- **Peer-to-peer negotiation**: Agents coordinate directly
+
+<Callout type="note">
+Modern agent communication protocols (like Model Context Protocol) are implementing actor-model semantics—standardized message formats, asynchronous communication, and location transparency.
+</Callout>
+
+## Actor Model vs Traditional Concurrency
+
+| Aspect | Shared Memory (Threads) | Actor Model |
+|--------|------------------------|-------------|
+| **Communication** | Shared variables | Messages only |
+| **Synchronization** | Locks, semaphores | Message ordering |
+| **Deadlock risk** | High (circular waiting) | Low (no waiting) |
+| **Distribution** | Difficult (shared mem local) | Natural (messages over network) |
+| **Debugging** | Race conditions | Message interleaving |
+| **Scaling** | Limited (contention) | Excellent (isolation) |
+
+For distributed AI agents—potentially across organizations, regions, or computing environments—the Actor Model's message-passing approach is far more practical than shared memory.
+
+## Supervision and Fault Tolerance
+
+Actor systems often implement **supervision hierarchies**: parent actors monitor children and handle failures.
+
+**Erlang's "Let It Crash" Philosophy**:
+1. Actors perform work without defensive programming
+2. Supervisor actors monitor workers
+3. On failure, supervisor decides: restart, escalate, or stop
+4. System self-heals through supervision strategies
+
+<Diagram type="mermaid" caption="Supervision hierarchy">
+{`graph TD
+    SUP1[Supervisor] --> W1[Worker 1]
+    SUP1 --> W2[Worker 2]
+    SUP1 --> W3[Worker 3]
+
+    W2 -.crash!.-> SUP1
+    SUP1 -.restart.-> W2B[Worker 2<br/>restarted]
+
+    style SUP1 fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style W1 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style W2 fill:#0a0a0a,stroke:#ff0000,stroke-width:2px,color:#cccccc
+    style W3 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style W2B fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+**For AI agents**: Supervisory patterns enable resilient multi-agent systems where individual agent failures don't cascade.
+
+## Actor Model Implementations
+
+Several languages and frameworks implement actor semantics:
+
+### Erlang/Elixir
+- Built on actor model fundamentally
+- Massively concurrent (millions of actors)
+- Used for: telecom, messaging systems
+
+### Akka (JVM)
+- Actor library for Scala/Java
+- Supervision hierarchies
+- Distributed actor systems
+
+### Orleans (.NET)
+- "Virtual actors" (actors created on-demand)
+- Used by: Xbox Live, Halo
+
+### Ray (Python)
+- Distributed computing framework
+- Actor-based parallelism
+- Popular for AI workloads
+
+<Callout type="insight">
+Modern AI frameworks increasingly adopt actor semantics. Ray, used for training large models and running inference, is fundamentally an actor system optimized for ML workloads.
+</Callout>
+
+## Challenges for AI Agent Systems
+
+### Message Protocol Design
+Unlike simple data, AI agents exchange rich semantic content. Protocol design is critical:
+- **Structured messages** (JSON, protobuf) vs **natural language**
+- **Ontology agreement** (shared vocabulary for concepts)
+- **Versioning** (evolving message formats)
+
+### Coordination Without Central Control
+Actor systems avoid central coordinators—but AI agents often need to:
+- Avoid duplicate work
+- Reach consensus
+- Synchronize knowledge
+
+**Solutions**: Gossip protocols, distributed consensus (Raft, Paxos), choreography over orchestration
+
+### Semantic Understanding
+Traditional actors process syntactic messages. AI agents must:
+- Interpret intent (not just structure)
+- Handle ambiguity
+- Learn communication protocols
+
+LLMs help bridge this gap—agents can negotiate protocols in natural language.
+
+## The Anthropological Parallel
+
+The Actor Model mirrors how human organizations work:
+
+| Actor System | Human Organization |
+|--------------|-------------------|
+| Actors | Employees, departments |
+| Messages | Emails, memos, meetings |
+| Mailbox | Inbox, task queue |
+| Private state | Individual knowledge |
+| Creating actors | Hiring, forming teams |
+| Supervision | Management hierarchy |
+
+Successful organizations operate like well-designed actor systems: autonomous units with clear responsibilities, communicating asynchronously, with supervision handling failures.
+
+<Callout type="insight">
+The Actor Model isn't just a computation theory—it's a theory of organized complexity. This is why it's so relevant to multi-agent AI: scaling intelligence requires organizational principles, not just algorithmic ones.
+</Callout>
+
+## Future Directions
+
+**Agent coordination protocols**: Standardized message formats for AI agents (MCP is a step in this direction)
+
+**Semantic actors**: Actors that understand message meaning, not just structure
+
+**Hybrid human-AI actor systems**: Organizations where humans and AI agents are both actors in the same system
+
+**Emergent behavior**: Designing actor interactions that produce intelligent collective behavior
+
+The Actor Model provides the computational substrate for societies of AI agents—just as it provided the foundation for internet-scale human collaboration platforms.
+
+## See Also
+
+- [BDI Model](/entries/bdi-model) — the cognitive architecture actors might implement
+- [Multi-Agent Systems](/entries/multi-agent-systems) — actor networks in practice
+- [The Agent Loop](/entries/the-agent-loop) — what each actor executes internally
+- [Agent Protocols](/entries/agent-protocols) — standardizing actor communication (Phase 4)

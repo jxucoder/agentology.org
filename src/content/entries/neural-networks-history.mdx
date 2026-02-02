@@ -1,0 +1,351 @@
+---
+title: "Neural Networks History"
+category: archaeology
+tags: [foundations, learning, connectionism, deep-learning]
+related: [cybernetics, expert-systems, agentogenesis]
+status: published
+description: "From McCulloch-Pitts neurons to deep learning—the parallel paradigm that ultimately enabled modern AI agents through learning rather than programming."
+date: 2026-02-01
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+import Timeline from '../../components/Timeline.astro';
+import TimelineEvent from '../../components/TimelineEvent.astro';
+
+While expert systems dominated the AI landscape of the 1970s-80s, a parallel tradition quietly developed: **neural networks**—computational models inspired by biological brains that learn from data rather than following programmed rules. This connectionist approach would eventually eclipse symbolic AI and provide the foundation for modern language model agents.
+
+Understanding neural network history is essential to understanding why today's agents work the way they do—and why they emerged when they did.
+
+## The Biological Inspiration
+
+The human brain contains roughly 86 billion neurons, each connected to thousands of others through synapses. Information propagates as electrical and chemical signals. Learning occurs through synaptic strengthening and weakening—the physical substrate of memory.
+
+Could computation work the same way? Could machines learn patterns from data, rather than executing explicit rules?
+
+<Callout type="insight">
+Neural networks represent a fundamentally different philosophy than symbolic AI: intelligence as learned pattern recognition, not logical deduction. Experience over axioms. Statistics over symbols.
+</Callout>
+
+## The McCulloch-Pitts Neuron (1943)
+
+The origin point was a collaboration between neurophysiologist **Warren McCulloch** and mathematician **Walter Pitts**. Their 1943 paper, "A Logical Calculus of the Ideas Immanent in Nervous Activity," proposed the first mathematical model of a neuron:
+
+<Diagram type="mermaid" caption="McCulloch-Pitts artificial neuron">
+{`graph LR
+    X1[Input x₁] --> W1[Weight w₁]
+    X2[Input x₂] --> W2[Weight w₂]
+    X3[Input x₃] --> W3[Weight w₃]
+
+    W1 --> SUM[Σ weighted sum]
+    W2 --> SUM
+    W3 --> SUM
+
+    SUM --> THRESH[Threshold function]
+    THRESH --> OUT[Output: 0 or 1]
+
+    style X1 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style X2 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style X3 fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style SUM fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style THRESH fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style OUT fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+**Key insight**: Networks of these simple threshold units could compute any logical function. The brain's complexity might emerge from vast numbers of simple computational units.
+
+**Limitation**: The weights were set by hand. No learning mechanism existed.
+
+## The Perceptron (1958)
+
+Frank Rosenblatt's **perceptron** added the crucial missing ingredient: a learning algorithm. The perceptron could adjust its weights based on errors, learning to classify patterns.
+
+**The learning rule:**
+```
+If output is correct: do nothing
+If output is 0 but should be 1: increase weights
+If output is 1 but should be 0: decrease weights
+```
+
+Simple, but revolutionary. The machine could improve through experience.
+
+<Diagram type="mermaid" caption="Perceptron learning cycle">
+{`graph TD
+    IN[Input pattern] --> PERC[Perceptron]
+    PERC --> OUT[Predicted output]
+    OUT --> COMP[Compare to target]
+    TARGET[Target output] --> COMP
+    COMP --> ERR[Compute error]
+    ERR --> UPDATE[Update weights]
+    UPDATE -.adjust.-> PERC
+
+    style PERC fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style COMP fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style ERR fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style UPDATE fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+`}
+</Diagram>
+
+**Early enthusiasm**: Rosenblatt predicted machines would "be able to recognize people and call out their names."
+
+**The harsh reality**: Marvin Minsky and Seymour Papert's 1969 book *Perceptrons* proved that single-layer perceptrons couldn't learn XOR or any non-linearly-separable function. The limitation seemed fundamental.
+
+## The First AI Winter (1970s)
+
+Neural network research largely froze:
+- Funding dried up
+- Researchers pivoted to symbolic AI (expert systems)
+- The field was considered a dead end
+
+<Callout type="warning">
+The perceptron controversy illustrated a recurring pattern: overpromise → disillusionment → winter. Understanding these cycles helps calibrate expectations for modern agents.
+</Callout>
+
+## Backpropagation: The Breakthrough (1986)
+
+While the perceptron was limited, **multi-layer networks** (networks with hidden layers between input and output) could represent any function. The problem: no one knew how to train them.
+
+**Backpropagation** (independently discovered by several researchers, popularized by Rumelhart, Hinton, and Williams in 1986) solved this:
+
+**The algorithm:**
+1. Forward pass: Compute outputs layer by layer
+2. Calculate error at output
+3. Backward pass: Propagate error back through layers
+4. Adjust weights proportional to their contribution to error
+5. Repeat with many examples
+
+<Diagram type="mermaid" caption="Multi-layer network with backpropagation">
+{`graph TD
+    subgraph INPUT["INPUT LAYER"]
+        I1[x₁]
+        I2[x₂]
+        I3[x₃]
+    end
+
+    subgraph HIDDEN["HIDDEN LAYER<br/>learns features"]
+        H1[h₁]
+        H2[h₂]
+        H3[h₃]
+    end
+
+    subgraph OUTPUT["OUTPUT LAYER"]
+        O1[y]
+    end
+
+    I1 --> H1
+    I1 --> H2
+    I1 --> H3
+    I2 --> H1
+    I2 --> H2
+    I2 --> H3
+    I3 --> H1
+    I3 --> H2
+    I3 --> H3
+
+    H1 --> O1
+    H2 --> O1
+    H3 --> O1
+
+    O1 -.error.-> BACK[Backpropagate error]
+    BACK -.adjust.-> H1
+    BACK -.adjust.-> H2
+    BACK -.adjust.-> H3
+
+    style INPUT fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style HIDDEN fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style OUTPUT fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style BACK fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+`}
+</Diagram>
+
+**Significance**: This was the *sine qua non* of modern AI. Every large language model, every neural agent, traces its lineage to backpropagation.
+
+## The Connectionist Revival (1980s-90s)
+
+Backpropagation sparked renewed interest:
+
+**Successes:**
+- Handwritten digit recognition (MNIST)
+- Speech recognition
+- Simple pattern classification
+
+**Limitations:**
+- Shallow networks (2-3 layers max)
+- Limited data
+- Slow training on available hardware
+- Vanishing gradients in deep networks
+
+Neural networks became a niche tool—useful for specific pattern recognition tasks, but not a path to general intelligence.
+
+## The Second AI Winter (1990s)
+
+By the mid-1990s, enthusiasm again waned:
+- Support Vector Machines and other methods outperformed neural networks
+- "Deep" networks (more than a few layers) didn't train well
+- The field pivoted to statistical machine learning
+
+## The Deep Learning Revolution (2006-2012)
+
+Several developments converged to revive neural networks:
+
+### Algorithmic Breakthroughs
+- **Layer-wise pretraining** (Hinton et al., 2006): Initialize deep networks intelligently
+- **ReLU activation** (Nair & Hinton, 2010): Solve vanishing gradients
+- **Dropout** (Hinton et al., 2012): Prevent overfitting
+- **Batch normalization** (Ioffe & Szegedy, 2015): Stabilize training
+
+### Hardware
+- **GPUs**: Graphics cards could parallelize matrix operations
+- **TPUs**: Google's custom chips for neural network training
+
+### Data
+- **ImageNet** (2009): 14 million labeled images
+- **Web-scale datasets**: Billions of text examples
+- **Compute scaling**: More data + more compute = better performance
+
+### The ImageNet Moment (2012)
+
+AlexNet—a deep convolutional neural network—crushed the ImageNet image classification competition, halving the error rate.
+
+<Callout type="insight">
+2012 marked the inflection point: deep learning wasn't just another technique. It was *the* technique. The field would never be the same.
+</Callout>
+
+## Timeline of Key Developments
+
+<Timeline>
+  <TimelineEvent year="1943" title="McCulloch-Pitts Neuron" type="paper">
+    First mathematical model of neural computation—brain as logical circuit.
+  </TimelineEvent>
+
+  <TimelineEvent year="1958" title="The Perceptron" type="milestone">
+    Rosenblatt's learning algorithm: machines that improve through experience.
+  </TimelineEvent>
+
+  <TimelineEvent year="1969" title="Perceptrons Book" type="paper">
+    Minsky and Papert prove fundamental limitations. First AI winter begins.
+  </TimelineEvent>
+
+  <TimelineEvent year="1986" title="Backpropagation Popularized" type="paper">
+    Rumelhart, Hinton, Williams show how to train multi-layer networks.
+  </TimelineEvent>
+
+  <TimelineEvent year="1989" title="LeCun's CNN" type="paper">
+    Convolutional networks for handwritten digit recognition—first practical deep learning.
+  </TimelineEvent>
+
+  <TimelineEvent year="1997" title="LSTM Networks" type="paper">
+    Hochreiter and Schmidhuber solve sequence learning—foundation for language models.
+  </TimelineEvent>
+
+  <TimelineEvent year="2006" title="Deep Learning Renaissance" type="milestone">
+    Hinton's layer-wise pretraining revives deep networks.
+  </TimelineEvent>
+
+  <TimelineEvent year="2012" title="AlexNet Victory" type="milestone">
+    Deep learning dominates ImageNet. The era of deep learning begins.
+  </TimelineEvent>
+
+  <TimelineEvent year="2014" title="Sequence-to-Sequence Models" type="paper">
+    Neural machine translation: end-to-end learning for complex tasks.
+  </TimelineEvent>
+
+  <TimelineEvent year="2017" title="Transformer Architecture" type="paper">
+    "Attention Is All You Need" introduces transformers—foundation of modern LLMs.
+  </TimelineEvent>
+
+  <TimelineEvent year="2018-2020" title="BERT, GPT-2, GPT-3" type="release">
+    Scaled transformer models show emergent capabilities with size.
+  </TimelineEvent>
+
+  <TimelineEvent year="2022-present" title="LLM-Based Agents" type="milestone">
+    Language models + tool use + reasoning loops = autonomous agents.
+  </TimelineEvent>
+</Timeline>
+
+## From Networks to Agents
+
+The path from neural networks to AI agents required several conceptual leaps:
+
+| Era | Architecture | Capability | Agency |
+|-----|-------------|------------|---------|
+| **1950s-80s** | Perceptrons, shallow nets | Pattern classification | None |
+| **1990s-2000s** | Backprop, deeper nets | Image/speech recognition | None |
+| **2010s** | Deep CNNs, RNNs | Complex perception tasks | None |
+| **2017-2020** | Transformers, LLMs | Language understanding | Minimal |
+| **2023-present** | LLMs + tools + loops | Autonomous task execution | **Yes** |
+
+<Diagram type="mermaid" caption="Evolution to agency">
+{`graph TD
+    NN[NEURAL NETWORKS<br/>1943-2010s<br/>pattern_recognition] --> DL[DEEP LEARNING<br/>2012-2020s<br/>complex_perception]
+
+    DL --> TRANS[TRANSFORMERS<br/>2017+<br/>language_understanding]
+
+    TRANS --> LLM[LARGE LANGUAGE MODELS<br/>2020-2023<br/>general_knowledge]
+
+    LLM --> AGENT[AI AGENTS<br/>2023-present<br/>autonomous_action]
+
+    AGENT --> TOOLS[+ Tool use]
+    AGENT --> LOOP[+ Agent loop]
+    AGENT --> MEM[+ Memory systems]
+
+    style NN fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style DL fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style TRANS fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style LLM fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style AGENT fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+`}
+</Diagram>
+
+**Key insight**: Neural networks provided the *substrate* for intelligence. Agents required additional architectural components (tools, loops, memory) built on top of that substrate.
+
+## Why Now? The Scaling Hypothesis
+
+One of the most important discoveries of the 2020s: **capabilities emerge with scale**.
+
+Large language models exhibit behaviors that smaller models don't:
+- In-context learning (learning from examples without weight updates)
+- Chain-of-thought reasoning
+- Tool use
+- Instruction following
+- Common sense reasoning
+
+These weren't explicitly trained—they **emerged** as models grew larger.
+
+<Callout type="insight">
+Emergent capabilities from scale vindicated the neural network approach: build the substrate, make it big enough, and intelligence appears. This was impossible to foresee in the perceptron era.
+</Callout>
+
+## The Anthropological Lens
+
+Neural networks mirror biological evolution's strategy: **build general-purpose learning machinery and let experience shape it**.
+
+| Biological Brain | Artificial Neural Network |
+|------------------|--------------------------|
+| Neurons and synapses | Artificial neurons and weights |
+| Synaptic plasticity | Gradient descent |
+| Developmental learning | Training on data |
+| Evolutionary adaptation | Architecture search |
+| Massive parallelism | GPU computation |
+
+The convergence isn't coincidental. Both solve the same problem: how to build adaptive intelligence when you can't anticipate every situation in advance.
+
+**Expert systems** tried to crystallize intelligence into rules. **Neural networks** learned the patterns underlying intelligence. The latter proved more robust, more scalable, and more adaptable.
+
+## Lessons from History
+
+1. **Simple mechanisms, complex behavior**: Individual neurons are trivial. Networks of billions are intelligent.
+2. **Scale matters**: Many "impossible" problems become solvable with bigger models and more data.
+3. **Learning beats programming**: Data-driven adaptation outperforms hand-coded rules.
+4. **Patience required**: Neural networks took 70+ years from conception to dominance.
+5. **Winter passes**: Periods of disillusionment precede breakthroughs.
+
+The history of neural networks teaches humility about predicting AI's future. What seems impossible now may simply require more scale, better algorithms, or different framing.
+
+## See Also
+
+- [Cybernetics](/entries/cybernetics) — the broader context of machine intelligence
+- [Expert Systems](/entries/expert-systems) — the competing paradigm
+- [Agentogenesis](/entries/agentogenesis) — how neural networks enabled modern agents
+- [Capability Tiers](/entries/capability-tiers) — the capabilities that emerged from scale
