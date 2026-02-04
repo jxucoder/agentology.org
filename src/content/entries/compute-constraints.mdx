@@ -1,0 +1,416 @@
+---
+title: "Compute Constraints"
+category: ecology
+tags: [resources, limits, economics, infrastructure]
+related: [scaffolding, capability-tiers, habitat-classification, api-ecosystems]
+status: published
+description: "The physics of agent existence—how computational resources like tokens, latency, memory, and cost create carrying capacities that shape what agents can do."
+date: 2024-01-25
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+In ecology, **carrying capacity** is the maximum population an environment can sustain given available resources—food, water, space, energy. Organisms must survive within these limits or perish.
+
+For AI agents, **compute constraints** define their carrying capacity: the tokens, memory, latency, and cost budgets that bound what's possible. These aren't abstract limits—they're the physics of agent existence.
+
+## The Resource Landscape
+
+Agents consume multiple computational resources:
+
+<Diagram type="ascii" caption="Agent resource consumption">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│                    AGENT OPERATION                       │
+│                                                          │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │                                                  │   │
+│   │   INPUT        PROCESSING        OUTPUT         │   │
+│   │   TOKENS  ───► COMPUTE    ───►  TOKENS         │   │
+│   │      │            │                │            │   │
+│   │      │            │                │            │   │
+│   │      ▼            ▼                ▼            │   │
+│   │  ┌───────┐   ┌───────┐        ┌───────┐       │   │
+│   │  │Context│   │Latency│        │  Cost │       │   │
+│   │  │Window │   │  Time │        │   $   │       │   │
+│   │  └───────┘   └───────┘        └───────┘       │   │
+│   │                                                  │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                          │
+│   Every operation consumes limited resources            │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+<Callout type="insight">
+Compute constraints are to agents what metabolic limits are to organisms. Just as animals can only eat, move, and grow within energy budgets, agents can only think and act within computational budgets.
+</Callout>
+
+## Primary Constraints
+
+### Token Limits
+
+The fundamental unit of language model capacity.
+
+<Diagram type="ascii" caption="The context window constraint">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                   CONTEXT WINDOW                         │
+│                  (e.g., 128K tokens)                     │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ████████████████████████████████░░░░░░░░░░░░░░░░░░░░  │
+│  ▲                                ▲                     │
+│  │                                │                     │
+│  Used tokens                      Available             │
+│  (system prompt,                  capacity              │
+│   history, context)                                     │
+│                                                          │
+│  Components competing for space:                        │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ System prompt     │ ~1-5K tokens                │   │
+│  │ Conversation      │ Variable (grows over time)  │   │
+│  │ Retrieved context │ Variable (per query)        │   │
+│  │ Tool results      │ Variable (per operation)    │   │
+│  │ Working space     │ What remains for reasoning  │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Implications:**
+- Long conversations degrade as history exceeds limits
+- Large documents can't fit in single context
+- Complex reasoning competes with background context
+- Trade-off between memory and immediate capability
+
+### Latency
+
+Time from request to response.
+
+| Latency Component | Source |
+|-------------------|--------|
+| **Network** | Data transmission time |
+| **Queue** | Waiting for processing capacity |
+| **Inference** | Model computation (scales with tokens) |
+| **Tool execution** | External API calls |
+| **Post-processing** | Output filtering, formatting |
+
+<Diagram type="ascii" caption="Latency budget breakdown">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   Total acceptable latency: 10 seconds                   │
+│                                                          │
+│   ├──────┼──────┼────────────────┼───────┼─────┤        │
+│   0      1      2                6       8    10 sec    │
+│   │      │      │                │       │              │
+│   │      │      │                │       └─ Safety      │
+│   │      │      │                │          checks      │
+│   │      │      │                └─ Tool calls          │
+│   │      │      └─ Model inference                      │
+│   │      └─ Context loading                             │
+│   └─ Network round-trip                                 │
+│                                                          │
+│   If any component exceeds budget, UX suffers           │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Implications:**
+- Real-time applications have strict requirements
+- More reasoning = more latency
+- Tool calls add unpredictable delays
+- Streaming can hide latency perception
+
+### Memory
+
+What persists across interactions.
+
+| Memory Type | Constraint |
+|-------------|------------|
+| **Context window** | Hard limit per call |
+| **Vector store** | Storage and retrieval costs |
+| **External DB** | Query latency, storage costs |
+| **Session state** | Management complexity |
+
+<Callout type="note">
+Agents don't naturally remember. Every "memory" system consumes resources—tokens for retrieval, storage for persistence, compute for indexing.
+</Callout>
+
+### Cost
+
+The economic constraint underlying all others.
+
+<Diagram type="ascii" caption="Cost structure of agent operations">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   COST PER OPERATION                                     │
+│                                                          │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ Input tokens    │ $X per 1M tokens              │   │
+│   │ Output tokens   │ $Y per 1M tokens (often 3-4X) │   │
+│   │ Tool calls      │ $Z per API call               │   │
+│   │ Storage         │ $W per GB per month           │   │
+│   │ Compute         │ $V per GPU-hour               │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                          │
+│   Total cost = sum of all operations                    │
+│                                                          │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ Simple query:   ~$0.001                         │   │
+│   │ Complex task:   ~$0.10 - $1.00                  │   │
+│   │ Long workflow:  ~$1.00 - $10.00                 │   │
+│   │ Heavy usage:    ~$100+ per day                  │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Implications:**
+- Cost scales with capability usage
+- Longer reasoning costs more
+- Retrieval augmentation adds cost
+- High volume requires careful budgeting
+
+## Constraint Interactions
+
+Constraints interact in complex ways:
+
+<Diagram type="ascii" caption="Constraint interaction effects">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   CONSTRAINT INTERACTIONS                                │
+│                                                          │
+│   More tokens ───────────► Higher cost                  │
+│        │                                                 │
+│        └────────────────► Higher latency                │
+│                                                          │
+│   More reasoning ────────► More tokens ───► Both above  │
+│                                                          │
+│   Better quality ────────► More reasoning ──► All above │
+│                                                          │
+│   More context ──────────► More tokens                  │
+│        │                   Less working space           │
+│        │                                                 │
+│        └─────────────────► Better grounding             │
+│                                                          │
+│   EVERYTHING IS TRADEOFFS                               │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+### The Quality-Speed-Cost Triangle
+
+<Diagram type="ascii" caption="The impossible triangle">
+{`
+                         QUALITY
+                            ▲
+                           /│\\
+                          / │ \\
+                         /  │  \\
+                        /   │   \\
+                       /    │    \\
+                      /     │     \\
+                     /      │      \\
+                    /       │       \\
+                   /        │        \\
+                  ▼─────────┴─────────▼
+               SPEED                COST
+
+   Pick two. The third suffers.
+
+   High quality + Low cost = Slow
+   High quality + Fast    = Expensive  
+   Fast + Low cost        = Low quality
+`}
+</Diagram>
+
+## Adaptation Strategies
+
+How agents and their operators adapt to constraints:
+
+### Token Management
+
+**Compression techniques:**
+- Summarize long histories
+- Extract key information from documents
+- Use efficient prompt formats
+- Prune irrelevant context
+
+**Allocation strategies:**
+- Reserve space for reasoning
+- Dynamic context window management
+- Tiered importance for context items
+
+### Latency Optimization
+
+**Parallel processing:**
+- Multiple tool calls simultaneously
+- Speculative execution
+- Background pre-computation
+
+**Streaming:**
+- Return partial results early
+- Progressive enhancement
+
+**Caching:**
+- Store frequent responses
+- Pre-compute common operations
+
+### Cost Optimization
+
+**Model selection:**
+- Use cheaper models for simple tasks
+- Route to expensive models only when needed
+- Fine-tuned small models for specific tasks
+
+**Request optimization:**
+- Batch operations where possible
+- Avoid redundant calls
+- Cache aggressively
+
+<Callout type="warning">
+Aggressive optimization can degrade capability. A cheaper, faster agent that gives wrong answers isn't actually better. Balance optimization with quality requirements.
+</Callout>
+
+## Carrying Capacity Metaphor
+
+Like ecological carrying capacity, compute constraints determine sustainable agent behavior:
+
+<Diagram type="ascii" caption="Agent carrying capacity">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   SUSTAINABLE OPERATION ZONE                             │
+│                                                          │
+│   Capability  │                                         │
+│   Level       │          ┌──────────────┐              │
+│               │          │  Sustainable  │              │
+│               │         ╱│    Zone       │╲             │
+│       High    │        ╱ │              │ ╲            │
+│               │       ╱  │              │  ╲           │
+│               │      ╱   └──────────────┘   ╲          │
+│               │     ╱    Exceeds budget      ╲         │
+│       Low     │    ╱     (unsustainable)      ╲        │
+│               │   ╱                            ╲       │
+│               └──────────────────────────────────      │
+│                   Low                    High          │
+│                        Resource Budget                  │
+│                                                          │
+│   Agents must operate within sustainable zone or        │
+│   run out of resources (funds, tokens, time)           │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+### Boom-Bust Dynamics
+
+Agents can exceed sustainable limits temporarily:
+- Burst capacity for complex tasks
+- Borrowing from future budget
+- Degraded performance while recovering
+
+But sustained over-consumption leads to failure.
+
+## Constraint Evolution
+
+Constraints change over time:
+
+| Trend | Direction | Implication |
+|-------|-----------|-------------|
+| Context windows | Growing | More complex tasks possible |
+| Token costs | Falling | Higher volume feasible |
+| Model latency | Improving | Better real-time capability |
+| Capability per token | Increasing | More efficient reasoning |
+
+<Diagram type="ascii" caption="Constraint evolution over time">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│   CONSTRAINT TRENDS (log scale)                         │
+│                                                          │
+│   Context      │                                        │
+│   Window       │                               ▄▄▄▄    │
+│   (tokens)     │                         ▄▄▄▄▄▀        │
+│                │                   ▄▄▄▄▄▀              │
+│                │             ▄▄▄▄▀                     │
+│                │        ▄▄▄▀                           │
+│                └────────────────────────────────────── │
+│                 2020   2021   2022   2023   2024       │
+│                                                          │
+│   Cost per     │                                        │
+│   Token        │  ▀▀▀▀▀▄▄                               │
+│   ($)          │        ▀▀▀▀▄▄                          │
+│                │             ▀▀▀▀▄▄                     │
+│                │                  ▀▀▀▀▄▄               │
+│                │                       ▀▀▀            │
+│                └────────────────────────────────────── │
+│                 2020   2021   2022   2023   2024       │
+│                                                          │
+│   What's expensive today is cheap tomorrow.             │
+│   What's impossible today is routine tomorrow.          │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+<Callout type="insight">
+Today's constraints shape today's agents. But constraint evolution means tomorrow's agents will be fundamentally different—able to do things that are currently impossible due to resource limits.
+</Callout>
+
+## Constraint-Aware Design
+
+Design agents with constraints as first-class considerations:
+
+### Graceful Degradation
+When resources are exhausted:
+- Reduce quality rather than fail completely
+- Inform users of limitations
+- Prioritize critical functionality
+
+### Resource Budgeting
+Explicit allocation:
+- Token budget per task
+- Latency budget per operation
+- Cost budget per session/user
+
+### Monitoring
+Track consumption:
+- Alert on approaching limits
+- Analyze usage patterns
+- Identify optimization opportunities
+
+### Scaling Strategies
+Handle varying demand:
+- Queue management under load
+- Tiered service levels
+- Automatic capacity adjustment
+
+## The Resource Politics
+
+Compute constraints create political questions:
+
+- **Who gets compute?** Allocation decisions have consequences
+- **Who pays?** Cost distribution affects access
+- **Who decides limits?** Governance of shared resources
+- **What's prioritized?** Quality vs. access trade-offs
+
+These are not purely technical questions—they're questions about values and priorities.
+
+## See Also
+
+- [Scaffolding](/entries/scaffolding) — infrastructure that manages constraints
+- [Capability Tiers](/entries/capability-tiers) — how constraints bound capability
+- [Habitat Classification](/entries/habitat-classification) — environments with different constraint profiles
+- [API Ecosystems](/entries/api-ecosystems) — external constraints from dependencies

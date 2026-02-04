@@ -1,17 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
-import EntryCard from '../components/EntryCard.astro';
 import { getCollection } from 'astro:content';
 
 const categories = [
-  { name: 'archaeology', slug: 'archaeology', code: 'ARCH' },
-  { name: 'anatomy', slug: 'anatomy', code: 'ANAT' },
-  { name: 'taxonomy', slug: 'taxonomy', code: 'TAXO' },
-  { name: 'ethology', slug: 'ethology', code: 'ETHO' },
-  { name: 'linguistics', slug: 'linguistics', code: 'LING' },
-  { name: 'sociology', slug: 'sociology', code: 'SOCI' },
-  { name: 'ecology', slug: 'ecology', code: 'ECOL' },
-  { name: 'ethics', slug: 'ethics', code: 'ETHI' },
+  { name: 'Archaeology', slug: 'archaeology' },
+  { name: 'Anatomy', slug: 'anatomy' },
+  { name: 'Taxonomy', slug: 'taxonomy' },
+  { name: 'Ethology', slug: 'ethology' },
+  { name: 'Linguistics', slug: 'linguistics' },
+  { name: 'Sociology', slug: 'sociology' },
+  { name: 'Ecology', slug: 'ecology' },
+  { name: 'Ethics', slug: 'ethics' },
 ];
 
 const allEntries = await getCollection('entries');
@@ -22,82 +21,144 @@ const categoryCounts = categories.map(cat => ({
 }));
 ---
 
-<Base title="BROWSE">
-  <header class="mb-6 pb-3 border-b border-border-primary">
-    <pre class="text-xs text-text-muted mb-2">
-> query: list_all_entries
-> status: {allEntries.length} records found
-    </pre>
-  </header>
-
-  <section class="mb-6">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-      {categoryCounts.map((cat) => (
-        <a
-          href={`#${cat.slug}`}
-          class="category-filter p-2 bg-bg-secondary border border-border-primary hover:border-text-primary transition-all animate-fade-in"
-          data-category={cat.slug}
-        >
-          <div class="flex items-center justify-between">
-            <span class="font-mono text-text-muted">[{cat.code}]</span>
-            <span class="text-text-muted">{cat.count}</span>
-          </div>
-          <div class="font-mono text-text-secondary mt-1">{cat.name}</div>
-        </a>
-      ))}
+<Base title="Browse">
+  <!-- Header -->
+  <section class="section border-b border-border-secondary">
+    <div class="container-apple text-center">
+      <h1 class="text-display-md text-text-primary mb-4">Browse Entries</h1>
+      <p class="text-body-lg text-text-secondary">
+        Explore {allEntries.length} entries across {categories.length} categories
+      </p>
     </div>
   </section>
 
-  {categories.map((cat) => {
-    const catEntries = allEntries.filter(e => e.data.category === cat.slug);
-    return catEntries.length > 0 && (
-      <section id={cat.slug} class="mb-8 category-section animate-fade-in" data-category={cat.slug}>
-        <h2 class="text-sm font-mono text-text-primary mb-3 pb-1 border-b border-border-primary flex items-center justify-between">
-          <span>[{cat.code}] {cat.name}</span>
-          <span class="text-text-muted">{catEntries.length}</span>
-        </h2>
-        <div class="space-y-2">
-          {catEntries.map((entry, index) => (
-            <div style={`animation-delay: ${index * 50}ms`} class="animate-slide-in">
-              <EntryCard
-                title={entry.data.title}
-                slug={entry.slug}
-                category={entry.data.category}
-                description={entry.data.description}
-                status={entry.data.status}
-              />
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  })}
-
-  {allEntries.length === 0 && (
-    <div class="text-center py-16">
-      <p class="text-text-muted text-xs font-mono">no entries found</p>
+  <!-- Category Filter -->
+  <section class="py-8 border-b border-border-secondary sticky top-14 bg-bg-primary/80 backdrop-blur-xl z-30">
+    <div class="container-apple-lg">
+      <div class="flex flex-wrap justify-center gap-3">
+        <button
+          class="category-pill active"
+          data-category="all"
+        >
+          All
+        </button>
+        {categoryCounts.map((cat) => (
+          <button
+            class="category-pill"
+            data-category={cat.slug}
+          >
+            {cat.name}
+            <span class="ml-1 text-text-muted">({cat.count})</span>
+          </button>
+        ))}
+      </div>
     </div>
-  )}
+  </section>
+
+  <!-- Entries -->
+  <section class="section">
+    <div class="container-apple-lg">
+      {categories.map((cat) => {
+        const catEntries = allEntries.filter(e => e.data.category === cat.slug);
+        return catEntries.length > 0 && (
+          <div
+            id={cat.slug}
+            class="category-section mb-16 last:mb-0"
+            data-category={cat.slug}
+          >
+            <div class="flex items-baseline justify-between mb-8">
+              <h2 class="text-headline text-text-primary">{cat.name}</h2>
+              <span class="text-body-sm text-text-muted">{catEntries.length} entries</span>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {catEntries.map((entry) => (
+                <a
+                  href={`/entries/${entry.slug}`}
+                  class="card-hover p-6 group"
+                >
+                  <div class="flex items-center justify-between mb-3">
+                    <span class={`category-badge category-${entry.data.category}`}>
+                      {cat.name}
+                    </span>
+                    {entry.data.status === 'draft' && (
+                      <span class="text-caption text-amber-600">Draft</span>
+                    )}
+                  </div>
+                  <h3 class="text-title-sm text-text-primary group-hover:text-accent-blue transition-colors mb-2">
+                    {entry.data.title}
+                  </h3>
+                  <p class="text-body-sm text-text-secondary line-clamp-2">
+                    {entry.data.description}
+                  </p>
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+
+      {allEntries.length === 0 && (
+        <div class="text-center py-20">
+          <p class="text-body text-text-muted">No entries found</p>
+        </div>
+      )}
+    </div>
+  </section>
 </Base>
+
+<style>
+  .category-pill {
+    @apply px-4 py-2 text-body-sm font-medium text-text-secondary rounded-full
+           bg-bg-secondary hover:bg-border-secondary transition-all;
+  }
+
+  .category-pill.active {
+    @apply bg-text-primary text-white;
+  }
+</style>
 
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const categoryParam = urlParams.get('category');
+    const pills = document.querySelectorAll('.category-pill');
+    const sections = document.querySelectorAll('.category-section');
 
-    if (categoryParam) {
-      const sections = document.querySelectorAll('.category-section');
+    function filterByCategory(category) {
+      pills.forEach(pill => {
+        pill.classList.toggle('active', pill.dataset.category === category);
+      });
+
       sections.forEach(section => {
-        if (section.dataset.category !== categoryParam) {
-          section.style.display = 'none';
+        if (category === 'all') {
+          section.style.display = 'block';
+        } else {
+          section.style.display = section.dataset.category === category ? 'block' : 'none';
         }
       });
 
-      // Scroll to category
+      const url = new URL(window.location);
+      if (category === 'all') {
+        url.searchParams.delete('category');
+      } else {
+        url.searchParams.set('category', category);
+      }
+      window.history.replaceState({}, '', url);
+    }
+
+    if (categoryParam) {
+      filterByCategory(categoryParam);
       const targetSection = document.getElementById(categoryParam);
       if (targetSection) {
-        setTimeout(() => targetSection.scrollIntoView({ behavior: 'smooth' }), 100);
+        setTimeout(() => targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
       }
     }
+
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        filterByCategory(pill.dataset.category);
+      });
+    });
   });
 </script>

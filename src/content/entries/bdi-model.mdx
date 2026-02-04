@@ -1,0 +1,315 @@
+---
+title: "BDI Model"
+category: anatomy
+tags: [architecture, cognition, planning, philosophy]
+related: [the-agent-loop, actor-model, perception-action-cycle]
+status: published
+description: "The Belief-Desire-Intention architecture—a philosophical framework that became a practical blueprint for goal-directed autonomous agents."
+date: 2026-02-01
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+The **BDI model** (Belief-Desire-Intention) is a cognitive architecture for agents that reasons explicitly about mental states. Originating in philosophy of mind, it became the theoretical foundation for autonomous agent systems in the 1980s-90s and remains influential in understanding how agents represent and pursue goals.
+
+While modern LLM-based agents don't implement BDI explicitly, they often exhibit BDI-like reasoning when prompted appropriately—a convergence that reveals something deep about the structure of practical reasoning.
+
+## The Philosophical Foundation
+
+Philosopher Michael Bratman's 1987 work on **practical reasoning** asked: How do humans decide what to do? His answer centered on three mental attitudes:
+
+**Beliefs**: What the agent thinks is true about the world
+**Desires**: What states of the world the agent wants to achieve
+**Intentions**: What the agent has committed to doing
+
+<Callout type="insight">
+Intention is the key innovation. It's not enough to have desires—agents must commit to plans and follow through despite changing circumstances. Intentions provide stability and coherence to action.
+</Callout>
+
+### Why Intentions Matter
+
+Consider: You desire to write a paper, exercise, and visit a friend. These desires may conflict—you can't do all three simultaneously. **Intentions** resolve this:
+
+1. You form an intention to write the paper today
+2. This intention filters perception (noticing your desk, ignoring the gym)
+3. It guides planning (block out 3 hours, gather references)
+4. It constrains future decisions (declining other invitations)
+5. It persists despite obstacles (your computer crashes; you restart rather than give up)
+
+Intention transforms desire into commitment—and commitment enables action in a complex world.
+
+## The BDI Architecture
+
+Anand Rao and Michael Georgeff formalized Bratman's ideas into a computational architecture in the early 1990s:
+
+<Diagram type="mermaid" caption="BDI agent architecture">
+{`graph TD
+    ENV[ENVIRONMENT<br/>percepts_and_events] --> PERC[Perception<br/>observe]
+
+    PERC --> BEL[BELIEFS<br/>what_is_true<br/>world_model]
+
+    BEL --> OPTIONS[Generate options<br/>what_is_possible]
+
+    DES[DESIRES<br/>what_to_achieve<br/>goals] --> OPTIONS
+
+    OPTIONS --> FILTER[Filter<br/>select_intention]
+
+    INT[INTENTIONS<br/>committed_plans<br/>active_goals] --> FILTER
+
+    FILTER --> INT
+
+    INT --> EXEC[Execute<br/>act]
+
+    EXEC --> ACT[ACTIONS<br/>tool_calls<br/>outputs]
+
+    ACT --> ENV
+
+    style ENV fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style BEL fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style DES fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style INT fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style OPTIONS fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style FILTER fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style EXEC fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+### The Components
+
+**Belief Base**: The agent's model of the world
+- Current state observations
+- Inferred facts
+- Remembered history
+- Uncertainty estimates
+
+**Desire Set**: Goals the agent might pursue
+- Top-level objectives (given by user or system)
+- Subgoals (derived from plans)
+- Opportunistic goals (arising from observations)
+
+**Intention Stack**: Committed plans being executed
+- Active goals
+- Partial plans
+- Scheduled actions
+- Commitment to follow through
+
+## The BDI Reasoning Cycle
+
+A BDI agent operates in a continuous loop:
+
+1. **Perceive**: Gather information from environment → update beliefs
+2. **Generate options**: Given beliefs and desires, what actions are possible?
+3. **Deliberate**: Which desires should become intentions? (Goal selection)
+4. **Plan**: How to achieve selected intentions? (Means-ends reasoning)
+5. **Execute**: Carry out next action in plan
+6. **Repeat**: Return to perception
+
+<Diagram type="mermaid" caption="BDI reasoning cycle">
+{`graph TD
+    START[Perceive environment] --> UPDATE[Update beliefs]
+    UPDATE --> GEN[Generate options from beliefs + desires]
+    GEN --> DELIB[Deliberate: select intention]
+    DELIB --> PLAN[Plan: means-ends reasoning]
+    PLAN --> EXEC[Execute: perform action]
+    EXEC --> CHECK{Goal achieved?}
+    CHECK -->|No| START
+    CHECK -->|Yes| DROP[Drop intention]
+    DROP --> START
+
+    style START fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style UPDATE fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style GEN fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style DELIB fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style PLAN fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style EXEC fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style CHECK fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+    style DROP fill:#0a0a0a,stroke:#10b981,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+### Key Design Choices
+
+**Deliberation**: How to choose among competing desires?
+- **Filter**: Apply rules (priority, resources, constraints)
+- **Evaluate**: Simulate outcomes, choose highest expected utility
+- **Satisfice**: Pick first acceptable option
+
+**Means-ends reasoning**: How to achieve intentions?
+- **Hierarchical planning**: Decompose goals into subgoals
+- **Reactive plans**: Pre-compiled action recipes triggered by conditions
+- **Search**: Explore action space for goal-achieving sequences
+
+**Reconsideration**: When to revise intentions?
+- **Bold agents**: Never reconsider—full commitment
+- **Cautious agents**: Constantly reconsider—maximum flexibility
+- **Pragmatic agents**: Reconsider when beliefs change significantly
+
+## Classical BDI Systems
+
+Several implemented systems demonstrated the BDI approach:
+
+### PRS (Procedural Reasoning System) - 1987
+- Developed by Georgeff and Lansky
+- Used for spacecraft control
+- Plan library + reactive selection
+
+### JACK Intelligent Agents - 1990s
+- Commercial BDI platform
+- Java-based
+- Widely used in military simulations, air traffic control
+
+### Jason - 2003
+- Open-source BDI interpreter
+- AgentSpeak language
+- Academic research platform
+
+<Callout type="note">
+These systems formalized the BDI architecture explicitly. Modern LLM agents implement BDI *implicitly* through prompting and scaffolding, without separate data structures for beliefs, desires, and intentions.
+</Callout>
+
+## Comparison to Modern Agent Architectures
+
+| Aspect | Classical BDI | Modern LLM Agents |
+|--------|--------------|-------------------|
+| **Beliefs** | Explicit symbolic database | Implicit in context window + memory |
+| **Desires** | Explicit goal list | Task description + system prompt |
+| **Intentions** | Explicit plan stack | Current reasoning trace + action history |
+| **Planning** | Formal plan libraries | Natural language reasoning (CoT) |
+| **Execution** | Procedural action rules | Function calling / tool use |
+| **Reconsideration** | Hard-coded policies | Implicit in each reasoning step |
+
+The LLM approach is **softer** and **more flexible**—no rigid separation of beliefs, desires, and intentions—but the conceptual structure remains recognizable.
+
+### Example: LLM Agent with BDI Structure
+
+**Task**: "Book a flight to Paris next week"
+
+```
+[BELIEFS - inferred from context]
+- User wants to travel to Paris
+- Current date is Feb 1, 2026
+- I have access to flight search tools
+
+[DESIRES - extracted from task]
+- Find available flights to Paris
+- Select reasonable options
+- Present choices to user
+- Complete booking if approved
+
+[INTENTION - selected for current action]
+- Search for flights next week (Feb 8-14)
+
+[PLAN - implicit reasoning]
+Step 1: Use flight_search tool with:
+  - origin: user's location (need to ask)
+  - destination: Paris
+  - dates: Feb 8-14
+Step 2: Present results
+Step 3: Get user selection
+Step 4: Complete booking
+
+[EXECUTION]
+THOUGHT: I need to know the user's departure city
+ACTION: ask_user("What city will you be departing from?")
+```
+
+The agent exhibits BDI reasoning without explicit BDI data structures—the pattern emerges from the language model's training.
+
+## Strengths of the BDI Model
+
+1. **Intuitive**: Maps to how humans describe their own reasoning
+2. **Handles commitment**: Intentions persist despite distractions
+3. **Reactive and deliberative**: Can respond to urgency or plan carefully
+4. **Hierarchical goals**: Natural handling of subgoals and task decomposition
+5. **Philosophically grounded**: Built on solid theory of practical reasoning
+
+## Limitations and Challenges
+
+### The Frame Problem
+How much do beliefs need to be updated after each action? Classical BDI required explicit frame axioms. LLMs sidestep this—the model "intuits" what stays constant.
+
+### Combinatorial Planning
+BDI planning can be computationally expensive. Real systems used reactive plan libraries (pre-compiled recipes) rather than search.
+
+### Intention Reconsideration
+Balancing commitment (sticking to plans) vs. flexibility (adapting to new information) is hard. Too bold: inefficient. Too cautious: unstable.
+
+### Social Coordination
+Single-agent BDI is well-understood. Multi-agent BDI requires reasoning about other agents' beliefs, desires, and intentions—computationally expensive.
+
+<Callout type="warning">
+BDI's explicitness is both strength and weakness. Formal representations enable verification and explanation, but limit flexibility. LLMs trade rigor for adaptability.
+</Callout>
+
+## BDI in Multi-Agent Systems
+
+BDI shines in multi-agent contexts where explicit mental models matter:
+
+**Team coordination:**
+- Agents share beliefs (joint knowledge)
+- Agents negotiate desires (conflict resolution)
+- Agents synchronize intentions (coordinated plans)
+
+**Theory of mind:**
+- Modeling other agents' beliefs (what do they know?)
+- Inferring other agents' desires (what do they want?)
+- Predicting other agents' intentions (what will they do?)
+
+Modern agent protocols could benefit from explicit BDI representations for coordination.
+
+## The BDI-Agent Loop Connection
+
+The BDI cycle maps cleanly to the agent loop:
+
+| BDI Phase | Agent Loop Phase |
+|-----------|------------------|
+| Perceive | Observe |
+| Update beliefs | Process observations |
+| Generate options + deliberate | Reason |
+| Plan + execute | Act |
+
+<Diagram type="mermaid" caption="BDI and agent loop correspondence">
+{`graph LR
+    subgraph BDI["BDI CYCLE"]
+        B1[Perceive] --> B2[Update beliefs]
+        B2 --> B3[Deliberate]
+        B3 --> B4[Plan]
+        B4 --> B5[Execute]
+        B5 -.loop.-> B1
+    end
+
+    subgraph AGENT["AGENT LOOP"]
+        A1[Observe] --> A2[Reason]
+        A2 --> A3[Act]
+        A3 -.loop.-> A1
+    end
+
+    B1 -.corresponds.-> A1
+    B2 -.corresponds.-> A1
+    B3 -.corresponds.-> A2
+    B4 -.corresponds.-> A2
+    B5 -.corresponds.-> A3
+
+    style BDI fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+    style AGENT fill:#0a0a0a,stroke:#10b981,stroke-width:2px,color:#cccccc
+`}
+</Diagram>
+
+BDI provides finer-grained structure to the "reason" phase—distinguishing deliberation (what to do) from planning (how to do it).
+
+## Future Directions
+
+**Hybrid architectures**: LLMs for flexible reasoning + explicit BDI structures for verifiability
+**Explainability**: BDI's explicit representations could improve agent interpretability
+**Verification**: Formal BDI models could prove safety properties
+**Coordination**: Explicit belief/desire/intention sharing in multi-agent systems
+
+The future may not be pure BDI or pure LLM, but a synthesis leveraging strengths of both.
+
+## See Also
+
+- [The Agent Loop](/entries/the-agent-loop) — the operational structure BDI formalizes
+- [Actor Model](/entries/actor-model) — the computational model for distributed agents
+- [Perception-Action Cycle](/entries/perception-action-cycle) — the cognitive substrate underlying BDI
+- [Memory Systems](/entries/memory-systems) — how beliefs persist and evolve

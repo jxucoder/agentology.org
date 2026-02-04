@@ -9,40 +9,40 @@ interface Props {
 
 const { title, slug, category, description, status } = Astro.props;
 
-const categoryInfo: Record<string, { code: string }> = {
-  archaeology: { code: 'ARCH' },
-  anatomy: { code: 'ANAT' },
-  taxonomy: { code: 'TAXO' },
-  ethology: { code: 'ETHO' },
-  linguistics: { code: 'LING' },
-  sociology: { code: 'SOCI' },
-  ecology: { code: 'ECOL' },
-  ethics: { code: 'ETHI' },
+const categoryInfo: Record<string, { name: string }> = {
+  archaeology: { name: 'Archaeology' },
+  anatomy: { name: 'Anatomy' },
+  taxonomy: { name: 'Taxonomy' },
+  ethology: { name: 'Ethology' },
+  linguistics: { name: 'Linguistics' },
+  sociology: { name: 'Sociology' },
+  ecology: { name: 'Ecology' },
+  ethics: { name: 'Ethics' },
 };
 
-const cat = categoryInfo[category] || { code: 'MISC' };
+const cat = categoryInfo[category] || { name: 'Misc' };
 ---
 
 <a
   href={`/entries/${slug}`}
-  class="entry-card block p-2 bg-bg-secondary border border-border-primary hover:border-text-primary hover:bg-bg-tertiary transition-all group"
+  class="card-hover block p-6 group"
 >
-  <div class="flex items-start justify-between gap-3 mb-1">
-    <span class="text-xs font-mono text-text-muted">
-      [{cat.code}]
+  <div class="flex items-center justify-between mb-3">
+    <span class={`category-badge category-${category}`}>
+      {cat.name}
     </span>
     {status === 'draft' && (
-      <span class="text-xs font-mono text-accent-warning">
-        draft
+      <span class="text-caption font-medium text-amber-600">
+        Draft
       </span>
     )}
   </div>
 
-  <h3 class="font-mono font-semibold text-sm text-text-secondary group-hover:text-text-primary transition-colors mb-1">
+  <h3 class="text-title-sm text-text-primary group-hover:text-accent-blue transition-colors mb-2">
     {title}
   </h3>
 
   {description && (
-    <p class="text-xs text-text-muted line-clamp-1">{description}</p>
+    <p class="text-body-sm text-text-secondary line-clamp-2">{description}</p>
   )}
 </a>

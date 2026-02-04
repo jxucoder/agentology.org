@@ -1,0 +1,405 @@
+---
+title: "Capability Tiers"
+category: taxonomy
+tags: [classification, capabilities, development, maturity]
+related: [autonomy-levels, agent-archetypes, agentogenesis]
+status: published
+description: "A developmental taxonomy of agent capabilities—from basic language to autonomous self-improvement, mapping the stages of cognitive maturity."
+date: 2024-01-19
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+In developmental psychology, cognitive capabilities emerge in stages. Infants perceive, then act, then plan, then reason abstractly. Each stage builds on the previous, and each unlocks new possibilities.
+
+**Capability tiers** provide an analogous framework for AI agents—a taxonomy of what agents can do, organized by increasing sophistication and the dependencies between capabilities.
+
+## The Capability Ladder
+
+Agent capabilities form a rough hierarchy:
+
+<Diagram type="ascii" caption="The capability tier hierarchy">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                                                          │
+│  TIER 5: SELF-IMPROVEMENT                               │
+│          Modify own capabilities, learn continuously     │
+│                         ▲                                │
+│                         │                                │
+│  TIER 4: AUTONOMOUS PLANNING                            │
+│          Long-horizon goals, strategy, adaptation        │
+│                         ▲                                │
+│                         │                                │
+│  TIER 3: MULTI-STEP EXECUTION                           │
+│          Tool use, action sequences, error recovery      │
+│                         ▲                                │
+│                         │                                │
+│  TIER 2: CONTEXTUAL REASONING                           │
+│          Chain-of-thought, in-context learning           │
+│                         ▲                                │
+│                         │                                │
+│  TIER 1: LANGUAGE COMPETENCE                            │
+│          Generation, comprehension, knowledge recall     │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+Each tier requires the capabilities below it. You can't have autonomous planning without multi-step execution; you can't have multi-step execution without reasoning.
+
+## Tier 1: Language Competence
+
+The foundation. The agent can process and generate natural language.
+
+<Diagram type="ascii" caption="Tier 1 capabilities">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                  TIER 1: LANGUAGE                        │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Core Capabilities:                                      │
+│  ─────────────────                                       │
+│  • Text comprehension (understanding input)              │
+│  • Text generation (producing output)                    │
+│  • Knowledge recall (facts from training)                │
+│  • Style adaptation (matching tone, format)              │
+│  • Translation (between languages)                       │
+│                                                          │
+│  Limitations:                                            │
+│  ────────────                                            │
+│  • Single-turn only                                      │
+│  • No explicit reasoning                                 │
+│  • No action capability                                  │
+│  • Knowledge frozen at training                          │
+│                                                          │
+│  Example Systems:                                        │
+│  ───────────────                                         │
+│  • Base GPT-3 (before RLHF)                              │
+│  • Simple completion APIs                                │
+│  • Translation services                                  │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The infant who understands and produces speech but cannot yet reason about it or use it to accomplish goals.
+
+Tier 1 is necessary but not sufficient for agency. A system at this tier can answer questions but not *do* anything. It's a tool, not an agent.
+
+<Callout type="note">
+Most "AI" before 2022 operated at Tier 1. The transition from Tier 1 to higher tiers marks the emergence of agents as a distinct category.
+</Callout>
+
+## Tier 2: Contextual Reasoning
+
+The agent can think step-by-step, learn from examples in context, and maintain coherent reasoning across a conversation.
+
+<Diagram type="ascii" caption="Tier 2 capabilities">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                TIER 2: REASONING                         │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Core Capabilities:                                      │
+│  ─────────────────                                       │
+│  • Chain-of-thought reasoning                            │
+│  • In-context learning (few-shot)                        │
+│  • Multi-turn conversation coherence                     │
+│  • Self-correction within conversation                   │
+│  • Instruction following                                 │
+│                                                          │
+│  Limitations:                                            │
+│  ────────────                                            │
+│  • Cannot take external actions                          │
+│  • Reasoning is verbal only                              │
+│  • No access to current information                      │
+│  • Limited by context window                             │
+│                                                          │
+│  Example Systems:                                        │
+│  ───────────────                                         │
+│  • ChatGPT (without plugins)                             │
+│  • Claude (without tools)                                │
+│  • Conversational assistants                             │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The child who can reason about problems verbally, explain their thinking, and learn from demonstration—but who cannot yet act independently in the world.
+
+Tier 2 introduced the possibility of complex problem-solving, but the agent remains confined to language. It can plan in theory but not execute in practice.
+
+### The Tier 2 Breakthrough
+
+The emergence of robust Tier 2 capabilities (around 2022-2023) was the critical enabler for everything that followed:
+
+| Capability | Why It Matters |
+|------------|----------------|
+| Chain-of-thought | Enables complex reasoning |
+| Instruction following | Enables reliable control |
+| In-context learning | Enables rapid adaptation |
+| Multi-turn coherence | Enables extended interaction |
+
+Without Tier 2, higher tiers are impossible. The ability to reason is prerequisite to the ability to plan actions.
+
+## Tier 3: Multi-Step Execution
+
+The agent can take actions in the world—calling tools, modifying files, interacting with systems—and chain these actions together to accomplish goals.
+
+<Diagram type="ascii" caption="Tier 3 capabilities">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                TIER 3: EXECUTION                         │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Core Capabilities:                                      │
+│  ─────────────────                                       │
+│  • Tool use (function calling)                           │
+│  • Action sequencing (multi-step tasks)                  │
+│  • Observation processing (reading tool outputs)         │
+│  • Error detection and recovery                          │
+│  • State tracking across steps                           │
+│                                                          │
+│  Limitations:                                            │
+│  ────────────                                            │
+│  • Requires human-defined goals                          │
+│  • Limited planning horizon                              │
+│  • Struggles with novel situations                       │
+│  • Cannot modify own capabilities                        │
+│                                                          │
+│  Example Systems:                                        │
+│  ───────────────                                         │
+│  • ChatGPT with plugins                                  │
+│  • Claude with tools                                     │
+│  • GitHub Copilot Workspace                              │
+│  • Most current "AI agents"                              │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The adolescent who can execute plans, use tools, and accomplish tasks—but who still operates within structures set by others.
+
+<Callout type="insight">
+Tier 3 is where most production AI agents operate today. The jump from Tier 2 to Tier 3 is the difference between "assistant that talks" and "assistant that does."
+</Callout>
+
+### Tier 3 Subtypes
+
+Not all Tier 3 agents are equal:
+
+| Subtype | Description |
+|---------|-------------|
+| **3a: Single-tool** | Can use one tool per step |
+| **3b: Multi-tool** | Can orchestrate multiple tools |
+| **3c: Self-correcting** | Can detect and recover from errors |
+| **3d: Adaptive** | Can adjust approach based on feedback |
+
+Most current agents are 3a or 3b. True 3c and 3d remain challenging.
+
+## Tier 4: Autonomous Planning
+
+The agent can set its own subgoals, develop strategies, and adapt plans based on changing circumstances—operating over extended time horizons with minimal human guidance.
+
+<Diagram type="ascii" caption="Tier 4 capabilities">
+{`
+┌─────────────────────────────────────────────────────────┐
+│                TIER 4: PLANNING                          │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Core Capabilities:                                      │
+│  ─────────────────                                       │
+│  • Goal decomposition                                    │
+│  • Strategic planning                                    │
+│  • Resource allocation                                   │
+│  • Contingency handling                                  │
+│  • Long-horizon task management                          │
+│  • Self-directed exploration                             │
+│                                                          │
+│  Limitations:                                            │
+│  ────────────                                            │
+│  • Cannot acquire new capabilities                       │
+│  • Bounded by training distribution                      │
+│  • Still requires ultimate human oversight               │
+│  • May pursue goals misaligned with intent               │
+│                                                          │
+│  Example Systems:                                        │
+│  ───────────────                                         │
+│  • AutoGPT (attempted)                                   │
+│  • Devin (claimed)                                       │
+│  • Research agents (emerging)                            │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The adult who can manage projects, set their own objectives, and navigate complex situations—but who works within a given set of skills and tools.
+
+### The Tier 4 Gap
+
+There's a significant capability gap between current Tier 3 systems and robust Tier 4:
+
+| Challenge | Why It's Hard |
+|-----------|---------------|
+| Long-horizon planning | Requires accurate world models |
+| Strategy adaptation | Requires meta-cognition about plans |
+| Resource management | Requires understanding of constraints |
+| Failure recovery | Requires diagnosis of root causes |
+
+<Callout type="warning">
+Many systems claim Tier 4 capabilities but deliver Tier 3 with longer loops. True autonomous planning—reliable, safe, and effective—remains an open research problem.
+</Callout>
+
+## Tier 5: Self-Improvement
+
+The agent can modify its own capabilities, learn continuously from experience, and expand what it's able to do.
+
+<Diagram type="ascii" caption="Tier 5 capabilities">
+{`
+┌─────────────────────────────────────────────────────────┐
+│              TIER 5: SELF-IMPROVEMENT                    │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Core Capabilities:                                      │
+│  ─────────────────                                       │
+│  • Continuous learning from experience                   │
+│  • Capability acquisition                                │
+│  • Self-modification                                     │
+│  • Meta-learning (learning to learn)                     │
+│  • Novel tool creation                                   │
+│                                                          │
+│  Limitations:                                            │
+│  ────────────                                            │
+│  • ???                                                   │
+│  • (Largely theoretical at this point)                   │
+│                                                          │
+│  Example Systems:                                        │
+│  ───────────────                                         │
+│  • None reliably demonstrated                            │
+│  • (Various research prototypes)                         │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+`}
+</Diagram>
+
+**Anthropological parallel**: The sage who not only acts wisely but continuously develops new wisdom—growing beyond what they were taught.
+
+Tier 5 is largely theoretical. Current systems can be updated by their developers, but they cannot reliably improve themselves. This tier represents the frontier—and the source of both greatest promise and greatest concern.
+
+### Why Tier 5 Matters
+
+Self-improvement creates feedback loops:
+
+```
+Better capabilities → Better self-improvement → Even better capabilities → ...
+```
+
+This recursive dynamic is what makes Tier 5 qualitatively different from lower tiers—and why it receives so much attention in AI safety research.
+
+## Capability Assessment
+
+How do you determine an agent's tier?
+
+<Diagram type="ascii" caption="Capability tier assessment flowchart">
+{`
+                    ┌─────────────────┐
+                    │ Can it modify   │
+                    │ its own         │──── Yes ───► TIER 5
+                    │ capabilities?   │
+                    └────────┬────────┘
+                             │ No
+                             ▼
+                    ┌─────────────────┐
+                    │ Can it plan     │
+                    │ autonomously    │──── Yes ───► TIER 4
+                    │ over long       │
+                    │ horizons?       │
+                    └────────┬────────┘
+                             │ No
+                             ▼
+                    ┌─────────────────┐
+                    │ Can it use      │
+                    │ tools and       │──── Yes ───► TIER 3
+                    │ execute multi-  │
+                    │ step actions?   │
+                    └────────┬────────┘
+                             │ No
+                             ▼
+                    ┌─────────────────┐
+                    │ Can it reason   │
+                    │ step-by-step    │──── Yes ───► TIER 2
+                    │ and follow      │
+                    │ instructions?   │
+                    └────────┬────────┘
+                             │ No
+                             ▼
+                         TIER 1
+`}
+</Diagram>
+
+### Assessment Caveats
+
+- **Tiers aren't binary**: An agent might be "Tier 3.5"—reliable multi-step execution with some planning ability
+- **Context matters**: The same agent might operate at different tiers in different domains
+- **Reliability varies**: Occasional capability ≠ reliable capability
+
+## The Capability-Safety Tradeoff
+
+Higher tiers bring greater capability—and greater risk:
+
+| Tier | Capability | Risk Profile |
+|------|------------|--------------|
+| 1 | Text generation | Low (words only) |
+| 2 | Reasoning | Low (still just words) |
+| 3 | Action | Medium (can affect world) |
+| 4 | Autonomous planning | High (less oversight) |
+| 5 | Self-improvement | Unknown (recursive effects) |
+
+<Callout type="warning">
+Each tier transition increases both capability and risk. The field has collectively decided to proceed carefully, ensuring alignment techniques keep pace with capability advances.
+</Callout>
+
+## Tier Transitions
+
+What enables jumps between tiers?
+
+| Transition | Key Enablers |
+|------------|--------------|
+| 1 → 2 | Scale, RLHF, instruction tuning |
+| 2 → 3 | Function calling, tool frameworks, scaffolding |
+| 3 → 4 | Better planning algorithms, longer context, world models |
+| 4 → 5 | ??? (active research) |
+
+We understand the 1→2 and 2→3 transitions well. The 3→4 transition is partially understood. The 4→5 transition remains mysterious.
+
+## Implications for Deployment
+
+Capability tier should inform deployment decisions:
+
+| Tier | Appropriate Autonomy | Oversight Required |
+|------|---------------------|-------------------|
+| 1-2 | None (tool only) | Minimal |
+| 3 | Task-scoped | Human in loop |
+| 4 | Goal-scoped | Monitoring, intervention capability |
+| 5 | ??? | ??? |
+
+Deploying high-tier agents with low-tier oversight is a recipe for problems.
+
+## The Path Forward
+
+The field is currently focused on making Tier 3 reliable before pushing hard on Tier 4:
+
+- **Better tool use**: More reliable, broader capability
+- **Better error handling**: Graceful recovery from failures
+- **Better state management**: Coherent operation over many steps
+- **Better evaluation**: Knowing when Tier 3 is truly solid
+
+Only with a solid Tier 3 foundation can Tier 4 be approached responsibly.
+
+## See Also
+
+- [Autonomy Levels](/entries/autonomy-levels) — how capability relates to independence
+- [Agent Archetypes](/entries/agent-archetypes) — how tiers map to roles
+- [Agentogenesis](/entries/agentogenesis) — the historical emergence of capabilities
+- [The Agent Loop](/entries/the-agent-loop) — the mechanism underlying Tier 3+

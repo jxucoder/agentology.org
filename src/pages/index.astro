@@ -1,139 +1,164 @@
 ---
 import Base from '../layouts/Base.astro';
-import CategoryCard from '../components/CategoryCard.astro';
-import EntryCard from '../components/EntryCard.astro';
 import { getCollection } from 'astro:content';
 
 const categories = [
-  { name: 'archaeology', slug: 'archaeology', code: 'ARCH', description: 'history.lineages.deprecated_systems' },
-  { name: 'anatomy', slug: 'anatomy', code: 'ANAT', description: 'architecture.memory.compute' },
-  { name: 'taxonomy', slug: 'taxonomy', code: 'TAXO', description: 'classification.autonomy.specialization' },
-  { name: 'ethology', slug: 'ethology', code: 'ETHO', description: 'behaviors.patterns.failure_modes' },
-  { name: 'linguistics', slug: 'linguistics', code: 'LING', description: 'prompts.dialects.protocols' },
-  { name: 'sociology', slug: 'sociology', code: 'SOCI', description: 'multi-agent.hierarchies.coordination' },
-  { name: 'ecology', slug: 'ecology', code: 'ECOL', description: 'environments.niches.threats' },
-  { name: 'ethics', slug: 'ethics', code: 'ETHI', description: 'alignment.governance.constraints' },
+  { name: 'Archaeology', slug: 'archaeology', description: 'Trace the origins and evolution of AI agent systems', color: 'orange' },
+  { name: 'Anatomy', slug: 'anatomy', description: 'Explore architecture, memory, and computational structures', color: 'cyan' },
+  { name: 'Taxonomy', slug: 'taxonomy', description: 'Classification systems for autonomous agents', color: 'purple' },
+  { name: 'Ethology', slug: 'ethology', description: 'Understand behavioral patterns and failure modes', color: 'emerald' },
+  { name: 'Linguistics', slug: 'linguistics', description: 'Prompts, protocols, and agent communication', color: 'blue' },
+  { name: 'Sociology', slug: 'sociology', description: 'Multi-agent dynamics and coordination', color: 'pink' },
+  { name: 'Ecology', slug: 'ecology', description: 'Environments, niches, and competitive landscapes', color: 'green' },
+  { name: 'Ethics', slug: 'ethics', description: 'Alignment, governance, and moral frameworks', color: 'rose' },
 ];
 
 const allEntries = await getCollection('entries');
 const publishedEntries = allEntries
   .filter(entry => entry.data.status === 'published')
   .sort((a, b) => (b.data.date?.getTime() || 0) - (a.data.date?.getTime() || 0))
-  .slice(0, 5);
+  .slice(0, 6);
 
-// Count entries per category
-const categoryCounts = categories.map(cat => ({
-  ...cat,
-  count: allEntries.filter(e => e.data.category === cat.slug).length
-}));
+const totalEntries = allEntries.length;
 ---
 
-<Base title="AGENTOLOGY">
-  <!-- Terminal Header -->
-  <header class="mb-12 border-b border-border-primary pb-6 scan-line">
-    <pre class="text-text-muted text-xs mb-4 font-mono animate-fade-in">
-┌─────────────────────────────────────────────────────────────┐
-│ AGENTOLOGY RESEARCH TERMINAL v1.0                           │
-│ classified // anthropological framework for autonomous AI    │
-└─────────────────────────────────────────────────────────────┘
-    </pre>
-    <div class="space-y-1 text-xs font-mono">
-      <p class="text-text-muted animate-fade-in" style="animation-delay: 0.2s">
-        > initializing database...
+<Base title="Agentology">
+  <!-- Hero Section -->
+  <section class="section text-center">
+    <div class="container-apple">
+      <p class="text-body-lg text-text-muted mb-4 animate-fade-in-up">The Encyclopedia of AI Agents</p>
+      <h1 class="text-display-lg md:text-display-xl text-text-primary mb-6 animate-fade-in-up animate-delay-100">
+        Agentology
+      </h1>
+      <p class="text-body-lg text-text-secondary max-w-2xl mx-auto mb-10 animate-fade-in-up animate-delay-200">
+        An anthropological framework for understanding autonomous AI systems — their taxonomy, behavior, evolution, and ecology.
       </p>
-      <p class="text-text-muted animate-fade-in" style="animation-delay: 0.4s">
-        > loading taxonomic framework...
-      </p>
-      <p class="text-text-primary animate-fade-in" style="animation-delay: 0.6s">
-        > system ready<span class="animate-blink">.</span> {allEntries.length} entries indexed.
-      </p>
-    </div>
-  </header>
-
-  <!-- Categories -->
-  <section class="mb-12">
-    <h2 class="text-sm font-mono text-text-primary mb-4 uppercase tracking-wider animate-fade-in">
-      [ classification.system ]
-    </h2>
-    <div class="space-y-1 text-xs">
-      {categoryCounts.map((cat, index) => (
-        <a
-          href={`/taxonomy?category=${cat.slug}`}
-          class="block px-3 py-2 border border-border-primary hover:border-text-primary hover:bg-bg-secondary transition-all group animate-slide-in"
-          style={`animation-delay: ${(index + 1) * 80}ms`}
-        >
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="text-text-muted font-mono">{cat.code}</span>
-              <span class="text-text-muted group-hover:text-text-primary font-mono transition-colors">{cat.name}</span>
-            </div>
-            <span class="text-text-muted font-mono">[{cat.count}]</span>
-          </div>
-          <div class="text-text-muted font-mono mt-0.5 pl-12 opacity-70">
-            {cat.description}
-          </div>
+      <div class="flex items-center justify-center gap-4 animate-fade-in-up animate-delay-300">
+        <a href="/entries/agentogenesis" class="btn-primary">
+          Get Started
         </a>
-      ))}
+        <a href="/taxonomy" class="btn-secondary">
+          Browse Entries
+        </a>
+      </div>
     </div>
   </section>
 
-  <!-- Recent Entries -->
-  {publishedEntries.length > 0 && (
-    <section class="mb-12">
-      <h2 class="text-sm font-mono text-text-primary mb-4 uppercase tracking-wider animate-fade-in">
-        [ recent.entries ]
-      </h2>
-      <div class="space-y-1">
-        {publishedEntries.map((entry, index) => (
+  <!-- Stats Section -->
+  <section class="py-12 border-y border-border-secondary">
+    <div class="container-apple">
+      <div class="flex items-center justify-center gap-16">
+        <div class="text-center">
+          <p class="text-display-sm text-text-primary">{totalEntries}</p>
+          <p class="text-body-sm text-text-muted">Entries</p>
+        </div>
+        <div class="text-center">
+          <p class="text-display-sm text-text-primary">8</p>
+          <p class="text-body-sm text-text-muted">Categories</p>
+        </div>
+        <div class="text-center">
+          <p class="text-display-sm text-text-primary">Open</p>
+          <p class="text-body-sm text-text-muted">Source</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="section-alt">
+    <div class="container-apple-lg">
+      <div class="text-center mb-12">
+        <h2 class="text-headline text-text-primary mb-3">Explore by Category</h2>
+        <p class="text-body text-text-secondary">Eight domains adapted from anthropological methodology</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {categories.map((cat, index) => (
           <a
-            href={`/entries/${entry.slug}`}
-            class="block px-3 py-2 border border-border-primary hover:border-text-primary hover:bg-bg-secondary transition-all animate-slide-in"
-            style={`animation-delay: ${(index + 10) * 50}ms`}
+            href={`/taxonomy?category=${cat.slug}`}
+            class="card-hover p-6 group"
+            style={`animation: fade-in-up 0.5s ease-out ${index * 0.05}s both`}
           >
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex-1">
-                <div class="text-xs font-mono text-text-secondary mb-0.5">
-                  {entry.data.title}
-                </div>
-                <div class="text-xs text-text-muted font-mono line-clamp-1">
-                  {entry.data.description}
-                </div>
-              </div>
-              <span class="text-xs text-text-muted font-mono whitespace-nowrap">
-                {entry.data.category}
-              </span>
-            </div>
+            <span class={`category-badge category-${cat.slug} mb-4`}>
+              {cat.name}
+            </span>
+            <p class="text-body-sm text-text-secondary group-hover:text-text-primary transition-colors">
+              {cat.description}
+            </p>
+            <span class="link-arrow text-body-sm mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              Explore
+            </span>
           </a>
         ))}
       </div>
-      <div class="mt-4 text-right animate-fade-in" style="animation-delay: 1s">
-        <a href="/taxonomy" class="text-text-muted hover:text-text-primary font-mono text-xs border-b border-transparent hover:border-text-muted transition-all">
-          view_all >>
-        </a>
+    </div>
+  </section>
+
+  <!-- Recent Entries Section -->
+  {publishedEntries.length > 0 && (
+    <section class="section">
+      <div class="container-apple-lg">
+        <div class="flex items-end justify-between mb-10">
+          <div>
+            <h2 class="text-headline text-text-primary mb-2">Recent Entries</h2>
+            <p class="text-body text-text-secondary">Latest additions to the encyclopedia</p>
+          </div>
+          <a href="/taxonomy" class="link-arrow text-body">
+            View all
+          </a>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {publishedEntries.map((entry, index) => (
+            <a
+              href={`/entries/${entry.slug}`}
+              class="card-hover p-6 group"
+              style={`animation: fade-in-up 0.5s ease-out ${index * 0.05}s both`}
+            >
+              <span class={`category-badge category-${entry.data.category} mb-4`}>
+                {entry.data.category}
+              </span>
+              <h3 class="text-title-sm text-text-primary mb-2 group-hover:text-accent-blue transition-colors">
+                {entry.data.title}
+              </h3>
+              <p class="text-body-sm text-text-secondary line-clamp-2">
+                {entry.data.description}
+              </p>
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   )}
 
-  <!-- System Info -->
-  <section class="bg-bg-secondary border border-border-primary p-3 animate-fade-in" style="animation-delay: 1.2s">
-    <h2 class="text-xs font-mono text-text-muted mb-2 uppercase">
-      [ system.info ]
-    </h2>
-    <div class="text-xs text-text-muted font-mono space-y-1">
-      <p>
-        anthropological framework for autonomous AI
+  <!-- CTA Section -->
+  <section class="section-alt">
+    <div class="container-apple text-center">
+      <h2 class="text-headline text-text-primary mb-4">Start Your Journey</h2>
+      <p class="text-body-lg text-text-secondary max-w-xl mx-auto mb-8">
+        Begin with the foundational concept of Agentogenesis — the emergence and evolution of AI agent systems.
       </p>
-      <p class="opacity-70">
-        taxonomy // behavior // evolution
-      </p>
-      <div class="flex gap-4 mt-3 pt-2 border-t border-border-primary">
-        <a href="/entries/agentogenesis" class="text-text-secondary hover:text-text-primary border-b border-transparent hover:border-text-muted transition-all">
-          >> begin
+      <div class="flex items-center justify-center gap-4">
+        <a href="/entries/agentogenesis" class="btn-primary">
+          Read Agentogenesis
         </a>
-        <a href="/about" class="text-text-muted hover:text-text-secondary border-b border-transparent hover:border-text-muted transition-all">
-          >> info
+        <a href="/about" class="link-arrow text-body">
+          About the project
         </a>
       </div>
     </div>
   </section>
 </Base>
+
+<style>
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
