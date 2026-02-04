@@ -1,154 +1,147 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const categories = [
+  { name: 'Archaeology', slug: 'archaeology', description: 'History, lineages, deprecated systems, evolutionary trajectories' },
+  { name: 'Anatomy', slug: 'anatomy', description: 'Architecture, memory systems, I/O modalities, compute requirements' },
+  { name: 'Taxonomy', slug: 'taxonomy', description: 'Classification, autonomy levels, specialization, capability profiles' },
+  { name: 'Ethology', slug: 'ethology', description: 'Behaviors, patterns, failure modes, observed pathologies' },
+  { name: 'Linguistics', slug: 'linguistics', description: 'Communication patterns, prompts, protocols, agent dialects' },
+  { name: 'Sociology', slug: 'sociology', description: 'Multi-agent dynamics, hierarchies, coordination, emergent behavior' },
+  { name: 'Ecology', slug: 'ecology', description: 'Environments, resource competition, adversarial threats, niches' },
+  { name: 'Ethics', slug: 'ethics', description: 'Alignment, governance, constraints, moral frameworks' },
+];
+
+const principles = [
+  { title: 'Precision over accessibility', description: 'Accurate terminology and rigorous definitions. We prioritize correctness over simplification.' },
+  { title: 'Structured flexibility', description: 'Organization without forced categorization. Entries can span multiple categories when appropriate.' },
+  { title: 'Continuous evolution', description: 'Living documentation that adapts to developments in the field.' },
+  { title: 'Networked knowledge', description: 'Cross-referenced entries forming knowledge graphs for deeper exploration.' },
+];
 ---
 
-<Base title="ABOUT">
-  <article class="prose">
-    <header class="mb-8 pb-4 border-b border-border-primary">
-      <pre class="text-xs text-text-muted mb-3">
-[ system.documentation ]
-FILE: about.txt
-STATUS: classified
-LAST_MODIFIED: {new Date().toISOString().split('T')[0]}
-      </pre>
-      <h1 class="text-xl font-bold font-mono text-text-primary mb-2 uppercase">
-        AGENTOLOGY
+<Base title="About">
+  <!-- Hero -->
+  <section class="section border-b border-border-secondary">
+    <div class="container-apple text-center">
+      <h1 class="text-display-md md:text-display-lg text-text-primary mb-6">
+        About Agentology
       </h1>
-      <p class="text-sm text-text-secondary font-mono">
-        anthropological framework for autonomous AI systems
+      <p class="text-body-lg text-text-secondary max-w-2xl mx-auto">
+        An anthropological framework for understanding and classifying autonomous AI systems.
       </p>
-    </header>
+    </div>
+  </section>
 
-    <section class="mb-12">
-      <h2>premise</h2>
-      <p>
-        autonomous AI systems proliferate. coding assistants. research agents.
-        decision-making systems. we lack coherent frameworks for classification
-        and analysis.
-      </p>
-      <p>
-        anthropology provides methodological tools refined across centuries:
-        origin tracing. behavioral analysis. social structures. evolutionary patterns.
-      </p>
-      <p>
-        <strong>agentology</strong> adapts these frameworks for artificial systems.
-      </p>
-    </section>
-
-    <section class="mb-12">
-      <h2>classification.framework</h2>
-      <p>
-        eight taxonomic categories adapted from anthropological methodology:
-      </p>
-
-      <div class="grid gap-2 my-6 not-prose text-xs">
-        <div class="p-3 bg-bg-secondary border border-border-primary">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-text-muted font-mono">[ARCH]</span>
-            <h3 class="font-mono font-semibold text-text-primary">archaeology</h3>
-          </div>
-          <p class="text-text-secondary font-mono pl-12">
-            history // lineages // deprecated_systems // evolutionary_trajectories
+  <!-- Premise -->
+  <section class="section">
+    <div class="container-apple">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-headline text-text-primary mb-6">The Premise</h2>
+        <div class="prose">
+          <p>
+            Autonomous AI systems are proliferating rapidly—coding assistants, research agents,
+            decision-making systems. Yet we lack coherent frameworks for their classification and analysis.
           </p>
-        </div>
-
-        <div class="p-3 bg-bg-secondary border border-border-primary">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-text-muted font-mono">[ANAT]</span>
-            <h3 class="font-mono font-semibold text-text-primary">anatomy</h3>
-          </div>
-          <p class="text-text-secondary font-mono pl-12">
-            architecture // memory_systems // io_modalities // compute_requirements
+          <p>
+            Anthropology provides methodological tools refined across centuries: origin tracing,
+            behavioral analysis, social structures, and evolutionary patterns.
           </p>
-        </div>
-
-        <div class="p-3 bg-bg-secondary border border-border-primary">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-text-muted font-mono">[TAXO]</span>
-            <h3 class="font-mono font-semibold text-text-primary">taxonomy</h3>
-          </div>
-          <p class="text-text-secondary font-mono pl-12">
-            classification // autonomy_levels // specialization // capability_profiles
-          </p>
-        </div>
-
-        <div class="p-3 bg-bg-secondary border border-border-primary">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-text-muted font-mono">[ETHO]</span>
-            <h3 class="font-mono font-semibold text-text-primary">ethology</h3>
-          </div>
-          <p class="text-text-secondary font-mono pl-12">
-            behaviors // patterns // failure_modes // observed_pathologies
-          </p>
-        </div>
-
-        <div class="p-3 bg-bg-secondary border border-border-primary">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-text-muted font-mono">[LING]</span>
-            <h3 class="font-mono font-semibold text-text-primary">linguistics</h3>
-          </div>
-          <p class="text-text-secondary font-mono pl-12">
-            communication_patterns // prompts // protocols // agent_dialects
-          </p>
-        </div>
-
-        <div class="p-3 bg-bg-secondary border border-border-primary">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-text-muted font-mono">[SOCI]</span>
-            <h3 class="font-mono font-semibold text-text-primary">sociology</h3>
-          </div>
-          <p class="text-text-secondary font-mono pl-12">
-            multi-agent_dynamics // hierarchies // coordination // emergent_behavior
-          </p>
-        </div>
-
-        <div class="p-3 bg-bg-secondary border border-border-primary">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-text-muted font-mono">[ECOL]</span>
-            <h3 class="font-mono font-semibold text-text-primary">ecology</h3>
-          </div>
-          <p class="text-text-secondary font-mono pl-12">
-            environments // resource_competition // adversarial_threats // niches
-          </p>
-        </div>
-
-        <div class="p-3 bg-bg-secondary border border-border-primary">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-text-muted font-mono">[ETHI]</span>
-            <h3 class="font-mono font-semibold text-text-primary">ethics</h3>
-          </div>
-          <p class="text-text-secondary font-mono pl-12">
-            alignment // governance // constraints // moral_frameworks
+          <p>
+            <strong>Agentology</strong> adapts these frameworks for artificial systems, creating a
+            shared vocabulary for researchers, practitioners, and observers of AI agent systems.
           </p>
         </div>
       </div>
-    </section>
-
-    <section class="mb-12">
-      <h2>design.principles</h2>
-      <ul>
-        <li><strong>precision over accessibility.</strong> accurate terminology. rigorous definitions.</li>
-        <li><strong>structured flexibility.</strong> organization without forced categorization.</li>
-        <li><strong>continuous evolution.</strong> living documentation adapting to field developments.</li>
-        <li><strong>networked knowledge.</strong> cross-referenced entries forming knowledge graphs.</li>
-      </ul>
-    </section>
-
-    <section class="mb-12">
-      <h2>contributing</h2>
-      <p>
-        open research project. contributions accepted via GitHub.
-      </p>
-      <p>
-        format: MDX files in <code>/src/content/entries/</code> with appropriate frontmatter.
-      </p>
-    </section>
-
-    <div class="not-prose p-3 bg-bg-secondary border border-border-primary">
-      <p class="text-xs text-text-muted font-mono">
-        NOTE: independent research project. no organizational affiliation.
-        purpose: shared vocabulary development for emerging field.
-      </p>
     </div>
-  </article>
+  </section>
+
+  <!-- Classification -->
+  <section class="section-alt">
+    <div class="container-apple-lg">
+      <div class="text-center mb-12">
+        <h2 class="text-headline text-text-primary mb-4">Classification Framework</h2>
+        <p class="text-body text-text-secondary">
+          Eight taxonomic categories adapted from anthropological methodology
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {categories.map((cat) => (
+          <a
+            href={`/taxonomy?category=${cat.slug}`}
+            class="card-hover p-6 group"
+          >
+            <span class={`category-badge category-${cat.slug} mb-4`}>
+              {cat.name}
+            </span>
+            <p class="text-body-sm text-text-secondary group-hover:text-text-primary transition-colors">
+              {cat.description}
+            </p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Principles -->
+  <section class="section">
+    <div class="container-apple">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-headline text-text-primary mb-8">Design Principles</h2>
+
+        <div class="space-y-8">
+          {principles.map((principle, index) => (
+            <div class="flex gap-6">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-bg-secondary flex items-center justify-center text-body-sm font-semibold text-text-muted">
+                {index + 1}
+              </div>
+              <div>
+                <h3 class="text-title-sm text-text-primary mb-2">{principle.title}</h3>
+                <p class="text-body text-text-secondary">{principle.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contributing -->
+  <section class="section-alt">
+    <div class="container-apple">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-headline text-text-primary mb-4">Contributing</h2>
+        <p class="text-body text-text-secondary mb-8">
+          Agentology is an open research project. Contributions are accepted via GitHub.
+          Entries are written in MDX format with appropriate frontmatter.
+        </p>
+        <a
+          href="https://github.com"
+          class="btn-primary inline-flex items-center gap-2"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Note -->
+  <section class="section">
+    <div class="container-apple">
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-bg-secondary rounded-apple-lg p-6">
+          <p class="text-body text-text-secondary">
+            <strong class="text-text-primary">Note:</strong> Agentology is an independent research project
+            with no organizational affiliation. Its purpose is to develop a shared vocabulary for this emerging field.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 </Base>

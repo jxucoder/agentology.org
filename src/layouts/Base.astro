@@ -8,29 +8,22 @@ interface Props {
 
 const { title, description = 'Agentology — An encyclopedia for AI agents, using anthropology as the organizing framework.' } = Astro.props;
 
-const categories = [
-  { name: 'archaeology', slug: 'archaeology', code: 'ARCH', description: 'history.lineages.epochs' },
-  { name: 'anatomy', slug: 'anatomy', code: 'ANAT', description: 'architecture.memory.compute' },
-  { name: 'taxonomy', slug: 'taxonomy', code: 'TAXO', description: 'classification.species' },
-  { name: 'ethology', slug: 'ethology', code: 'ETHO', description: 'behaviors.patterns' },
-  { name: 'linguistics', slug: 'linguistics', code: 'LING', description: 'prompts.dialects' },
-  { name: 'sociology', slug: 'sociology', code: 'SOCI', description: 'multi-agent.systems' },
-  { name: 'ecology', slug: 'ecology', code: 'ECOL', description: 'environments.niches' },
-  { name: 'ethics', slug: 'ethics', code: 'ETHI', description: 'values.alignment' },
+const navLinks = [
+  { name: 'Home', href: '/' },
+  { name: 'Browse', href: '/taxonomy' },
+  { name: 'Glossary', href: '/glossary' },
+  { name: 'About', href: '/about' },
 ];
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <title>{title} — AGENTOLOGY</title>
+    <title>{title} — Agentology</title>
     <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
     <script src="/pagefind/pagefind-ui.js" is:inline></script>
     <script type="module" is:inline>
@@ -39,141 +32,116 @@ const categories = [
         startOnLoad: true,
         theme: 'base',
         themeVariables: {
-          primaryColor: '#00ff00',
-          primaryTextColor: '#cccccc',
-          primaryBorderColor: '#333333',
-          lineColor: '#00ff00',
-          secondaryColor: '#0a0a0a',
-          tertiaryColor: '#1a1a1a',
-          background: '#000000',
-          mainBkg: '#0a0a0a',
-          secondBkg: '#1a1a1a',
-          mainContrastColor: '#00ff00',
-          darkMode: true,
-          fontFamily: 'JetBrains Mono, monospace',
+          primaryColor: '#f5f5f7',
+          primaryTextColor: '#1d1d1f',
+          primaryBorderColor: '#d2d2d7',
+          lineColor: '#86868b',
+          secondaryColor: '#fbfbfd',
+          tertiaryColor: '#f5f5f7',
+          background: '#ffffff',
+          mainBkg: '#f5f5f7',
+          secondBkg: '#fbfbfd',
+          darkMode: false,
+          fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
           fontSize: '12px'
         },
         flowchart: {
-          curve: 'linear',
-          padding: 10
+          curve: 'basis',
+          padding: 15
         }
       });
     </script>
   </head>
   <body class="bg-bg-primary min-h-screen">
-    <div class="flex">
-      <!-- Sidebar -->
-      <aside class="fixed left-0 top-0 h-screen w-56 bg-bg-secondary border-r border-border-primary overflow-y-auto hidden lg:block">
-        <div class="p-4">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-xl border-b border-border-secondary">
+      <div class="max-w-apple-lg mx-auto px-6">
+        <div class="flex items-center justify-between h-14">
           <!-- Logo -->
-          <a href="/" class="block mb-6 pb-4 border-b border-border-primary scan-line">
-            <pre class="text-xs text-text-primary leading-tight animate-fade-in">
- █████╗  ██████╗
-██╔══██╗██╔════╝
-███████║██║  ███╗
-██╔══██║██║   ██║
-██║  ██║╚██████╔╝
-╚═╝  ╚═╝ ╚═════╝ </pre>
-            <p class="text-xs text-text-muted mt-2 font-mono">SYSTEM_ID: agentology</p>
-            <p class="text-xs text-text-muted font-mono">STATUS: <span class="text-text-primary animate-blink">█</span> active</p>
+          <a href="/" class="text-title-sm text-text-primary font-semibold">
+            Agentology
           </a>
 
-          <!-- Search -->
-          <div class="mb-6">
-            <div id="search" class="search-container"></div>
-          </div>
-
-          <!-- Navigation -->
-          <nav class="space-y-4">
-            <div>
-              <h2 class="text-xs font-mono text-text-muted mb-2">[ NAVIGATE ]</h2>
-              <ul class="space-y-0.5 text-xs">
-                <li>
-                  <a href="/" class="block px-2 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all">
-                    > index
-                  </a>
-                </li>
-                <li>
-                  <a href="/taxonomy" class="block px-2 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all">
-                    > browse
-                  </a>
-                </li>
-                <li>
-                  <a href="/glossary" class="block px-2 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all">
-                    > glossary
-                  </a>
-                </li>
-                <li>
-                  <a href="/about" class="block px-2 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all">
-                    > about
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h2 class="text-xs font-mono text-text-muted mb-2">[ CATEGORIES ]</h2>
-              <ul class="space-y-0.5 text-xs">
-                {categories.map((cat) => (
-                  <li>
-                    <a
-                      href={`/taxonomy?category=${cat.slug}`}
-                      class="block px-2 py-1 text-text-muted hover:text-text-primary hover:bg-bg-tertiary border-l-2 border-transparent hover:border-text-primary transition-all"
-                    >
-                      <span class="text-text-muted">{cat.code}</span> {cat.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </nav>
-        </div>
-
-        <!-- Footer -->
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-border-primary bg-bg-secondary">
-          <p class="text-[10px] text-text-muted text-center font-mono">
-            v1.0.0 // classified
-          </p>
-        </div>
-      </aside>
-
-      <!-- Mobile Header -->
-      <header class="fixed top-0 left-0 right-0 bg-bg-secondary border-b border-border-primary lg:hidden z-50">
-        <div class="flex items-center justify-between px-4 py-2">
-          <a href="/" class="font-mono text-sm text-text-primary">
-            AG // agentology
-          </a>
-          <button id="mobile-menu-btn" class="p-2 text-text-secondary hover:text-text-primary">
-            [MENU]
-          </button>
-        </div>
-      </header>
-
-      <!-- Mobile Menu Overlay -->
-      <div id="mobile-menu" class="fixed inset-0 bg-bg-primary z-40 hidden lg:hidden">
-        <div class="p-6 pt-16">
-          <nav class="space-y-2 text-sm">
-            <a href="/" class="block py-1 text-text-primary">> index</a>
-            <a href="/taxonomy" class="block py-1 text-text-primary">> browse</a>
-            <a href="/glossary" class="block py-1 text-text-primary">> glossary</a>
-            <a href="/about" class="block py-1 text-text-primary">> about</a>
-            <hr class="border-border-primary my-3" />
-            {categories.map((cat) => (
-              <a href={`/taxonomy?category=${cat.slug}`} class="block py-1 text-text-muted">
-                {cat.code} {cat.name}
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <a href={link.href} class="nav-link">
+                {link.name}
               </a>
             ))}
-          </nav>
+          </div>
+
+          <!-- Search Button -->
+          <button
+            id="search-btn"
+            class="flex items-center gap-2 px-3 py-1.5 text-body-sm text-text-muted bg-bg-secondary rounded-apple-sm hover:bg-border-secondary transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <span class="hidden sm:inline">Search</span>
+          </button>
+
+          <!-- Mobile Menu Button -->
+          <button id="mobile-menu-btn" class="md:hidden p-2 text-text-secondary hover:text-text-primary">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
         </div>
       </div>
+    </nav>
 
-      <!-- Main Content -->
-      <main class="flex-1 lg:ml-56 min-h-screen pt-14 lg:pt-0">
-        <div class="max-w-4xl mx-auto px-6 py-8">
-          <slot />
-        </div>
-      </main>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-bg-primary hidden md:hidden">
+      <div class="pt-20 px-6">
+        <nav class="space-y-1">
+          {navLinks.map((link) => (
+            <a
+              href={link.href}
+              class="block py-3 text-title text-text-primary border-b border-border-secondary"
+            >
+              {link.name}
+            </a>
+          ))}
+        </nav>
+      </div>
     </div>
+
+    <!-- Search Modal -->
+    <div id="search-modal" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-black/20 backdrop-blur-sm" id="search-backdrop"></div>
+      <div class="relative max-w-2xl mx-auto mt-20 mx-4">
+        <div class="bg-bg-primary rounded-apple-lg shadow-apple-lg overflow-hidden">
+          <div id="search" class="p-4"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-border-secondary mt-20">
+      <div class="max-w-apple-lg mx-auto px-6 py-12">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="text-center md:text-left">
+            <p class="text-body-sm text-text-muted">
+              Agentology — An open research project
+            </p>
+          </div>
+          <div class="flex items-center gap-8">
+            {navLinks.map((link) => (
+              <a href={link.href} class="text-body-sm text-text-muted hover:text-text-primary transition-colors">
+                {link.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
 
     <script is:inline>
       // Mobile menu toggle
@@ -182,10 +150,46 @@ const categories = [
       if (menuBtn && mobileMenu) {
         menuBtn.addEventListener('click', () => {
           mobileMenu.classList.toggle('hidden');
+          document.body.classList.toggle('overflow-hidden');
         });
-        mobileMenu.addEventListener('click', (e) => {
-          if (e.target === mobileMenu || e.target.tagName === 'A') {
+        mobileMenu.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
             mobileMenu.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+          });
+        });
+      }
+
+      // Search modal
+      const searchBtn = document.getElementById('search-btn');
+      const searchModal = document.getElementById('search-modal');
+      const searchBackdrop = document.getElementById('search-backdrop');
+
+      if (searchBtn && searchModal && searchBackdrop) {
+        searchBtn.addEventListener('click', () => {
+          searchModal.classList.remove('hidden');
+          document.body.classList.add('overflow-hidden');
+        });
+
+        searchBackdrop.addEventListener('click', () => {
+          searchModal.classList.add('hidden');
+          document.body.classList.remove('overflow-hidden');
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !searchModal.classList.contains('hidden')) {
+            searchModal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+          }
+        });
+
+        // Open on Cmd/Ctrl + K
+        document.addEventListener('keydown', (e) => {
+          if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            searchModal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
           }
         });
       }

@@ -1,6 +1,5 @@
 ---
 import Base from './Base.astro';
-import RelatedEntries from '../components/RelatedEntries.astro';
 import { getCollection } from 'astro:content';
 
 interface Props {
@@ -17,18 +16,18 @@ interface Props {
 const { frontmatter } = Astro.props;
 const { title, category, tags = [], related = [], status, description } = frontmatter;
 
-const categoryInfo: Record<string, { icon: string; name: string }> = {
-  archaeology: { icon: '🏛️', name: 'Archaeology' },
-  anatomy: { icon: '🧠', name: 'Anatomy' },
-  taxonomy: { icon: '🌳', name: 'Taxonomy' },
-  ethology: { icon: '🔄', name: 'Ethology' },
-  linguistics: { icon: '💬', name: 'Linguistics' },
-  sociology: { icon: '🤝', name: 'Sociology' },
-  ecology: { icon: '🌍', name: 'Ecology' },
-  ethics: { icon: '⚖️', name: 'Ethics' },
+const categoryInfo: Record<string, { name: string }> = {
+  archaeology: { name: 'Archaeology' },
+  anatomy: { name: 'Anatomy' },
+  taxonomy: { name: 'Taxonomy' },
+  ethology: { name: 'Ethology' },
+  linguistics: { name: 'Linguistics' },
+  sociology: { name: 'Sociology' },
+  ecology: { name: 'Ecology' },
+  ethics: { name: 'Ethics' },
 };
 
-const cat = categoryInfo[category] || { icon: '📄', name: category };
+const cat = categoryInfo[category] || { name: category };
 
 // Get related entries
 const allEntries = await getCollection('entries');
@@ -38,84 +37,103 @@ const relatedEntries = allEntries.filter(entry =>
 ---
 
 <Base title={title} description={description}>
-  <article class="entry" data-pagefind-body>
+  <article class="animate-fade-in-up" data-pagefind-body>
     <!-- Header -->
-    <header class="mb-8 pb-6 border-b border-border-primary">
-      <div class="flex items-center gap-3 mb-4">
-        <a
-          href={`/taxonomy?category=${category}`}
-          class={`category-badge category-${category}`}
-        >
-          {cat.icon} {cat.name}
-        </a>
-        {status === 'draft' && (
-          <span class="text-xs font-mono text-accent-warning bg-accent-warning/10 px-2 py-0.5 rounded border border-accent-warning/30">
-            Draft
-          </span>
-        )}
-      </div>
-
-      <h1 class="text-4xl font-bold font-mono text-text-primary mb-4" data-pagefind-meta="title">
-        {title}
-      </h1>
-
-      {description && (
-        <p class="text-lg text-text-secondary" data-pagefind-meta="description">
-          {description}
-        </p>
-      )}
-
-      {tags.length > 0 && (
-        <div class="flex flex-wrap gap-2 mt-4">
-          {tags.map((tag) => (
-            <a href={`/taxonomy?tag=${tag}`} class="tag" data-pagefind-filter="tag">
-              #{tag}
+    <header class="section border-b border-border-secondary">
+      <div class="container-apple">
+        <div class="max-w-3xl">
+          <div class="flex items-center gap-3 mb-6">
+            <a
+              href={`/taxonomy?category=${category}`}
+              class={`category-badge category-${category}`}
+            >
+              {cat.name}
             </a>
-          ))}
+            {status === 'draft' && (
+              <span class="text-caption font-medium text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
+                Draft
+              </span>
+            )}
+          </div>
+
+          <h1 class="text-display-md md:text-display-lg text-text-primary mb-6" data-pagefind-meta="title">
+            {title}
+          </h1>
+
+          {description && (
+            <p class="text-body-lg text-text-secondary" data-pagefind-meta="description">
+              {description}
+            </p>
+          )}
+
+          {tags.length > 0 && (
+            <div class="flex flex-wrap gap-2 mt-8">
+              {tags.map((tag) => (
+                <a href={`/taxonomy?tag=${tag}`} class="tag" data-pagefind-filter="tag">
+                  {tag}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </header>
 
     <!-- Content -->
-    <div class="prose">
-      <slot />
-    </div>
+    <section class="section">
+      <div class="container-apple">
+        <div class="max-w-3xl prose">
+          <slot />
+        </div>
+      </div>
+    </section>
 
     <!-- Related Entries -->
     {relatedEntries.length > 0 && (
-      <footer class="mt-12 pt-8 border-t border-border-primary">
-        <h2 class="text-lg font-mono font-semibold text-text-primary mb-4">Related Entries</h2>
-        <div class="grid gap-3">
-          {relatedEntries.map((entry) => (
-            <a
-              href={`/entries/${entry.slug}`}
-              class="block p-4 bg-bg-secondary border border-border-primary rounded-lg hover:border-accent-primary transition-colors"
-            >
-              <div class="flex items-center gap-2 mb-1">
-                <span class={`category-badge category-${entry.data.category}`}>
-                  {categoryInfo[entry.data.category]?.icon} {categoryInfo[entry.data.category]?.name}
+      <section class="section-alt">
+        <div class="container-apple">
+          <h2 class="text-headline text-text-primary mb-8">Related Entries</h2>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl">
+            {relatedEntries.map((entry) => (
+              <a
+                href={`/entries/${entry.slug}`}
+                class="card-hover p-6 group"
+              >
+                <span class={`category-badge category-${entry.data.category} mb-4`}>
+                  {categoryInfo[entry.data.category]?.name}
                 </span>
-              </div>
-              <h3 class="font-mono font-semibold text-text-primary">{entry.data.title}</h3>
-              {entry.data.description && (
-                <p class="text-sm text-text-secondary mt-1">{entry.data.description}</p>
-              )}
-            </a>
-          ))}
+                <h3 class="text-title-sm text-text-primary group-hover:text-accent-blue transition-colors mb-2">
+                  {entry.data.title}
+                </h3>
+                {entry.data.description && (
+                  <p class="text-body-sm text-text-secondary line-clamp-2">{entry.data.description}</p>
+                )}
+              </a>
+            ))}
+          </div>
         </div>
-      </footer>
+      </section>
     )}
 
     <!-- Navigation -->
-    <nav class="mt-12 pt-8 border-t border-border-primary">
-      <div class="flex justify-between text-sm">
-        <a href="/taxonomy" class="text-accent-primary hover:underline">
-          ← Browse all entries
-        </a>
-        <a href={`/taxonomy?category=${category}`} class="text-accent-primary hover:underline">
-          More in {cat.name} →
-        </a>
+    <section class="py-12 border-t border-border-secondary">
+      <div class="container-apple">
+        <div class="flex justify-between items-center max-w-3xl">
+          <a href="/taxonomy" class="link-arrow text-body flex-row-reverse">
+            <span class="rotate-180 inline-block mr-1">›</span>
+            Browse all entries
+          </a>
+          <a href={`/taxonomy?category=${category}`} class="link-arrow text-body">
+            More in {cat.name}
+          </a>
+        </div>
       </div>
-    </nav>
+    </section>
   </article>
 </Base>
+
+<style>
+  .link-arrow.flex-row-reverse::after {
+    content: none;
+  }
+</style>
