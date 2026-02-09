@@ -1,0 +1,818 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const allEntries = await getCollection('entries');
+const publishedEntries = allEntries
+  .filter(entry => entry.data.status === 'published')
+  .filter(entry => entry.slug !== 'example-diagram')
+  .sort((a, b) => (a.data.date?.getTime() || 0) - (b.data.date?.getTime() || 0));
+
+// Group entries into thematic eras based on category
+const eras = [
+  {
+    id: 'foundations',
+    title: 'Foundations',
+    subtitle: 'The intellectual origins of autonomous systems',
+    icon: '⌖',
+    categories: ['archaeology'],
+  },
+  {
+    id: 'architecture',
+    title: 'Architecture',
+    subtitle: 'How agents are built and structured',
+    icon: '⬡',
+    categories: ['anatomy'],
+  },
+  {
+    id: 'behavior',
+    title: 'Behavior',
+    subtitle: 'How agents think, act, and fail',
+    icon: '◈',
+    categories: ['ethology'],
+  },
+  {
+    id: 'communication',
+    title: 'Communication',
+    subtitle: 'The language and protocols of agents',
+    icon: '◇',
+    categories: ['linguistics'],
+  },
+  {
+    id: 'society',
+    title: 'Society',
+    subtitle: 'When agents form collectives',
+    icon: '⊞',
+    categories: ['sociology'],
+  },
+  {
+    id: 'classification',
+    title: 'Classification',
+    subtitle: 'Taxonomies of agent types and capabilities',
+    icon: '⊟',
+    categories: ['taxonomy'],
+  },
+  {
+    id: 'environment',
+    title: 'Environment',
+    subtitle: 'The ecosystems agents inhabit and threats they face',
+    icon: '◉',
+    categories: ['ecology'],
+  },
+  {
+    id: 'values',
+    title: 'Values',
+    subtitle: 'Alignment, ethics, and governance',
+    icon: '◎',
+    categories: ['ethics'],
+  },
+];
+
+// Build era data with entries
+const eraData = eras.map(era => ({
+  ...era,
+  entries: publishedEntries.filter(e => era.categories.includes(e.data.category)),
+})).filter(era => era.entries.length > 0);
+
+const categoryColors: Record<string, string> = {
+  archaeology: '#ff9500',
+  anatomy: '#06b6d4',
+  taxonomy: '#a855f7',
+  ethology: '#10b981',
+  linguistics: '#0071e3',
+  sociology: '#ec4899',
+  ecology: '#22c55e',
+  ethics: '#f43f5e',
+};
+---
+
+<Base title="Timeline">
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-bg-secondary to-bg-primary"></div>
+    <div class="relative container-apple text-center py-24 md:py-32">
+      <p class="text-body text-text-muted mb-4 timeline-hero-fade" style="--delay: 0s">
+        Navigate the evolution
+      </p>
+      <h1 class="text-display-lg md:text-display-xl text-text-primary mb-6 timeline-hero-fade" style="--delay: 0.1s">
+        The Timeline
+      </h1>
+      <p class="text-body-lg text-text-secondary max-w-2xl mx-auto mb-10 timeline-hero-fade" style="--delay: 0.2s">
+        Trace the intellectual lineage of AI agents — from cybernetic foundations to modern autonomous systems.
+      </p>
+
+      <!-- Era quick-nav pills -->
+      <div class="flex flex-wrap items-center justify-center gap-2 timeline-hero-fade" style="--delay: 0.35s">
+        {eraData.map((era) => (
+          <a
+            href={`#${era.id}`}
+            class="era-pill"
+            data-era={era.id}
+          >
+            <span class="era-pill-dot" style={`background: ${categoryColors[era.categories[0]]}`}></span>
+            {era.title}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 timeline-hero-fade" style="--delay: 0.5s">
+      <div class="scroll-indicator">
+        <div class="scroll-indicator-dot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Progress bar -->
+  <div class="timeline-progress" id="timeline-progress">
+    <div class="timeline-progress-fill" id="timeline-progress-fill"></div>
+  </div>
+
+  <!-- Floating era indicator -->
+  <div class="era-indicator" id="era-indicator">
+    <span class="era-indicator-dot" id="era-indicator-dot"></span>
+    <span class="era-indicator-text" id="era-indicator-text"></span>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-container" id="timeline-container">
+    <!-- Central timeline line -->
+    <div class="timeline-line" aria-hidden="true">
+      <div class="timeline-line-fill" id="timeline-line-fill"></div>
+    </div>
+
+    {eraData.map((era, eraIndex) => (
+      <section class="timeline-era" id={era.id} data-era-name={era.title} data-era-color={categoryColors[era.categories[0]]}>
+        <!-- Era header -->
+        <div class="timeline-era-header" data-animate="timeline">
+          <div class="timeline-era-marker" style={`--era-color: ${categoryColors[era.categories[0]]}`}>
+            <span class="timeline-era-icon">{era.icon}</span>
+          </div>
+          <div class="timeline-era-label">
+            <span class="timeline-era-number">Chapter {eraIndex + 1}</span>
+            <h2 class="timeline-era-title">{era.title}</h2>
+            <p class="timeline-era-subtitle">{era.subtitle}</p>
+          </div>
+        </div>
+
+        <!-- Era entries -->
+        {era.entries.map((entry, entryIndex) => {
+          const isLeft = entryIndex % 2 === 0;
+          return (
+            <div
+              class={`timeline-entry ${isLeft ? 'timeline-entry-left' : 'timeline-entry-right'}`}
+              data-animate="timeline"
+              style={`--stagger: ${entryIndex * 0.08}s`}
+            >
+              <!-- Timeline node -->
+              <div class="timeline-node" style={`--node-color: ${categoryColors[entry.data.category]}`}>
+                <div class="timeline-node-ring"></div>
+                <div class="timeline-node-dot"></div>
+              </div>
+
+              <!-- Entry card -->
+              <a href={`/entries/${entry.slug}`} class="timeline-card group">
+                <div class="timeline-card-inner">
+                  <div class="flex items-center gap-3 mb-3">
+                    <span class={`category-badge category-${entry.data.category}`}>
+                      {entry.data.category}
+                    </span>
+                    {entry.data.tags?.slice(0, 2).map(tag => (
+                      <span class="text-caption text-text-muted hidden sm:inline">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <h3 class="text-title-sm text-text-primary group-hover:text-accent-blue transition-colors duration-300 mb-2">
+                    {entry.data.title}
+                  </h3>
+                  {entry.data.description && (
+                    <p class="text-body-sm text-text-secondary line-clamp-2 mb-3">
+                      {entry.data.description}
+                    </p>
+                  )}
+                  <span class="link-arrow text-body-sm">
+                    Read entry
+                  </span>
+                </div>
+
+                <!-- Connector line from node to card -->
+                <div class={`timeline-connector ${isLeft ? 'timeline-connector-left' : 'timeline-connector-right'}`}></div>
+              </a>
+            </div>
+          );
+        })}
+      </section>
+    ))}
+
+    <!-- End marker -->
+    <div class="timeline-end" data-animate="timeline">
+      <div class="timeline-end-marker">
+        <div class="timeline-end-dot"></div>
+      </div>
+      <p class="text-body text-text-muted mt-6">The journey continues...</p>
+      <a href="/taxonomy" class="btn-primary mt-4">
+        Browse All Entries
+      </a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  /* ============================================
+     HERO ANIMATIONS
+     ============================================ */
+  .timeline-hero-fade {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: timeline-hero-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes timeline-hero-enter {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    width: 24px;
+    height: 40px;
+    border: 2px solid var(--border-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 6px;
+  }
+
+  .scroll-indicator-dot {
+    width: 4px;
+    height: 8px;
+    background: var(--text-muted);
+    border-radius: 2px;
+    animation: scroll-bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes scroll-bounce {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(12px); opacity: 0.3; }
+  }
+
+  /* ============================================
+     PROGRESS BAR
+     ============================================ */
+  .timeline-progress {
+    position: fixed;
+    top: 56px; /* Below nav */
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--border-secondary);
+    z-index: 40;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .timeline-progress.visible {
+    opacity: 1;
+  }
+
+  .timeline-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent-blue);
+    transition: width 0.1s linear, background-color 0.5s ease;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ============================================
+     FLOATING ERA INDICATOR
+     ============================================ */
+  .era-indicator {
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-secondary);
+    border-radius: 20px;
+    z-index: 39;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .era-indicator.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  .era-indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    transition: background-color 0.5s ease;
+  }
+
+  .era-indicator-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+
+  /* ============================================
+     ERA PILLS (quick nav)
+     ============================================ */
+  .era-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+  }
+
+  .era-pill:hover {
+    border-color: var(--border-primary);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .era-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ============================================
+     TIMELINE CONTAINER & LINE
+     ============================================ */
+  .timeline-container {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 120px;
+  }
+
+  .timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-secondary);
+    transform: translateX(-50%);
+  }
+
+  .timeline-line-fill {
+    width: 100%;
+    height: 0%;
+    background: linear-gradient(180deg, var(--accent-blue), var(--accent-blue));
+    transition: height 0.1s linear, background 0.5s ease;
+    border-radius: 0 0 1px 1px;
+  }
+
+  /* ============================================
+     ERA HEADERS
+     ============================================ */
+  .timeline-era {
+    position: relative;
+    padding: 80px 0 40px;
+  }
+
+  .timeline-era-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .timeline-era-marker {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--bg-primary);
+    border: 2px solid var(--era-color, var(--border-primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 0 0 6px var(--bg-primary), 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+  }
+
+  .timeline-era-header:hover .timeline-era-marker {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 6px var(--bg-primary), 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .timeline-era-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .timeline-era-label {
+    max-width: 400px;
+  }
+
+  .timeline-era-number {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .timeline-era-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .timeline-era-subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  /* ============================================
+     TIMELINE ENTRIES
+     ============================================ */
+  .timeline-entry {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    padding: 0 20px;
+  }
+
+  .timeline-entry-left {
+    flex-direction: row-reverse;
+  }
+
+  .timeline-entry-right {
+    flex-direction: row;
+  }
+
+  .timeline-entry-left .timeline-card {
+    margin-right: auto;
+    text-align: right;
+  }
+
+  .timeline-entry-right .timeline-card {
+    margin-left: auto;
+    text-align: left;
+  }
+
+  /* ============================================
+     TIMELINE NODE (dot on the line)
+     ============================================ */
+  .timeline-node {
+    position: absolute;
+    left: 50%;
+    top: 24px;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .timeline-node-ring {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--node-color, var(--accent-blue));
+    background: var(--bg-primary);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .timeline-node-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--node-color, var(--accent-blue));
+    z-index: 1;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .timeline-entry:hover .timeline-node-ring {
+    transform: scale(1.3);
+    border-color: var(--node-color);
+    box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+  }
+
+  .timeline-entry:hover .timeline-node-dot {
+    transform: scale(1.2);
+  }
+
+  /* ============================================
+     TIMELINE CARD
+     ============================================ */
+  .timeline-card {
+    position: relative;
+    display: block;
+    width: calc(50% - 48px);
+    text-decoration: none;
+  }
+
+  .timeline-card-inner {
+    padding: 24px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .timeline-card:hover .timeline-card-inner {
+    border-color: var(--border-primary);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  /* ============================================
+     CONNECTOR LINES
+     ============================================ */
+  .timeline-connector {
+    position: absolute;
+    top: 34px;
+    height: 1px;
+    background: var(--border-secondary);
+    transition: background 0.3s ease;
+  }
+
+  .timeline-connector-left {
+    left: 100%;
+    width: 24px;
+  }
+
+  .timeline-connector-right {
+    right: 100%;
+    width: 24px;
+  }
+
+  .timeline-entry:hover .timeline-connector {
+    background: var(--border-primary);
+  }
+
+  /* ============================================
+     END MARKER
+     ============================================ */
+  .timeline-end {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 80px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .timeline-end-marker {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 6px var(--bg-primary);
+  }
+
+  .timeline-end-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.6; }
+  }
+
+  /* ============================================
+     SCROLL ANIMATIONS
+     ============================================ */
+  [data-animate="timeline"] {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--stagger, 0s);
+  }
+
+  [data-animate="timeline"].animated {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .timeline-entry-left[data-animate="timeline"] {
+    transform: translateX(-40px) translateY(16px);
+  }
+
+  .timeline-entry-right[data-animate="timeline"] {
+    transform: translateX(40px) translateY(16px);
+  }
+
+  .timeline-entry-left[data-animate="timeline"].animated,
+  .timeline-entry-right[data-animate="timeline"].animated {
+    transform: translateX(0) translateY(0);
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 768px) {
+    .timeline-line {
+      left: 24px;
+    }
+
+    .timeline-entry {
+      flex-direction: row !important;
+      padding-left: 52px;
+      padding-right: 0;
+    }
+
+    .timeline-entry-left .timeline-card,
+    .timeline-entry-right .timeline-card {
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      text-align: left;
+    }
+
+    .timeline-node {
+      left: 24px;
+    }
+
+    .timeline-connector {
+      display: none;
+    }
+
+    .timeline-era-header {
+      padding-left: 20px;
+    }
+
+    .timeline-era-marker {
+      box-shadow: 0 0 0 6px var(--bg-primary), 0 0 0 8px var(--bg-secondary), 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .timeline-entry-left[data-animate="timeline"],
+    .timeline-entry-right[data-animate="timeline"] {
+      transform: translateX(24px) translateY(16px);
+    }
+
+    .era-indicator {
+      top: 68px;
+      font-size: 12px;
+      padding: 4px 12px;
+    }
+  }
+</style>
+
+<script is:inline>
+  // ============================================
+  // SCROLL-TRIGGERED ANIMATIONS
+  // ============================================
+  const animateElements = document.querySelectorAll('[data-animate="timeline"]');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animated');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  animateElements.forEach(el => observer.observe(el));
+
+  // ============================================
+  // PROGRESS BAR & TIMELINE LINE FILL
+  // ============================================
+  const progressBar = document.getElementById('timeline-progress');
+  const progressFill = document.getElementById('timeline-progress-fill');
+  const timelineContainer = document.getElementById('timeline-container');
+  const timelineLineFill = document.getElementById('timeline-line-fill');
+  const eraIndicator = document.getElementById('era-indicator');
+  const eraIndicatorDot = document.getElementById('era-indicator-dot');
+  const eraIndicatorText = document.getElementById('era-indicator-text');
+
+  function updateProgress() {
+    if (!timelineContainer || !progressBar || !progressFill || !timelineLineFill) return;
+
+    const containerRect = timelineContainer.getBoundingClientRect();
+    const containerTop = containerRect.top + window.scrollY;
+    const containerHeight = containerRect.height;
+    const scrollY = window.scrollY;
+    const windowHeight = window.innerHeight;
+
+    // Show progress bar once timeline is in view
+    const isInTimeline = scrollY + windowHeight > containerTop && scrollY < containerTop + containerHeight;
+    progressBar.classList.toggle('visible', isInTimeline);
+
+    // Calculate progress through timeline
+    const progress = Math.max(0, Math.min(1,
+      (scrollY + windowHeight * 0.5 - containerTop) / containerHeight
+    ));
+
+    progressFill.style.width = `${progress * 100}%`;
+    timelineLineFill.style.height = `${progress * 100}%`;
+
+    // Update current era
+    const eraSections = document.querySelectorAll('.timeline-era');
+    let currentEra = null;
+
+    eraSections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top < windowHeight * 0.5) {
+        currentEra = section;
+      }
+    });
+
+    if (currentEra && eraIndicator && eraIndicatorDot && eraIndicatorText) {
+      const eraName = currentEra.getAttribute('data-era-name');
+      const eraColor = currentEra.getAttribute('data-era-color');
+
+      eraIndicatorText.textContent = eraName;
+      eraIndicatorDot.style.background = eraColor;
+      progressFill.style.background = eraColor;
+      timelineLineFill.style.background = `linear-gradient(180deg, var(--accent-blue), ${eraColor})`;
+
+      eraIndicator.classList.toggle('visible', isInTimeline);
+    } else if (eraIndicator) {
+      eraIndicator.classList.remove('visible');
+    }
+  }
+
+  // Throttled scroll handler
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateProgress();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Initial call
+  updateProgress();
+
+  // ============================================
+  // SMOOTH SCROLL FOR ERA PILLS
+  // ============================================
+  document.querySelectorAll('.era-pill').forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = pill.getAttribute('href').slice(1);
+      const target = document.getElementById(targetId);
+      if (target) {
+        const offset = 100;
+        const targetTop = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({
+          top: targetTop,
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+</script>
