@@ -1,0 +1,525 @@
+---
+title: "Agent Harnessing Patterns"
+category: anatomy
+tags: [architecture, scaffolding, tools, agent-loop, orchestration, open-source]
+related: [scaffolding, the-agent-loop, tool-use, autonomy-levels, memory-systems]
+status: published
+description: "How modern open-source coding agents harness language models—the architectural patterns for loops, tools, permissions, sessions, and multi-agent orchestration extracted from OpenCode, Codex, OpenHands, Oh My OpenCode, and Pi."
+date: 2026-02-08
+---
+
+import Callout from '../../components/Callout.astro';
+import Diagram from '../../components/Diagram.astro';
+
+The term **agent harness** refers to the entire software system that wraps a language model and turns it into a working coding agent. The model provides reasoning; the harness provides everything else—loops, tools, permissions, memory, session persistence, and the control surfaces that keep the agent useful and safe.
+
+Between 2024 and 2026, a generation of open-source coding agents matured enough to reveal recurring architectural patterns. This entry extracts those patterns from five systems: **OpenCode**, **Codex**, **OpenHands**, **Oh My OpenCode**, and **Pi**.
+
+## The Five Systems
+
+| System | Language | Core Pattern | Distinguishing Feature |
+|--------|----------|-------------|----------------------|
+| [OpenCode](https://github.com/sst/opencode) | TypeScript | Event-bus + plugin hooks | 7-level config hierarchy, message parts system |
+| [Codex](https://github.com/openai/codex) | Rust | Channel-based orchestration | Three-phase tool execution (approval → sandbox → retry) |
+| [OpenHands](https://github.com/All-Hands-AI/OpenHands) | Python | Event stream + action/observation | Docker-isolated runtime, multi-agent delegation |
+| [Oh My OpenCode](https://github.com/code-yeongyu/oh-my-opencode) | TypeScript | Hook injection + category routing | Role-separated orchestrator/implementer agents |
+| [Pi](https://github.com/badlogic/pi-mono) | TypeScript | Minimal core + extensions | Steering/follow-up message queues, pluggable operations |
+
+<Callout type="insight">
+These five systems converge on similar patterns despite being written in different languages by independent teams. That convergence is the signal. Where they diverge reveals genuine design trade-offs.
+</Callout>
+
+## Pattern 1: The Agent Loop
+
+Every system implements the same fundamental cycle. A loop calls the model, receives tool-call requests, executes them, feeds results back, and repeats until the model signals completion or a limit is hit.
+
+<Diagram type="mermaid" caption="the_universal_agent_loop">
+{`graph TD
+    A[User Input] --> B[Build Context]
+    B --> C[Call LLM]
+    C --> D{Tool Calls?}
+    D -->|Yes| E[Execute Tools]
+    E --> F[Collect Observations]
+    F --> B
+    D -->|No| G[Return Response]
+
+    style A fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style B fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style C fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style D fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style E fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style F fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style G fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+`}
+</Diagram>
+
+The implementations differ in how they manage the loop's edges:
+
+### Loop Termination
+
+All five systems must decide when to stop. The strategies overlap:
+
+- **Finish signal**: The model returns text without tool calls (all systems).
+- **Step limit**: A configurable maximum number of iterations (OpenCode's `max_steps`, OpenHands' `IterationControlFlag`, Codex's turn-level abort).
+- **Budget ceiling**: Token or dollar cost limits that halt execution (OpenHands' `BudgetControlFlag` with per-task `max_budget`).
+- **User cancellation**: Abort signals propagated through the loop (Codex uses Rust's `CancellationToken`; OpenCode uses `AbortController`; Pi checks `AbortSignal` between tool batches).
+
+### Stuck Detection
+
+Agents can enter infinite loops—calling the same tool with the same arguments and getting the same result. Two approaches have emerged:
+
+**Doom loop detection** (OpenCode): Track the last three tool calls. If they're identical, pause and ask the user for permission before continuing.
+
+**Pattern matching** (OpenHands): A dedicated `StuckDetector` class checks five scenarios—repeated action-observation pairs, error loops, agent monologues, action-observation pattern cycles, and context window overflow loops. When a loop is detected, it raises `AgentStuckInLoopError` and offers recovery options: truncate memory, restart from last user message, or stop.
+
+<Callout type="warning">
+Stuck detection is not optional. Without it, a coding agent can burn through an entire API budget repeating the same failed edit in seconds.
+</Callout>
+
+### Streaming Architecture
+
+All five systems stream model output rather than waiting for completion. This enables progressive UI updates and early tool-call detection. The common pattern uses async iterators:
+
+```typescript
+// Simplified streaming pattern (Pi)
+for await (const event of stream) {
+  if (event.type === 'text_delta')
+    ui.appendText(event.delta)
+  else if (event.type === 'tool_call_end')
+    results.push(await executeTool(event.toolCall))
+}
+```
+
+Pi introduces **steering messages**—the user can inject a message mid-loop (between tool executions) to redirect the agent without waiting for the turn to end. OpenCode handles this through its event bus. The rest require the user to cancel and re-prompt.
+
+## Pattern 2: Tool Systems
+
+Every coding agent ships with roughly the same core tools: `read`, `write`/`edit`, `bash`, `grep`/`glob`, and some form of web access. The interesting patterns are in how tools are defined, validated, and executed.
+
+### Tool Definition
+
+Three tiers of abstraction have emerged:
+
+**Schema-first** (OpenCode, Codex, Pi): Tools are defined with a JSON Schema (via Zod, TypeBox, or direct JSON), a description string, and an execute function. The harness validates arguments before execution.
+
+```typescript
+// OpenCode pattern
+Tool.define("bash", () => ({
+  description: "Execute a shell command",
+  parameters: z.object({
+    command: z.string(),
+    timeout: z.number().optional(),
+  }),
+  async execute(args, ctx) {
+    // ...
+    return { title: "bash", output: stdout }
+  }
+}))
+```
+
+**Action classes** (OpenHands): Tools are typed Python dataclasses in an action hierarchy. Each action class has a `runnable` flag, security risk level, and confirmation state:
+
+```python
+@dataclass
+class CmdRunAction(Action):
+    command: str
+    blocking: bool = True
+    runnable: ClassVar[bool] = True
+    security_risk: ActionSecurityRisk = UNKNOWN
+```
+
+**Pluggable operations** (Pi): Tool implementations accept an operations interface, allowing the file system or shell to be swapped at construction time—for SSH execution, container isolation, or testing:
+
+```typescript
+const tool = createReadTool(cwd, {
+  operations: {
+    readFile: async (path) => remoteRead(path),
+    access: async (path) => remoteAccess(path),
+  }
+})
+```
+
+### Parallel Tool Execution
+
+Codex implements read/write locking for tools. Read-only tools (`read_file`, `list_dir`) acquire a shared read lock and run concurrently. Mutating tools (`apply_patch`, `shell`) acquire an exclusive write lock and run serially. This is a direct application of the readers-writer lock pattern to agent tool execution.
+
+OpenHands takes a different approach: one pending action at a time, strictly sequential. The `_pending_action` property blocks the next `_step()` call until the current observation arrives.
+
+### MCP Integration
+
+The Model Context Protocol has become a standard for tool interoperability. OpenCode, Oh My OpenCode, and Pi all support MCP servers as dynamic tool sources:
+
+```typescript
+// OpenCode: MCP tools auto-discovered
+MCP.tools(config.mcp.servers) → Tool[]
+// Converted to AI SDK format, tracked for status changes
+```
+
+Oh My OpenCode adds a layer: skills can embed MCP server definitions in their YAML frontmatter, which are automatically registered at session start.
+
+## Pattern 3: Permission and Safety
+
+The most architecturally significant pattern in modern agent harnesses is the permission system. All five systems implement some form of it, but the approaches differ substantially.
+
+<Diagram type="mermaid" caption="permission_models_compared">
+{`graph LR
+    subgraph OPENCODE["OpenCode"]
+        OC1[Wildcard Patterns]
+        OC2[allow / deny / ask]
+        OC3[Per-agent Rules]
+    end
+
+    subgraph CODEX["Codex"]
+        CX1[Approval Policy]
+        CX2[Sandbox Selection]
+        CX3[Cached Decisions]
+    end
+
+    subgraph OPENHANDS["OpenHands"]
+        OH1[Security Analyzer]
+        OH2[Risk Levels]
+        OH3[Confirmation Gate]
+    end
+
+    style OPENCODE fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style CODEX fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style OPENHANDS fill:#0a0a0a,stroke:#00ff00,stroke-width:1px,color:#cccccc
+    style OC1 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style OC2 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style OC3 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style CX1 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style CX2 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style CX3 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style OH1 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style OH2 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style OH3 fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+### OpenCode: Pattern-Based Rules
+
+OpenCode uses glob-pattern permissions with three actions—`allow`, `deny`, `ask`—layered across agents:
+
+```yaml
+permission:
+  read:
+    "*": allow
+    "*.env": ask
+    "~/.ssh/*": deny
+  bash: ask
+  edit: allow
+```
+
+Rules merge hierarchically: built-in defaults → config-level → session-level → tool-level. The `ask` action pauses the loop and publishes a `PermissionNext.Event.Asked` event; a UI subscriber prompts the user and replies with `once`, `always`, or `reject`.
+
+### Codex: Three-Phase Orchestration
+
+Codex's `ToolOrchestrator` runs every tool call through three stages:
+
+1. **Approval**: Check whether the action needs user consent. Approval decisions are cached by semantic keys (file paths for patches, command prefixes for shell). An approval for `src/main.rs` carries over to the next edit of that same file within the session.
+
+2. **Sandbox selection**: Choose the appropriate sandbox (macOS Seatbelt, Linux seccomp, Windows restricted token, or none). The sandbox mode can be read-only, workspace-write, or full-access.
+
+3. **Execution with retry**: Run the tool. If it fails inside the sandbox (e.g., permission denied), offer to escalate—run again without the sandbox, with the user's explicit approval.
+
+This is the most sophisticated safety model among the five systems. It balances security with usability by learning from each approval within a session.
+
+### OpenHands: Security Risk Classification
+
+OpenHands classifies every action by risk level (`LOW`, `MEDIUM`, `HIGH`, `UNKNOWN`). A security analyzer inspects the action before execution. High-risk actions gate the agent into `AWAITING_USER_CONFIRMATION` state. The user confirms or rejects, and the agent resumes or stops.
+
+## Pattern 4: Provider Abstraction
+
+All five systems abstract across LLM providers. The approaches reflect different trade-offs between simplicity and control.
+
+| System | Abstraction Layer | Providers Supported |
+|--------|------------------|-------------------|
+| OpenCode | Vercel AI SDK | 20+ (Anthropic, OpenAI, Google, Azure, Bedrock, etc.) |
+| Codex | Custom Rust client | OpenAI Responses API + compatible endpoints |
+| OpenHands | litellm | All litellm-supported providers |
+| Oh My OpenCode | Inherits from OpenCode | 20+ (via OpenCode) |
+| Pi | Custom registry + per-provider implementations | 20+ (Anthropic, OpenAI, Google, xAI, Groq, Ollama, etc.) |
+
+The key design question is whether to use an existing SDK (Vercel AI SDK, litellm) or build provider adapters from scratch. OpenCode and OpenHands use existing SDKs and get breadth for free. Codex and Pi build their own for tighter control over streaming, caching, and cost tracking.
+
+Pi's approach is notable: each provider has a dedicated implementation file with a `stream` function, but all are accessed through a single `stream(model, context, options)` entry point. Provider-specific quirks (Anthropic's cache control, OpenAI's reasoning tokens) are handled inside each adapter.
+
+<Callout type="note">
+Provider abstraction is not just about API compatibility. It includes model-specific system prompt formatting, token counting differences, cache handling, and cost calculation. The naive "just swap the endpoint" approach invariably breaks.
+</Callout>
+
+## Pattern 5: Session and Context Management
+
+Long coding sessions exceed context windows. Every system needs a strategy for persistence and compression.
+
+### Conversation Persistence
+
+**OpenCode**: Messages are stored as structured parts (text, reasoning, tool calls, snapshots, patches, compaction summaries). Each part is a discriminated union with its own schema. Sessions can be forked at any message, creating a branching conversation tree.
+
+**Pi**: Sessions are stored as JSONL files with a tree structure—each entry has an `id` and `parentId`. Branching happens in-place without new files. Entry types include messages, compaction summaries, model changes, labels, and custom extension state.
+
+**OpenHands**: Events are persisted to a file store. Each event gets a sequential ID and timestamp. Secret values are masked with `<secret_hidden>` before storage.
+
+### Context Compaction
+
+When the conversation exceeds the context window, all systems compress history:
+
+- **OpenCode**: A compaction agent summarizes early messages and inserts a special `CompactionPart`. Subsequent LLM calls only see messages after the compaction point.
+- **Pi**: Rolling summarization keeps the last N tokens of recent messages and summarizes everything before that. File read/modify tracking helps the summary retain awareness of what's been done.
+- **OpenHands**: A `Condenser` system with two strategies—`ConversationWindowCondenser` (sliding window) and `LLMCondenser` (LLM-generated summary).
+- **Oh My OpenCode**: Adds preemptive compaction hooks and a `compaction-context-injector` that enriches the summary with project-specific context before compression.
+
+### Instruction Injection
+
+OpenCode injects file-specific instructions by scanning for `AGENTS.md`, `CLAUDE.md`, and `CONTEXT.md` files relative to whatever file the agent is editing. Pi reads `.pi/AGENTS.md` into the system prompt. OpenHands loads microagent markdown files with frontmatter metadata for project-specific and agent-specific knowledge injection.
+
+## Pattern 6: Multi-Agent Orchestration
+
+This is where the systems diverge most. Three approaches have emerged.
+
+### Subagent Spawning (OpenCode, Pi)
+
+The primary agent can spawn secondary agents for specific tasks. In OpenCode, agents are classified by mode—`primary` (build, plan), `subagent` (explore, general)—and each has its own permissions, model, and system prompt. The `task` tool creates a new session for the subagent.
+
+Pi takes a deliberately minimal approach: no built-in sub-agents. Instead, extensions can implement them. The steering and follow-up message queues provide the primitives for agent-to-agent communication.
+
+### Parent-Child Delegation (OpenHands)
+
+OpenHands implements a formal delegation pattern. The `AgentController` has `parent` and `delegate` fields. When an agent issues an `AgentDelegateAction`, a child controller is created with a shared event stream but separate state. Events flow to the delegate until it finishes, then the parent resumes.
+
+Key characteristics:
+- Shared event stream (all agents write to the same history)
+- Shared metrics (parent snapshot captured at delegation time)
+- Global iteration counter across the hierarchy
+- Clean delegation chain that can nest multiple levels
+
+### Role-Separated Orchestration (Oh My OpenCode)
+
+Oh My OpenCode implements the most elaborate multi-agent pattern—a three-layer hierarchy:
+
+**Layer 1 — Planning**: Prometheus conducts interviews and generates plans. Metis performs gap analysis. Momus reviews the plan.
+
+**Layer 2 — Orchestration**: Atlas coordinates execution but is explicitly forbidden from writing code. It can read files, run diagnostics, and verify results, but must delegate all implementation.
+
+**Layer 3 — Execution**: Sisyphus-Junior executes tasks with category-specific prompts and model selection. Specialist agents (Oracle for architecture, Librarian for documentation, Explore for codebase search) handle specific needs.
+
+<Diagram type="mermaid" caption="oh_my_opencode_three_layer_orchestration">
+{`graph TD
+    subgraph PLAN["PLANNING"]
+        PR[Prometheus<br/>Planner]
+        ME[Metis<br/>Gap Analyzer]
+        MO[Momus<br/>Reviewer]
+        PR --> ME --> MO
+    end
+
+    subgraph ORCH["ORCHESTRATION"]
+        AT[Atlas<br/>Conductor]
+    end
+
+    subgraph EXEC["EXECUTION"]
+        SJ[Sisyphus-Junior<br/>Implementer]
+        OR[Oracle<br/>Architecture]
+        LI[Librarian<br/>Documentation]
+        EX[Explore<br/>Search]
+    end
+
+    MO --> AT
+    AT --> SJ
+    AT --> OR
+    AT --> LI
+    AT --> EX
+
+    style PLAN fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style ORCH fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style EXEC fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#666666
+    style PR fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style ME fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style MO fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style AT fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style SJ fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style OR fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style LI fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style EX fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+The strict orchestrator-cannot-implement rule is enforced by hook injection: the `atlas` hook injects `DELEGATION_REQUIRED` system directives when violations are detected. This prevents the common failure mode where an orchestrator agent starts implementing instead of delegating.
+
+## Pattern 7: Event Systems
+
+Agent harnesses need internal communication between components—the UI must know when tools execute, the permission system must intercept tool calls, session persistence must capture everything.
+
+### Publish-Subscribe (OpenCode)
+
+OpenCode uses a typed event bus:
+
+```typescript
+Bus.publish(Session.Event.Updated, { info })
+Bus.subscribe(PermissionNext.Event.Asked, (event) => {
+  // Show approval dialog
+})
+```
+
+Events flow between the agent loop, TUI, permission system, MCP manager, and session storage. The system is fully decoupled—components only know about event types, not each other.
+
+### Event Stream with Subscribers (OpenHands)
+
+OpenHands uses a thread-safe queue with typed subscriber levels. Events are processed FIFO, and subscribers execute in thread pools:
+
+```python
+class EventStreamSubscriber(str, Enum):
+    AGENT_CONTROLLER = 'agent_controller'
+    SERVER = 'server'
+    RUNTIME = 'runtime'
+    MEMORY = 'memory'
+```
+
+Each event carries causality metadata—an observation's `_cause` field points to the action that triggered it, enabling full trace reconstruction.
+
+### Async Channels (Codex)
+
+Codex uses Rust's async channels for a clean producer-consumer pattern:
+
+```rust
+pub struct Codex {
+    pub tx_sub: Sender<Submission>,    // User sends operations
+    pub rx_event: Receiver<Event>,     // User receives events
+    pub agent_status: watch::Receiver<AgentStatus>,
+}
+```
+
+This channel-based design fully decouples the frontend from the agent engine. The TUI, API server, and IDE extensions all consume the same event channel.
+
+## Pattern 8: Configuration Hierarchies
+
+All systems support layered configuration, but OpenCode's seven-level hierarchy is the most elaborate:
+
+1. Managed config (system-wide)
+2. Remote `.well-known` (organization-level)
+3. Global user config (`~/.config/opencode/opencode.json`)
+4. Custom `OPENCODE_CONFIG` environment variable
+5. Project config (`opencode.json` in project root)
+6. `.opencode` directories (subdirectory overrides)
+7. Inline `OPENCODE_CONFIG_CONTENT` (for CI/CD)
+
+Each level can override agents, tools, permissions, models, and system prompts. Oh My OpenCode adds its own layer on top with category-based model routing—a `task(category="visual")` call automatically selects a vision-capable model, while `task(category="business-logic")` routes to a reasoning-focused model.
+
+Pi takes the opposite approach: flat settings with CLI flags taking highest precedence, then project-local `.pi/settings.json`, then user-global `~/.pi/agent/settings.json`. Simpler, but less suitable for enterprise environments.
+
+## Pattern 9: Extensibility
+
+The extensibility patterns reveal a spectrum from opinionated to open:
+
+### Plugin Systems (OpenCode, Oh My OpenCode)
+
+OpenCode plugins are npm packages that implement a `PluginInput` interface. They can add tools, modify system prompts, and intercept hooks. Oh My OpenCode is itself an OpenCode plugin—one that registers 11 agents, 37 hooks, and 25 tools.
+
+### Extension API (Pi)
+
+Pi extensions are TypeScript modules that receive an `ExtensionAPI` object:
+
+```typescript
+export default function(pi: ExtensionAPI) {
+  pi.registerTool({ ... })
+  pi.registerCommand({ ... })
+  pi.registerShortcut({ ... })
+  pi.registerProvider({ ... })
+  pi.on('tool:result', (event) => { ... })
+}
+```
+
+Extensions can register tools, commands, keyboard shortcuts, LLM providers, and event listeners. They can also provide custom rendering for tool calls and results in the TUI.
+
+### Skills and Instructions
+
+Multiple systems support markdown-based knowledge injection:
+
+- **OpenCode**: `SKILL.md` files discovered from global and project directories, loaded with YAML frontmatter metadata.
+- **Pi**: Skills are markdown files with frontmatter, discovered from `~/.pi/agent/skills/` and `.pi/skills/`.
+- **OpenHands**: Microagents are markdown files categorized as `REPO_KNOWLEDGE` or `AGENT_KNOWLEDGE`, injected into system prompts.
+- **Oh My OpenCode**: Skills can embed MCP definitions and are routed to agents based on task category.
+
+<Callout type="insight">
+The convergence on markdown-with-frontmatter as the skill/knowledge format across independent projects suggests it's a natural fit—human-readable, version-controllable, and easy to inject into LLM context.
+</Callout>
+
+## Pattern 10: Runtime Isolation
+
+The question of where agent-generated code runs is architecturally significant.
+
+**Codex** offers the most granular sandbox model: platform-specific sandboxes (macOS Seatbelt, Linux seccomp, Windows restricted tokens) with three modes—read-only, workspace-write, and full-access. Sandbox escalation on failure asks the user before running unrestricted.
+
+**OpenHands** provides the strongest isolation: a full Docker container runtime. The agent's shell commands, file operations, and browser interactions all happen inside a container. The abstract `Runtime` base class has implementations for Docker, Kubernetes, local, and remote execution, plus third-party runtimes (Daytona, E2B, Modal).
+
+**OpenCode** and **Pi** rely on file-path validation and permission rules rather than OS-level sandboxing. The trade-off is lower setup friction versus weaker isolation guarantees.
+
+## Convergent Architecture
+
+Despite independent development, these five systems converge on a common high-level architecture:
+
+<Diagram type="mermaid" caption="convergent_agent_harness_architecture">
+{`graph TB
+    subgraph HARNESS["AGENT HARNESS"]
+        UI[Interface Layer<br/>TUI / Web / IDE]
+        EVENTS[Event System<br/>Bus / Stream / Channel]
+        LOOP[Agent Loop<br/>Prompt → Tool → Observe]
+        TOOLS[Tool Registry<br/>Define / Validate / Execute]
+        PERM[Permission Layer<br/>Rules / Approval / Sandbox]
+        PROV[Provider Abstraction<br/>Unified LLM API]
+        SESS[Session Manager<br/>Persist / Compact / Fork]
+        EXT[Extension System<br/>Plugins / Skills / MCP]
+    end
+
+    UI --> EVENTS
+    EVENTS --> LOOP
+    LOOP --> TOOLS
+    TOOLS --> PERM
+    LOOP --> PROV
+    LOOP --> SESS
+    EXT --> TOOLS
+    EXT --> PROV
+
+    style HARNESS fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style UI fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style EVENTS fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style LOOP fill:#0a0a0a,stroke:#00ff00,stroke-width:2px,color:#cccccc
+    style TOOLS fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style PERM fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style PROV fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style SESS fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+    style EXT fill:#0a0a0a,stroke:#333333,stroke-width:1px,color:#cccccc
+`}
+</Diagram>
+
+The components are the same; the implementations reflect genuine trade-offs:
+
+| Trade-off | Minimal (Pi) | Moderate (OpenCode, Codex) | Maximal (OpenHands, Oh My OpenCode) |
+|-----------|-------------|---------------------------|-------------------------------------|
+| Agent count | 1 | 2-3 modes | 5-11 specialized agents |
+| Isolation | Path validation | Permissions + patterns | Docker containers / OS sandbox |
+| Config | Flat files | Hierarchical merge | Hierarchical + category routing |
+| Extension | TypeScript API | Plugin + MCP | Plugin + hooks + skills + MCP |
+| Context mgmt | Rolling summary | Compaction agent | Condenser + microagents |
+
+## Lessons
+
+Several practical lessons emerge from studying these systems:
+
+**The loop is simple; the edges are hard.** The core `while (tool_calls) { execute(); }` loop is trivial. Everything around it—stuck detection, cancellation, permission checking, context compaction, error recovery—is where the real engineering lives.
+
+**Permission caching matters.** Codex's insight of caching approval decisions by semantic key (file path, command prefix) rather than exact match dramatically reduces user friction while maintaining safety.
+
+**Orchestrator and implementer should be separate roles.** Oh My OpenCode's strict rule that the orchestrator cannot write code prevents a common failure mode in multi-agent systems where the coordinator starts doing the work itself and loses track of the plan.
+
+**Markdown is the universal skill format.** Every system that supports knowledge injection settled on markdown with YAML frontmatter independently. It's human-writable, LLM-readable, and version-controllable.
+
+**Provider abstraction is deeper than endpoint swapping.** Model-specific system prompt formatting, token counting, cache handling, and cost calculation all vary by provider. Systems that treat providers as interchangeable (just swap the API key) consistently hit edge cases.
+
+## See Also
+
+- [Scaffolding](/entries/scaffolding) — the broader concept of external structures that enable agents
+- [The Agent Loop](/entries/the-agent-loop) — the fundamental cycle at the heart of every harness
+- [Tool Use](/entries/tool-use) — how agents extend their capabilities through function calls
+- [Autonomy Levels](/entries/autonomy-levels) — how harnesses implement different levels of human oversight
+- [Memory Systems](/entries/memory-systems) — the persistence component of agent harnesses
+- [Sandboxing](/entries/sandboxing) — isolation patterns for safe code execution
